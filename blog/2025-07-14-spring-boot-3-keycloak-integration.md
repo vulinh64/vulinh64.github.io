@@ -11,34 +11,6 @@ This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot
 
 <!--truncate-->
 
-## Table of Contents
-
-<!-- TOC -->
-* [Spring Boot 3 + KeyCloak Integration](#spring-boot-3--keycloak-integration)
-  * [Table of Contents](#table-of-contents)
-  * [TL;DR](#tldr)
-  * [What we need](#what-we-need)
-  * [Installing KeyCloak](#installing-keycloak)
-    * [Option 1: Quick Development Setup (Single Container)](#option-1-quick-development-setup-single-container)
-    * [Option 2: Setup with Docker Compose](#option-2-setup-with-docker-compose)
-  * [Adding Required Information to KeyCloak](#adding-required-information-to-keycloak)
-    * [Step-by-step KeyCloak Configuration:](#step-by-step-keycloak-configuration)
-  * [Kickstart Our Spring Boot Application](#kickstart-our-spring-boot-application)
-    * [Dependency](#dependency)
-    * [`application.yaml`](#applicationyaml)
-    * [Using Java Record Like a Sir to Inject Application Properties](#using-java-record-like-a-sir-to-inject-application-properties)
-    * [Our Security Configuration](#our-security-configuration)
-      * [`SecurityConfig` class](#securityconfig-class)
-      * [`JwtConverter` class](#jwtconverter-class)
-      * [Custom `AuthorizationException` class](#custom-authorizationexception-class)
-    * [Testing Our Application](#testing-our-application)
-    * [Quick Docker Compose debugging commands:](#quick-docker-compose-debugging-commands)
-  * [Troubleshooting](#troubleshooting)
-    * [1. "Client not allowed for direct access grants" error](#1-client-not-allowed-for-direct-access-grants-error)
-    * [2. "Account is not fully set up" even with correct credentials](#2-account-is-not-fully-set-up-even-with-correct-credentials)
-  * [Conclusion](#conclusion)
-<!-- TOC -->
-
 ## TL;DR
 
 If you are impatient and don't want to read (we are now in the era of absolute *brainrot* and A.I infesting, damaging and corroding our own lives), there is a link to the GitHub repository that backs this article, here:
