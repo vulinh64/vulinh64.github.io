@@ -50,7 +50,11 @@ docker run -d -p 8080:8080 -p 9000:9000 \
   quay.io/keycloak/keycloak:26.3 start-dev
 ```
 
-**Pro tip:** The command above is for development only. Don't even think about using this in production unless you want to get fired.
+This command fires up a Keycloak container using its volatile H2 database. 
+
+> ⚠️ **_WARNING_**: ️️⚠️ 
+> 
+> This setup is... fragile, and all your configurations will be vaporized the moment the container is deleted.
 
 ### Option 2: Setup with Docker Compose
 
@@ -62,7 +66,7 @@ For a more robust setup that includes PostgreSQL persistence and proper data man
 - **Health checks** to ensure proper startup order
 - **Network isolation** for security
 
-If you are lazy, go to [TL;DR](#tldr), again.
+If you are lazy, go to [TL;DR](#tldr), again. The backing source code is there. Download it, or clone it.
 
 **Why use the Docker Compose setup instead of the simple container?**
 
@@ -75,19 +79,21 @@ If you are lazy, go to [TL;DR](#tldr), again.
 **To use the Docker Compose setup from the repository:**
 
 ```shell
-# Clone the repository (if you haven't already)
-git clone https://github.com/vulinh64/spring-boot-3-keycloak-integration
-cd spring-boot-3-keycloak-integration
-
-# Start everything
+# From the project root folder
 docker-compose up -d
+```
 
+```shell
 # Check logs
 docker-compose logs -f keycloak
+```
 
+```shell
 # Stop everything
 docker-compose down
+```
 
+```shell
 # Stop and remove volumes (WARNING: This will delete all data!)
 docker-compose down -v
 ```
@@ -98,7 +104,13 @@ docker-compose down -v
 - If you need to reset everything, use `docker-compose down -v` to remove volumes
 - The setup includes health checks to ensure proper startup order
 
-Then access `http://localhost:8080` and start configuring KeyCloak (we need a realm, a client, some test users and some client roles for this article).
+### Option 3: Option #1 Plus an external PostgreSQL Database for Data Persisting
+
+The accompanying source code includes a [script](https://github.com/vulinh64/spring-boot-3-keycloak-integration/blob/main/run-keycloak-postgresql.cmd) (named `run-keycloak-postgresql.cmd`). Running it will start KeyCloak with a PostgreSQL database that uses an external volume for data persistence, preventing any data loss.
+
+### Visiting KeyCloak Administrator Interface
+
+Access `http://localhost:8080` and start configuring KeyCloak (we need a realm, a client, some test users and some client roles for this article).
 
 Default login username is `admin`, and default password is `admin`, as defined in the configuration above.
 
@@ -130,7 +142,9 @@ After you configured KeyCloak, it is time to write our Spring Boot application.
 
 ### Dependency
 
-We start with some properties:
+We start with the very basic of a Maven project:
+
+#### Spring Boot Parent POM
 
 ```xml
 <!-- Spring Boot parent pom -->
@@ -142,6 +156,8 @@ We start with some properties:
 </parent>
 ```
 
+#### Global Properties
+
 ```xml
 <!-- Some properties -->
 <properties>
@@ -149,6 +165,8 @@ We start with some properties:
     <springdoc.openapi.version>2.8.9</springdoc.openapi.version>
 </properties>
 ```
+
+#### Minimum Dependencies
 
 We will be needing these dependencies (and yes, I'm using Maven because I am not used to work with Gradle much, but same principles could):
 
@@ -178,6 +196,8 @@ We will be needing these dependencies (and yes, I'm using Maven because I am not
     </dependency>
 </dependencies>
 ```
+
+#### Build Configurations
 
 If you want to use Lombok (and you should, unless you enjoy writing boilerplate code), then you need to do additional configurations:
 
@@ -218,11 +238,15 @@ If you want to use Lombok (and you should, unless you enjoy writing boilerplate 
 
 You can always visit [Spring Initializr](https://start.spring.io/) to generate your own project, and then make your own changes to fit your preferences.
 
-### `application.yaml`
+### The `application.yaml` Hero We Need (and Deserve!)
 
-YAML is GOAT. Period. Traditional `application.properties` is for the weak.
+YAML is GOAT.
 
-Therefore, rename the peasant `application.properties` into a more elegant `application.yaml` and start adding properties, for example:
+Period.
+
+~~Traditional `application.properties` is for the weak.~~
+
+Therefore, rename the ~~peasant~~ `application.properties` into a more elegant `application.yaml` and start adding properties, for example:
 
 ```yaml
 application-properties:
@@ -426,7 +450,9 @@ We are using the default KeyCloak JWT payload, which would look like this:
 }
 ```
 
-**Important:** The `resource_access` claim is where KeyCloak stores the client-specific roles. This is different from realm roles, so make sure you're assigning CLIENT roles to your users.
+**Important:**
+
+> The `resource_access` claim is where KeyCloak stores the client-specific roles. This is different from realm roles, so make sure you're assigning CLIENT roles to your users.
 
 To get our access token, import the following CURL to your Postman:
 
@@ -442,10 +468,14 @@ curl --location 'http://localhost:8080/realms/spring-boot-realm/protocol/openid-
 The response will contain an `access_token` field - copy that value and use it in your Authorization header as `Bearer {token}`.
 
 > I will be generating a Postman collection later for lazy folks.
+> 
+> ~~Or screw Postman because it has been heavily screwed up~~
 
 #### `JwtConverter` class
 
-And this is our custom `JwtConverter` class:
+And this is our custom `JwtConverter` class, the protagonist of this project:
+
+~~(We are still responsible for mapping KeyCloak roles into Spring Security roles and authority, too bad)~~
 
 ```java
 // Import omitted for brevity
@@ -530,7 +560,9 @@ Nothing spectacular here, just a custom exception to make debugging easier.
 
 That's basically the core of our application!
 
-And all hail the `var` keyword. Screw explicit data type definitions, ain't nobody got time for that!
+And all hail the `var` keyword. 
+
+~~And screw explicit data type definitions, ain't nobody got time for that! What's point of knowing the explicit data type when you still have to Ctrl + Click to access the actual class?~~
 
 ### Testing Our Application
 
