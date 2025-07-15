@@ -7,6 +7,10 @@ tags: [java, spring boot, keycloak, spring security, oauth2]
 
 # Spring Boot 3 + KeyCloak Integration
 
+This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot application.
+
+<!--truncate-->
+
 ## Table of Contents
 
 <!-- TOC -->
