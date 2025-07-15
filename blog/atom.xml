@@ -14,50 +14,6 @@
         <updated>2025-07-14T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot application.]]></summary>
         <content type="html"><![CDATA[<p>This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot application.</p>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="table-of-contents">Table of Contents<a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#table-of-contents" class="hash-link" aria-label="Direct link to Table of Contents" title="Direct link to Table of Contents">​</a></h2>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#spring-boot-3--keycloak-integration">Spring Boot 3 + KeyCloak Integration</a>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#table-of-contents">Table of Contents</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#tldr">TL;DR</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#what-we-need">What we need</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#installing-keycloak">Installing KeyCloak</a>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#option-1-quick-development-setup-single-container">Option 1: Quick Development Setup (Single Container)</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#option-2-setup-with-docker-compose">Option 2: Setup with Docker Compose</a></li>
-</ul>
-</li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#adding-required-information-to-keycloak">Adding Required Information to KeyCloak</a>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#step-by-step-keycloak-configuration">Step-by-step KeyCloak Configuration:</a></li>
-</ul>
-</li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#kickstart-our-spring-boot-application">Kickstart Our Spring Boot Application</a>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#dependency">Dependency</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#applicationyaml"><code>application.yaml</code></a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#using-java-record-like-a-sir-to-inject-application-properties">Using Java Record Like a Sir to Inject Application Properties</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#our-security-configuration">Our Security Configuration</a>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#securityconfig-class"><code>SecurityConfig</code> class</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#jwtconverter-class"><code>JwtConverter</code> class</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#custom-authorizationexception-class">Custom <code>AuthorizationException</code> class</a></li>
-</ul>
-</li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#testing-our-application">Testing Our Application</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#quick-docker-compose-debugging-commands">Quick Docker Compose debugging commands:</a></li>
-</ul>
-</li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#troubleshooting">Troubleshooting</a>
-<ul>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#1-client-not-allowed-for-direct-access-grants-error">1. "Client not allowed for direct access grants" error</a></li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#2-account-is-not-fully-set-up-even-with-correct-credentials">2. "Account is not fully set up" even with correct credentials</a></li>
-</ul>
-</li>
-<li><a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#conclusion">Conclusion</a></li>
-</ul>
-</li>
-</ul>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="tldr">TL;DR<a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#tldr" class="hash-link" aria-label="Direct link to TL;DR" title="Direct link to TL;DR">​</a></h2>
 <p>If you are impatient and don't want to read (we are now in the era of absolute <em>brainrot</em> and A.I infesting, damaging and corroding our own lives), there is a link to the GitHub repository that backs this article, here:</p>
 <blockquote>
