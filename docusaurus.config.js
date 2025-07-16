@@ -84,7 +84,7 @@ const config = {
         items: [
           {to: '/blog', label: 'Articles', position: 'left'},
           {
-            href: 'https://github.com/vulinh64',
+            href: 'https://github.com/vulinh64/vulinh64.github.io',
             label: 'GitHub',
           },
         ],
@@ -92,11 +92,11 @@ const config = {
       footer: {
         style: 'dark',
         links: [],
-        copyright: `This is not a copyright, just some random text I don't care to edit or ask for ChatGPT prompt`,
+        copyright: `Copyright whatever lololol (why would you even consider copywriting here?)`,
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: prismThemes.vsLight,
+        darkTheme: prismThemes.vsDark,
         additionalLanguages: ["java", "javascript", "typescript", "python", "powershell"],
       },
     }),
