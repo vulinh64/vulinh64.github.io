@@ -302,7 +302,7 @@ For extra security, throw an exception in the constructor to block reflection-ba
 
 Yes, even `java.util.Objects` class make use of this "feature", so why shouldn't you?
 
-Consider skip `implements Serializable` if you’re feeling extra cautious.
+Consider skipping `implements Serializable` if you’re feeling extra cautious.
 
 While some argue that utility classes deviate from pure object-oriented programming (OOP), remember: even Java itself isn't strictly OOP, with its primitive data types and static class members. So give yourself some flexibility for the sake of efficiency and sanity.
 
