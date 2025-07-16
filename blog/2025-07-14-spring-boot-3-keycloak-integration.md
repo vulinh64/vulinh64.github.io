@@ -50,7 +50,9 @@ docker run -d -p 8080:8080 -p 9000:9000 \
   quay.io/keycloak/keycloak:26.3 start-dev
 ```
 
-This command fires up a Keycloak container using its volatile H2 database. 
+This command fires up a Keycloak container using its volatile H2 database.
+
+**Pro-Tip:** Add the `-e KC_HOSTNAME=keycloak` parameter to the docker run command. This configures the JWT `iss` (issuer) claim to use the container's service name (e.g., `http://keycloak:8080/realms/spring-boot-realm`). This allows your Spring Boot application to consistently connect to Keycloak using the service name `keycloak`, which works for both debugging from your IDE and running in a fully containerized environment.
 
 > ⚠️ **_WARNING_**: ️️⚠️ 
 > 
@@ -173,27 +175,38 @@ We will be needing these dependencies (and yes, I'm using Maven because I am not
 ```xml
 <!-- Basic dependencies -->
 <dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <optional>true</optional>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-    </dependency>
+   <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+   </dependency>
+   <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+   </dependency>
+   <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+   </dependency>
+   <!-- For health check -->
+   <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+   </dependency>
+   <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+   </dependency>
+   <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+   </dependency>
+   <!-- For Swagger UI -->
+   <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc.openapi.version}</version>
+   </dependency>
 </dependencies>
 ```
 
@@ -250,26 +263,28 @@ Therefore, rename the ~~peasant~~ `application.properties` into a more elegant `
 
 ```yaml
 application-properties:
-  realm-name: spring-boot-realm
-  client-name: spring-boot-client
-  admin-privilege-urls:
-    - /test/admin/**
-  no-auth-urls:
-    # OpenAPI Swagger URLs
-    - /swagger-ui.html
-    - /swagger-ui/**
-    - /v3/api-docs/**
-    - /v3/api-docs.yaml
-    # Actuator endpoints:
-    - /actuator/**
-    # Custom no-auth URLs:
-    - /test/free
+   realm-name: spring-boot-realm
+   client-name: spring-boot-client
+   admin-privilege-urls:
+      - /test/admin/**
+   no-auth-urls:
+      # OpenAPI Swagger URLs
+      - /swagger-ui.html
+      - /swagger-ui/**
+      - /v3/api-docs/**
+      - /v3/api-docs.yaml
+      # Actuator endpoints:
+      - /actuator/**
+      # Custom no-auth URLs:
+      - /test/free
 server.port: 8088
-spring.security.oauth2.resourceserver:
-  jwt.issuer-uri: http://localhost:8080/realms/${application-properties.realm-name}
+spring:
+   threads.virtual.enabled: true # Make use of Spring Boot 3.2+ Virtual Threads support
+   security.oauth2.resourceserver:
+      jwt.issuer-uri: http://${KEYCLOAK_HOST:localhost:8080}/realms/${application-properties.realm-name}
 logging.level:
-  # If you are curious about how Spring Security OAuth2 works behind the scene
-  org.springframework.security.oauth2: TRACE
+   # If you are curious about how Spring Security OAuth2 works behind the scene
+   org.springframework.security.oauth2: TRACE
 ```
 
 Note that our KeyCloak instance is running on port `8080`, and therefore, we will be using a different port (`8088`) for our Spring Boot application, as defined in `server.port` property.
@@ -484,6 +499,9 @@ And this is our custom `JwtConverter` class, the protagonist of this project:
 @RequiredArgsConstructor
 public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticationToken> {
 
+  static final String RESOURCE_ACCESS_CLAIM = "resource_access";
+  static final String EMAIL_CLAIM = "email";
+
   private final ApplicationProperties applicationProperties;
 
   @Override
@@ -498,13 +516,16 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
     }
 
     // get the top-level "resource_access" claim.
-    var resourceAccess = nonMissing(jwt.getClaimAsMap("resource_access"), "resource_access");
+    var resourceAccess =
+        nonMissing(jwt.getClaimAsMap(RESOURCE_ACCESS_CLAIM), RESOURCE_ACCESS_CLAIM);
 
     // get the map specific to our client ID.
-    var clientRolesMap = (Map<String, Collection<String>>) getMapValue(resourceAccess, clientName);
+    var clientRolesMap =
+        (Map<String, Collection<String>>)
+            getMapValue(resourceAccess, clientName, RESOURCE_ACCESS_CLAIM);
 
     // get the collection of role strings from that map.
-    var roleNames = getMapValue(clientRolesMap, "roles");
+    var roleNames = getMapValue(clientRolesMap, "roles", RESOURCE_ACCESS_CLAIM, clientName);
 
     var authorities =
         roleNames.stream()
@@ -517,14 +538,18 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
         new SecurityConfig.AuthorizedUserDetails(
             UUID.fromString(nonMissing(jwt.getSubject(), "subject")),
             nonMissing(jwt.getClaimAsString("preferred_username"), "username"),
-            nonMissing(jwt.getClaimAsString("email"), "email"),
+            nonMissing(jwt.getClaimAsString(EMAIL_CLAIM), EMAIL_CLAIM),
             authorities);
 
-    return UsernamePasswordAuthenticationToken.authenticated(userDetails, null, authorities);
+    return UsernamePasswordAuthenticationToken.authenticated(
+        userDetails, jwt.getTokenValue(), authorities);
   }
 
-  private static <T> T getMapValue(Map<String, T> map, String key) {
-    return nonMissing(map.get(key), key);
+  private static <T> T getMapValue(Map<String, T> map, String key, String... origin) {
+    var claimName =
+        ArrayUtils.isEmpty(origin) ? key : "%s.%s".formatted(String.join(".", origin), key);
+
+    return nonMissing(map.get(key), claimName);
   }
 
   private static <T> T nonMissing(T object, String name) {
