@@ -240,11 +240,11 @@ Will Project Valhalla save us from this torment? Perhaps. Until then, library ma
 
 ## Using `enum` as Singleton: Heresy Yet Ingenious
 
-When Java 5 introduced the `enum` keyword, its purpose was crystal clear: to define a fixed set of type-safe constants. Think directions, days of the week, or states in a state machine—not service managers, database connection pools, or logger instances.
+When Java 5 introduced the `enum` keyword, its purpose was crystal clear: to define a fixed set of type-safe constants. Think directions, days of the week, or states in a state machine, not service managers, database connection pools, or logger instances.
 
 So, when Joshua Bloch suggested using an `enum` for a singleton in *Effective Java*, it sparked some serious debate. This wasn’t the classic "Gang of Four" approach, nor was it an intentional design choice by Java’s creators.
 
-But sometimes, heresy is brilliant—and in this case, it’s downright effective.
+But sometimes, heresy is brilliant, and in this case, it’s downright effective.
 
 Why does it work so well?
 
@@ -254,7 +254,7 @@ Java’s `enum` comes with JVM-backed superpowers:
 
 - **Reflection-Proof**: Reflection is a singleton’s worst enemy, but `enum` laughs in its face. Attempts to create additional instances via reflection are met with exceptions, thanks to JVM-level protection.
 
-- **Thread-Safe by Default**: The JVM handles `enum` constant initialization with thread-safety baked in. No race conditions, no multiple instances—just one, always.
+- **Thread-Safe by Default**: The JVM handles `enum` constant initialization with thread-safety baked in. No race conditions, no multiple instances. Just one, always.
 
 - **Clean and Concise**: A few lines of code, and you’re done. No synchronization blocks, no double-checked locking, no convoluted constructors.
 
