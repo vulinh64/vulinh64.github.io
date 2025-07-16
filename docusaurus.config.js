@@ -57,7 +57,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/vulinh64/vulinh64.github.io/edit/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/vulinh64/vulinh64.github.io/edit/main/blog/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
