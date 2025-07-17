@@ -5,6 +5,10 @@ authors: [vulinh64]
 tags: [java, querydsl, openfeign]
 ---
 
+Guide on how to make use of new QueryDSL fork by OpenFeign team.
+
+<!--truncate-->
+
 ## !!!Update!!!
 
 ### 2025-06-16
