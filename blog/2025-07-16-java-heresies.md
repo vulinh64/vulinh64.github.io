@@ -238,6 +238,48 @@ public static void sort(long[] a) {}
 
 Will Project Valhalla save us from this torment? Perhaps. Until then, library maintainers, I salute your endurance.
 
+## The Great Proliferation of `UnsupportedOperationException`
+
+Talk about Collection API again.
+
+You're having a perfectly normal day, writing some innocent Java code, when suddenly, a wild `UnsupportedOperationException` slams at your face. Yikes. 
+
+Welcome to the wonderful world of Java collections, where nothing is quite what it seems and trust is a luxury you can't afford.
+
+Can you modify that map? Maybe. 
+
+Can that list handle new elements? Who knows?
+
+Does `Stream#toList()` return something you can actually modify? No spoiler, please try it yourself.
+
+And... let's talk about `null`, the dark lord of Java data types. Some developer (probably past you) is conjuring dark magic that summons null values from the deepest pits of your database, or in your cache, or maybe in your API responses. Could probably be hiding in your morning coffee. And putting them into collection is like trying to read your wife's reactions when she is moody (assuming you have a wife)... she may throw a tantrum, or not. Your guess is as good as mine.
+
+You will have **questions**. Tons of them.
+
+The `UnsupportedOperationException` is everywhere, lurking in the shadows of the Collection API like that one friend who always shows up uninvited to parties. Sure, it's trying to protect you from accidentally mutating immutable collections, but it can also be very irritating sometimes.
+
+### Survival Guide for the Paranoid Developer
+
+**Assume everything is immutable until proven otherwise.** Seriously, it's safer that way, and you'll sleep better at night.
+
+**When in doubt, wrap it out.** Need to modify something? Wrap that suspicious collection in something you can trust: `ArrayList` for lists, `LinkedList` for queue-like shenanigans, `HashMap` for maps that won't bite back, `HashSet` for sets that actually set things. Maybe a bit too redundant, but safer nonetheless.
+
+**Remember: you're probably not actually modifying much anyway.** Unless you're grinding through LeetCode problems (in which case, my condolences), most real-world code is about transforming data, not mutating it (and mutating it on the fly is actually a very bad idea). You're usually creating new collections while leaving the originals alone, like a considerate house guest.
+
+**Null tolerance varies by collection type.** Your trusty `ArrayList` and `HashMap` are like that chill friend who accepts everyone. They'll happily store your nulls without judgment. `HashMap` even lets you have null keys AND null values because it's an overachiever. But try that with a `TreeMap` or some fancy concurrent collection, and you'll get the cold shoulder faster than a rejected pull request.
+
+**Still feeling paranoid?** Check the source code. Sometimes you need to see exactly what kind of monster you're dealing with.
+
+> **Bonus Round**: The `Arrays.asList()` Plot Twist
+>
+> Oh, you thought we were done? Here's a fun fact that'll ruin your day: the `Arrays.asList()` we have talked about creates a special "ArrayList" that's not actually the `java.util.ArrayList` you know and love. They have the same name, but they are nothing alike.
+>
+> This imposter is backed by an array, refuses to let you add or remove elements (because apparently that's too much to ask), but will happily let you modify existing ones. Those modifications show up in the original array too. It's like having a mirror that only reflects some of your movements.
+> 
+> Absolute heresy.
+
+So there you have it: Java collections, where everything is made up and the mutability doesn't matter. Handle with care, trust nothing, and always have a backup plan (and maybe some coffee).
+
 ## Using `enum` as Singleton: Heresy Yet Ingenious
 
 When Java 5 introduced the `enum` keyword, its purpose was crystal clear: to define a fixed set of type-safe constants. Think directions, days of the week, or states in a state machine, not service managers, database connection pools, or logger instances.
@@ -274,12 +316,15 @@ public enum MySingleton {
 }
 ```
 
-But are there times when other approaches shine brighter?
+But are there times when other approaches are better?
 
-- **Need Lazy Initialization?** Consider the Bill Pugh singleton pattern for on-demand instantiation:
+### **Need Lazy Initialization?** 
+
+Consider the Bill Pugh singleton pattern for on-demand instantiation:
 
 ```java
 public class BillPughSingleton {
+    
     private BillPughSingleton() {}
 
     private static class SingletonHelper {
@@ -294,7 +339,13 @@ public class BillPughSingleton {
 
 The Bill Pugh pattern is a strong runner-up for singleton design, especially when lazy loading is a priority.
 
-- **Want a Utility Class?** Stick with a standard class featuring a private constructor. After all, why do you even want an instance of a utility class?
+### **You Want Inheritance?**
+
+Be aware that enum-based singletons cannot extend other classes. Since enums can only implement interfaces, you must use a traditional class implementation if your singleton needs to inherit from a superclass.
+
+### **Want a Utility Class?** 
+
+If you need utility classes, use a standard class with a private constructor. After all, there’s no reason to create an instance of a utility class. Why incur the overhead of object instantiation for something that exists solely to group utility methods?
 
 For extra security, throw an exception in the constructor to block reflection-based instantiation.
 
@@ -304,7 +355,7 @@ Yes, even `java.util.Objects` class make use of this "feature", so why shouldn't
 
 Consider skipping `implements Serializable` if you’re feeling extra cautious.
 
-While some argue that utility classes deviate from pure object-oriented programming (OOP), remember: even Java itself isn't strictly OOP, with its primitive data types and static class members. So give yourself some flexibility for the sake of efficiency and sanity.
+Some may argue that utility classes stray from pure object-oriented programming (OOP), but remember: Java isn’t strictly OOP either, with its primitives and static members. It’s okay to bend the rules a bit for the sake of efficiency and your own sanity. We’re here to solve real-world problems, not to show off or blindly follow programming dogma.
 
 > **Bonus Tip**: 
 > 
@@ -314,6 +365,6 @@ Still, a heresy, although a cute one.
 
 ## Final Conclusion
 
-No language is exempted from some little quirks or maybe even heresies. Still, those things make Java... well, Java, because a little bit oopsie is all we need after hours of heated technical discussion and task plannings.
+No language is free from its quirks, or the occasional heresy. But that’s what makes Java, well... Java. A little “oopsie” here and there is exactly what we need after hours of technical debates and endless planning meetings.
 
-Now help me share this little lovely post. It might not be viral, but it will help some of the Java folks out there have a few laugh and gotcha moments.
+Now, help me spread this little post. It might not go viral, but it’ll definitely give some Java folks a few laughs and “aha!” moments along the way.
