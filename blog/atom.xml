@@ -49,8 +49,8 @@
 </blockquote>
 <p>Think of it like TypeScript: in the end, it gets compiled into JavaScript and loses all of its carefully constructed types. The magic happens at compile time, not runtime, but that's often exactly what you need.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="unsigned-when">Unsigned When?<a href="https://vulinh64.github.io/blog/java-heresies#unsigned-when" class="hash-link" aria-label="Direct link to Unsigned When?" title="Direct link to Unsigned When?">​</a></h2>
-<p>Yes, where is my unsigned <code>int</code> with <code>4_294_967_295</code> value? You know, the fancy unsigned hexadecimal <code>0xFFFFFFFF</code>?</p>
-<p>Also, where is my unsigned <code>long</code> of <code>18_446_744_073_709_551_615L</code>?</p>
+<p>Yes, where is my unsigned <code>int</code> with <code>4_294_967_296</code> value? You know, the fancy unsigned hexadecimal <code>0xFFFFFFFF</code>?</p>
+<p>Also, where is my unsigned <code>long</code> of <code>18_446_744_073_709_551_616L</code>? <del>very long indeed</del></p>
 <p>There are workarounds for some unsigned solutions, but they are messy and probably don't worth your time and effort that much. If you are truly desperate, just stick to good old <code>BigInteger</code> instead.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="strings-questionable-immutability"><code>String</code>'s Questionable Immutability<a href="https://vulinh64.github.io/blog/java-heresies#strings-questionable-immutability" class="hash-link" aria-label="Direct link to strings-questionable-immutability" title="Direct link to strings-questionable-immutability">​</a></h2>
 <p>I've written a dedicated article <a href="https://vulinh64.github.io/blog/string-immutability-truth">here</a>, but to sum up:</p>
