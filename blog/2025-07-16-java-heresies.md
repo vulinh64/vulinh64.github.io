@@ -112,9 +112,9 @@ Think of it like TypeScript: in the end, it gets compiled into JavaScript and lo
 
 ## Unsigned When?
 
-Yes, where is my unsigned `int` with `4_294_967_295` value? You know, the fancy unsigned hexadecimal `0xFFFFFFFF`?
+Yes, where is my unsigned `int` with `4_294_967_296` value? You know, the fancy unsigned hexadecimal `0xFFFFFFFF`?
 
-Also, where is my unsigned `long` of `18_446_744_073_709_551_615L`?
+Also, where is my unsigned `long` of `18_446_744_073_709_551_616L`? ~~very long indeed~~
 
 There are workarounds for some unsigned solutions, but they are messy and probably don't worth your time and effort that much. If you are truly desperate, just stick to good old `BigInteger` instead.
 
