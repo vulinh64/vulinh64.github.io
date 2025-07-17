@@ -13,11 +13,21 @@ This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot
 
 ## TL;DR
 
+<details>
+
+<summary>⚠️ If you are lazy and do not want to read this whole article, click here!</summary>
+
 If you are impatient and don't want to read (we are now in the era of absolute *brainrot* and A.I infesting, damaging and corroding our own lives), there is a link to the GitHub repository that backs this article, here:
 
 > https://github.com/vulinh64/spring-boot-3-keycloak-integration
 
-**Quick Summary:** We're integrating Spring Boot 3 with KeyCloak using OAuth2 Resource Server. You'll get JWT-based authentication with role-based access control. The whole setup takes about 30 minutes if you don't mess around.
+### **Quick Summary:** 
+
+We're integrating Spring Boot 3 with KeyCloak using OAuth2 Resource Server. You'll get JWT-based authentication with role-based access control. The whole setup takes about 30 minutes if you don't mess around.
+
+The source code should be workable in most cases when you successfully clone (or download) it to your local computer.
+
+</details>
 
 ## What we need
 
@@ -37,6 +47,8 @@ It is better that you should be using Docker at this point. You can manually run
 I'll show you two approaches: a quick development setup and a more robust production-ready setup with persistent data.
 
 ### Option 1: Quick Development Setup (Single Container)
+
+<details>
 
 Start your KeyCloak docker container, using this command:
 
@@ -58,7 +70,11 @@ This command fires up a Keycloak container using its volatile H2 database.
 > 
 > This setup is... fragile, and all your configurations will be vaporized the moment the container is deleted.
 
+</details>
+
 ### Option 2: Setup with Docker Compose
+
+<details>
 
 For a more robust setup that includes PostgreSQL persistence and proper data management, the source code repository already includes a comprehensive `docker-compose.yaml` file that sets up:
 
@@ -106,13 +122,19 @@ docker-compose down -v
 - If you need to reset everything, use `docker-compose down -v` to remove volumes
 - The setup includes health checks to ensure proper startup order
 
+</details>
+
 ### Option 3: Option #1 Plus an external PostgreSQL Database for Data Persisting
+
+<details>
 
 The accompanying source code includes a [script](https://github.com/vulinh64/spring-boot-3-keycloak-integration/blob/main/run-keycloak-postgresql.cmd) (named `run-keycloak-postgresql.cmd`). Running it will start KeyCloak with a PostgreSQL database that uses an external volume for data persistence, preventing any data loss.
 
-### Visiting KeyCloak Administrator Interface
+</details>
 
-Access `http://localhost:8080` and start configuring KeyCloak (we need a realm, a client, some test users and some client roles for this article).
+## Visiting KeyCloak Administrator Interface
+
+Access http://localhost:8080 (by default configuration) and start configuring KeyCloak (we need a realm, a client, some test users and some client roles for this article).
 
 Default login username is `admin`, and default password is `admin`, as defined in the configuration above.
 
@@ -172,6 +194,10 @@ We start with the very basic of a Maven project:
 
 We will be needing these dependencies (and yes, I'm using Maven because I am not used to work with Gradle much, but same principles could):
 
+<details>
+
+<summary>Basic dependencies</summary>
+
 ```xml
 <!-- Basic dependencies -->
 <dependencies>
@@ -210,9 +236,15 @@ We will be needing these dependencies (and yes, I'm using Maven because I am not
 </dependencies>
 ```
 
+</details>
+
 #### Build Configurations
 
 If you want to use Lombok (and you should, unless you enjoy writing boilerplate code), then you need to do additional configurations:
+
+<details>
+
+<summary>Maven build settings</summary>
 
 ```xml
 <!-- Maven build settings -->
@@ -249,6 +281,8 @@ If you want to use Lombok (and you should, unless you enjoy writing boilerplate 
 </build>
 ```
 
+</details>
+
 You can always visit [Spring Initializr](https://start.spring.io/) to generate your own project, and then make your own changes to fit your preferences.
 
 ### The `application.yaml` Hero We Need (and Deserve!)
@@ -260,6 +294,10 @@ Period.
 ~~Traditional `application.properties` is for the weak.~~
 
 Therefore, rename the ~~peasant~~ `application.properties` into a more elegant `application.yaml` and start adding properties, for example:
+
+<details>
+
+<summary>`application.yaml` Example</summary>
 
 ```yaml
 application-properties:
@@ -286,6 +324,8 @@ logging.level:
    # If you are curious about how Spring Security OAuth2 works behind the scene
    org.springframework.security.oauth2: TRACE
 ```
+
+</details>
 
 Note that our KeyCloak instance is running on port `8080`, and therefore, we will be using a different port (`8088`) for our Spring Boot application, as defined in `server.port` property.
 
@@ -327,6 +367,10 @@ public class Application {
 #### `SecurityConfig` class
 
 Create a `SecurityConfig` class and start defining our security configuration:
+
+<details>
+
+<summary>`SecurityConfig` Class</summary>
 
 ```java
 // Import omitted for brevity
@@ -435,6 +479,8 @@ public class SecurityConfig {
 
 ```
 
+</details>
+
 And `UserRole` enum:
 
 ```java
@@ -491,6 +537,10 @@ The response will contain an `access_token` field - copy that value and use it i
 And this is our custom `JwtConverter` class, the protagonist of this project:
 
 ~~(We are still responsible for mapping KeyCloak roles into Spring Security roles and authority, too bad)~~
+
+<details>
+
+<summary>`JwtConverter` Class</summary>
 
 ```java
 // Import omitted for brevity
@@ -562,6 +612,8 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
 }
 
 ```
+
+</details>
 
 #### Custom `AuthorizationException` class
 

@@ -18,11 +18,9 @@ Well, I am gonna bust your bubble. You may call me heretic and blasphemous, but 
 
 Here's the tea:
 
-> Java String is technically mutable, but effectively immutable.
+> *Java String is technically mutable, but effectively immutable.*
 
-*Excuse me what?*
-
-## Wait, What?! String is Mutable?!
+## String is... Mutable?
 
 Before you start having an existential crisis and questioning your entire Java journey, let me explain what's really
 going on under the hood (don't panic).
@@ -36,9 +34,7 @@ as `final`:
 Look here:
 
 ```java
-public final class String implements
-        java.io.Serializable, Comparable<String>,
-        CharSequence, Constable, ConstantDesc {
+public final class String {
 
     private final byte[] value; // Actual holder of String value
     private final byte coder; // either LATIN (0) or UTF16 (1)
@@ -74,25 +70,28 @@ Now you're probably thinking "Why would Java betray us like this? I trusted you,
 Calculating a String's hash code can be more expensive than your newly bought gift you are going to give to your crush.
 
 Think about it - a String could be as short as how your crush curtly responded to your messages ("k"), or as long as
-your sorry love story with your crush ***sob***, totally unrequited and not reciprocated.
+your sorry love story with your crush. ~~Totally unrequited and not reciprocated~~
 
-Every time you calculate that hash code, Java has to loop through every single character like it's counting sheep. For
-massive strings, this is about as fun as watching paint dry, but slower.
+Every time you calculate that hash code, Java has to loop through every single character like it's counting sheep.
+
+For massive strings (for example: a blog post, or a CLOB from a database), this is quite an expensive operation.
 
 ## Java Cares About Performance
 
 Here's where Java gets all smart and stuff: Instead of calculating everything on-demand, Java says "You know what? I'll
 calculate this hash code when someone actually needs it, and then I'll remember it forever." At least until JVM is shut
-down, obviously.
+down, obviously, or when it gets garbage collected.
 
-Java isn't here to hold your hand and explain why your crush left you on read. Java's got bigger fish to fry - like
+Java isn't here to hold your hand and explain why your crush left you on read. Java's got bigger fish to fry, like
 keeping your applications from throwing performance tantrums that could cost you your job. Hash codes aren't used that
-often anyway (mainly just when you're dealing with HashMap and its gang).
+often (mainly just when you're dealing with HashMap and its gang).
 
 So Java takes the "work smarter, not harder" approach: calculate once, cache forever, and keep your career prospects
 intact. ~~Your heart might be broken, but your career would not, thank you Java.~~
 
 If you are curious, this is how hash code is calculated in String class:
+
+<details>
 
 ```java
 // Implementation in JDK 21
@@ -113,19 +112,19 @@ public final class String implements
 
     public int hashCode() {
         int h = this.hash;
-        
+
         if (h == 0 && !this.hashIsZero) {
             h = isLatin1()
                     ? StringLatin1.hashCode(value)
                     : StringUTF16.hashCode(value);
-            
+
             if (h == 0) {
                 this.hashIsZero = true;
             } else {
                 this.hash = h;
             }
         }
-        
+
         return h;
     }
 
@@ -135,17 +134,18 @@ public final class String implements
 }
 ```
 
+</details>
+
 ## We Came to the "Effectively" Immutable Part!
 
-Here's the beautiful part - all this internal drama with hash code caching? It's completely invisible from the outside!
-It's like a really good magic trick where you know something's happening behind the curtain, but you can't see it.
+All this internal drama with hash code caching? It's completely invisible from the outside! It's like a really good
+magic trick where you know something's happening behind the curtain, but you can't see it.
 
-Unless you're one of those people who likes to play with fire and use Reflection API (why though?) or go completely off
-the rails with something like Cheat Engine (seriously, you go full heresy now?), you'll never notice these internal
-shenanigans.
+Unless you're one of those people who likes to play with fire and use Reflection API (why though?) ~~or go completely
+off the rails with something like Cheat Engine~~, you'll never notice these internal shenanigans.
 
 The hash code gets calculated, cached, and from that point on, it's stable as how your crush only sees you as a backup
-plan, best friend forever (don't even try to deny that!).
+plan, best friend forever (read: ***friendzone***, and don't even try to deny that!).
 
 So, indeed, String is technically mutable because of these internal changes, but practically speaking, it behaves like
 it's completely immutable, and reaps all the benefits from being one (JVM optimization notwithstanding). It works just
@@ -159,20 +159,25 @@ benefits of immutability that you actually care about:
 - Thread safety without the headache of synchronization
 - You can pass Strings around like they're going out of style without worrying about side effects
 - HashMaps won't have nervous breakdowns
-- No need for defensive copying (ain't nobody got time for dat)
+- No need for defensive copying (still, `toCharArray()` provides a defensive copy by creating a new array, thereby
+  ensuring the String's internal array remains unchanged and upholding its effective immutability. This design is
+  crucial until truly immutable "frozen arrays" become available.).
 
 So next time someone asks you about Java String immutability in an interview, you can drop this knowledge bomb and watch
 their face go through the five stages of grief.
 
 "Well," you can say with a knowing smile:
 
-> "Java String is technically mutable due to lazy hash code initialization, but effectively immutable for all practical
-> purposes".
+> *Java String is technically mutable due to lazy hash code initialization, but effectively immutable for all practical
+> purposes*.
 
 Yes, there is no beating around the bush here. Just straight up cold and hard facts. Some compromises have to be made
 ~~and sacrificed to the Programming Gods~~ so that your program can run smoothly 99.99999999% most of the time.
 
 ## Bonus: The Future is Looking Bright (And Actually Immutable?)
+
+<details>
+<summary>A better future?</summary>
 
 (At the time of writing: 2025-06-24)
 
@@ -200,3 +205,4 @@ status is like that one friend who can't commit to group vacation plans - it's h
 
 But who knows what the good folks at OpenJDK are secretly plotting for String? Maybe in a few years, we'll have truly
 immutable Strings that are also value classes, running faster than your excuses when you're late for a meeting.
+</details>

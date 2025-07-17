@@ -48,7 +48,9 @@ The moral of the story? Always use `.equals(Object)` for object value comparison
 
 Project Valhalla isn't here yet, but even when it arrives, you'll still want to stick to the good old `.equals(Object)`. When `Integer` becomes a value class, it will lose its identity, and any operation that depends on object identity won't work: think of how `==` or `System.identityHashCode(Object)` will either fail to compile or throw runtime exceptions. Yikes.
 
-Some compromises might be possible, but then a lot of developers will have to unlearn what they already know (like using `.equals(Object)` instead of `==` for object comparison). We might see another migration crisis similar to the painful transition from Python 2 to Python 3 that plagued the Python community for years.
+Some compromises might be possible, but if that happened, then a lot of developers would have to unlearn what they already know (like using `.equals(Object)` instead of `==` for object comparison). 
+
+In such a case, we might see another migration crisis similar to the painful transition from Python 2 to Python 3 that plagued the Python community for years.
 
 ## The Great `<Type>` Erasure: A Legacy of the Past
 
@@ -104,11 +106,17 @@ You can't outsmart type erasure by spreading your methods across different class
 
 ### Icing on Cakes
 
+<details>
+
+<summary>Click to show</summary>
+
 Still, a little bit of wisdom here: 
 
 > Generics, starting from JDK 5, basically turn any runtime casting error into compile-time errors.
 
 Think of it like TypeScript: in the end, it gets compiled into JavaScript and loses all of its carefully constructed types. The magic happens at compile time, not runtime, but that's often exactly what you need.
+
+</details>
 
 ## Unsigned When?
 
@@ -163,17 +171,27 @@ It's like inheriting both your mom's stubbornness and your dad's dad jokes -- yo
 Here's what's happening behind the scenes when you call `remove(1)`:
 
 **For `Collection<Integer> collection`:**
+
+<details>
+
 - Only has access to `remove(Object element)`
 - The integer `1` gets autoboxed to `Integer(1)`
 - Searches for and removes the element that equals `1`
 - Returns `true` if found and removed, `false` otherwise
 
+</details>
+
 **For `List<Integer> list`:**
+
+<details>
+
 - Has access to both `remove(Object element)` and `remove(int index)`
 - The compiler sees `1` as a primitive `int`
 - Chooses the more specific `remove(int index)` method (primitive beats autoboxing in overload resolution)
 - Removes whatever's at index `1` (the second element)
 - Returns the removed element
+
+</details>
 
 So you get the gist. This is how method overloading works. Just pure Java logic ~~(and said logic creates a JIRA bug ticket for you)~~.
 
@@ -260,15 +278,25 @@ The `UnsupportedOperationException` is everywhere, lurking in the shadows of the
 
 ### Survival Guide for the Paranoid Developer
 
-**Assume everything is immutable until proven otherwise.** Seriously, it's safer that way, and you'll sleep better at night.
+#### **Assume everything is immutable until proven otherwise.** 
 
-**When in doubt, wrap it out.** Need to modify something? Wrap that suspicious collection in something you can trust: `ArrayList` for lists, `LinkedList` for queue-like shenanigans, `HashMap` for maps that won't bite back, `HashSet` for sets that actually set things. Maybe a bit too redundant, but safer nonetheless.
+Seriously, it's safer that way, and you'll sleep better at night.
 
-**Remember: you're probably not actually modifying much anyway.** Unless you're grinding through LeetCode problems (in which case, my condolences), most real-world code is about transforming data, not mutating it (and mutating it on the fly is actually a very bad idea). You're usually creating new collections while leaving the originals alone, like a considerate house guest.
+#### **When in doubt, wrap it out.** 
 
-**Null tolerance varies by collection type.** Your trusty `ArrayList` and `HashMap` are like that chill friend who accepts everyone. They'll happily store your nulls without judgment. `HashMap` even lets you have null keys AND null values because it's an overachiever. But try that with a `TreeMap` or some fancy concurrent collection, and you'll get the cold shoulder faster than a rejected pull request.
+Need to modify something? Wrap that suspicious collection in something you can trust: `ArrayList` for lists, `LinkedList` for queue-like shenanigans, `HashMap` for maps that won't bite back, `HashSet` for sets that actually set things. Maybe a bit too redundant, but safer nonetheless.
 
-**Still feeling paranoid?** Check the source code. Sometimes you need to see exactly what kind of monster you're dealing with.
+#### **Remember: you're probably not actually modifying much anyway.** 
+
+Unless you're grinding through LeetCode problems (in which case, my condolences), most real-world code is about transforming data, not mutating it (and mutating it on the fly is actually a very bad idea). You're usually creating new collections while leaving the originals alone, like a considerate house guest.
+
+#### **Null tolerance varies by collection type.** 
+
+Your trusty `ArrayList` and `HashMap` are like that chill friend who accepts everyone. They'll happily store your nulls without judgment. `HashMap` even lets you have null keys AND null values because it's an overachiever. But try that with a `TreeMap` or some fancy concurrent collection, and you'll get the cold shoulder faster than a rejected pull request.
+
+#### **Still feeling paranoid?** 
+
+Check the source code. Sometimes you need to see exactly what kind of monster you're dealing with.
 
 > **Bonus Round**: The `Arrays.asList()` Plot Twist
 >
@@ -278,7 +306,7 @@ The `UnsupportedOperationException` is everywhere, lurking in the shadows of the
 > 
 > Absolute heresy.
 
-So there you have it: Java collections, where everything is made up and the mutability doesn't matter. Handle with care, trust nothing, and always have a backup plan (and maybe some coffee).
+Be careful when working with Collection API, okay?
 
 ## Using `enum` as Singleton: Heresy Yet Ingenious
 
