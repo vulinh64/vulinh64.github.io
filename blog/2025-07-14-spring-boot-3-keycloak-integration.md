@@ -66,9 +66,11 @@ This command fires up a Keycloak container using its volatile H2 database.
 
 **Pro-Tip:** Add the `-e KC_HOSTNAME=keycloak` parameter to the docker run command. This configures the JWT `iss` (issuer) claim to use the container's service name (e.g., `http://keycloak:8080/realms/spring-boot-realm`). This allows your Spring Boot application to consistently connect to Keycloak using the service name `keycloak`, which works for both debugging from your IDE and running in a fully containerized environment.
 
-> ⚠️ **_WARNING_**: ️️⚠️ 
-> 
-> This setup is... fragile, and all your configurations will be vaporized the moment the container is deleted.
+:::warning
+
+This setup is... fragile, and all your configurations will be vaporized the moment the container is deleted.
+
+:::
 
 </details>
 
@@ -331,7 +333,11 @@ Note that our KeyCloak instance is running on port `8080`, and therefore, we wil
 
 ### Using Java Record Like a Sir to Inject Application Properties
 
-> Spring Boot 3 requires Java 17 as minimum baseline, and with that, we gain access to the noble Java records. Forget about peasant classes with getters and setters, Java Records are the way forward, aside from JPA entities, and you cannot change my mind.
+:::warning
+
+Spring Boot 3 requires Java 17 as minimum baseline, and with that, we gain access to the noble Java records. Forget about peasant classes with getters and setters, Java Records are the way forward, aside from JPA entities, and you cannot change my mind.
+
+:::
 
 Create our own record to store application properties, like this:
 
@@ -511,9 +517,11 @@ We are using the default KeyCloak JWT payload, which would look like this:
 }
 ```
 
-**Important:**
+:::important
 
-> The `resource_access` claim is where KeyCloak stores the client-specific roles. This is different from realm roles, so make sure you're assigning CLIENT roles to your users.
+The `resource_access` claim is where KeyCloak stores the client-specific roles. This is different from realm roles, so make sure you're assigning CLIENT roles to your users.
+
+:::
 
 To get our access token, import the following CURL to your Postman:
 
@@ -527,10 +535,6 @@ curl --location 'http://localhost:8080/realms/spring-boot-realm/protocol/openid-
 ```
 
 The response will contain an `access_token` field - copy that value and use it in your Authorization header as `Bearer {token}`.
-
-> I will be generating a Postman collection later for lazy folks.
-> 
-> ~~Or screw Postman because it has been heavily screwed up~~
 
 #### `JwtConverter` class
 

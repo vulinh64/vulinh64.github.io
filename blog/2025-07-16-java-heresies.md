@@ -104,11 +104,7 @@ No matter how far you're hiding in the class hierarchy, the compiler will find y
 
 You can't outsmart type erasure by spreading your methods across different classes. It's like trying to hide from a hurricane in a cardboard box -- the storm will find you anyway.
 
-### Icing on Cakes
-
-<details>
-
-<summary>Click to show</summary>
+:::info[Icing on the cake]
 
 Still, a little bit of wisdom here: 
 
@@ -116,7 +112,7 @@ Still, a little bit of wisdom here:
 
 Think of it like TypeScript: in the end, it gets compiled into JavaScript and loses all of its carefully constructed types. The magic happens at compile time, not runtime, but that's often exactly what you need.
 
-</details>
+:::
 
 ## Unsigned When?
 
@@ -130,7 +126,11 @@ There are workarounds for some unsigned solutions, but they are messy and probab
 
 I've written a dedicated article [here](2025-06-24-string-immutability-truth.md), but to sum up:
 
-> `String` is technically mutable, but for all intents and purposes, it is *effectively* immutable
+:::warning
+
+`String` is technically mutable, but for all intents and purposes, it is *effectively* immutable
+
+:::
 
 Why the distinction? Because of the presence of two non-`final` fields: `hash` and `hashIsZero` (or just a single `hash` field if you're using JDK 8 and below). By the strict definition of an immutable class, `String` doesn't fit the bill, unlike the truly immutable ones like `Optional` or `LocalDateTime`.
 
@@ -228,11 +228,17 @@ No. It is `List<int[]>`.
 
 Let’s dive into the philosophical quagmire of Java’s type system:
 
+<details>
+
 - An `int[]` is an `Object`, but don’t you dare call it an `Object[]`. You will either get a compile error if you are lucky, or a devastating `ClassCastException` if you somehow managed to trick the compiler (working with raw type collections).
 
 - An `Integer[]`? That’s an `Object[]`, no questions asked.
 
 - For kicks, `Integer[]` is also an `Object`, because an `Object[]` is an `Object`, because in Java, everything non-primitive bows to the mighty `Object`.
+
+</details>
+
+**Also:**
 
 You might assume `int[]` and `Integer[]` play nicely with a variadic `doSomething(T...)`. 
 
@@ -298,13 +304,17 @@ Your trusty `ArrayList` and `HashMap` are like that chill friend who accepts eve
 
 Check the source code. Sometimes you need to see exactly what kind of monster you're dealing with.
 
-> **Bonus Round**: The `Arrays.asList()` Plot Twist
->
-> Oh, you thought we were done? Here's a fun fact that'll ruin your day: the `Arrays.asList()` we have talked about creates a special "ArrayList" that's not actually the `java.util.ArrayList` you know and love. They have the same name, but they are nothing alike.
->
-> This imposter is backed by an array, refuses to let you add or remove elements (because apparently that's too much to ask), but will happily let you modify existing ones. Those modifications show up in the original array too. It's like having a mirror that only reflects some of your movements.
-> 
-> Absolute heresy.
+:::note
+
+**Bonus Round**: The `Arrays.asList()` Plot Twist
+
+Oh, you thought we were done? Here's a fun fact that'll ruin your day: the `Arrays.asList()` we have talked about creates a special "ArrayList" that's not actually the `java.util.ArrayList` you know and love. They have the same name, but they are nothing alike.
+
+This imposter is backed by an array, refuses to let you add or remove elements (because apparently that's too much to ask), but will happily let you modify existing ones. Those modifications show up in the original array too. It's like having a mirror that only reflects some of your movements.
+
+Absolute heresy.
+
+:::
 
 Be careful when working with Collection API, okay?
 
@@ -385,9 +395,11 @@ Consider skipping `implements Serializable` if you’re feeling extra cautious.
 
 Some may argue that utility classes stray from pure object-oriented programming (OOP), but remember: Java isn’t strictly OOP either, with its primitives and static members. It’s okay to bend the rules a bit for the sake of efficiency and your own sanity. We’re here to solve real-world problems, not to show off or blindly follow programming dogma.
 
-> **Bonus Tip**: 
-> 
-> Tired of private constructor boilerplate? Use Lombok’s `@NoArgsConstructor(access = AccessLevel.PRIVATE)` for clean, copy-paste-ready code.
+:::info
+
+Tired of private constructor boilerplate? Use Lombok’s `@NoArgsConstructor(access = AccessLevel.PRIVATE)` for clean, copy-paste-ready code.
+
+:::
 
 Still, a heresy, although a cute one.
 

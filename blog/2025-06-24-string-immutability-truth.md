@@ -22,7 +22,11 @@ Well, I am gonna bust your bubble. You may call me heretic and blasphemous, but 
 
 Here's the tea:
 
-> *Java String is technically mutable, but effectively immutable.*
+:::info
+
+*Java String is technically mutable, but effectively immutable.*
+
+:::
 
 ## String is... Mutable?
 
@@ -172,8 +176,11 @@ their face go through the five stages of grief.
 
 "Well," you can say with a knowing smile:
 
-> *Java String is technically mutable due to lazy hash code initialization, but effectively immutable for all practical
-> purposes*.
+:::info
+
+*Java String is technically mutable due to lazy hash code initialization, but effectively immutable for all practical purposes*.
+
+:::
 
 Yes, there is no beating around the bush here. Just straight up cold and hard facts. Some compromises have to be made
 ~~and sacrificed to the Programming Gods~~ so that your program can run smoothly 99.99999999% most of the time.
