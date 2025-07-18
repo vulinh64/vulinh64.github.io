@@ -351,18 +351,13 @@
 <div class="language-shell codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#000000;--prism-background-color:#ffffff"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-shell codeBlock_bY9V thin-scrollbar" style="color:#000000;background-color:#ffffff"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#000000"><span class="token plain"># Check service status</span><br></span><span class="token-line" style="color:#000000"><span class="token plain">docker-compose ps</span><br></span><span class="token-line" style="color:#000000"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#000000"><span class="token plain"># View logs for specific service</span><br></span><span class="token-line" style="color:#000000"><span class="token plain">docker-compose logs keycloak</span><br></span><span class="token-line" style="color:#000000"><span class="token plain">docker-compose logs keycloak-db</span><br></span><span class="token-line" style="color:#000000"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#000000"><span class="token plain"># Restart specific service</span><br></span><span class="token-line" style="color:#000000"><span class="token plain">docker-compose restart keycloak</span><br></span><span class="token-line" style="color:#000000"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#000000"><span class="token plain"># Check database connection</span><br></span><span class="token-line" style="color:#000000"><span class="token plain">docker-compose exec keycloak-db psql -U keycloak -d keycloak -c "\l"</span><br></span></code></pre></div></div>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="troubleshooting">Troubleshooting<a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#troubleshooting" class="hash-link" aria-label="Direct link to Troubleshooting" title="Direct link to Troubleshooting">​</a></h2>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="1-client-not-allowed-for-direct-access-grants-error">1. "Client not allowed for direct access grants" error<a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#1-client-not-allowed-for-direct-access-grants-error" class="hash-link" aria-label="Direct link to 1. &quot;Client not allowed for direct access grants&quot; error" title="Direct link to 1. &quot;Client not allowed for direct access grants&quot; error">​</a></h3>
-<blockquote>
-<p>Check if "Direct Access grants" is enabled for the client.</p>
-</blockquote>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Details</summary><div><div class="collapsibleContent_i85q"><p>Check if "Direct Access grants" is enabled for the client.</p></div></div></details>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="2-account-is-not-fully-set-up-even-with-correct-credentials">2. "Account is not fully set up" even with correct credentials<a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#2-account-is-not-fully-set-up-even-with-correct-credentials" class="hash-link" aria-label="Direct link to 2. &quot;Account is not fully set up&quot; even with correct credentials" title="Direct link to 2. &quot;Account is not fully set up&quot; even with correct credentials">​</a></h3>
-<blockquote>
-<p>Check if:</p>
-<ul>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Details</summary><div><div class="collapsibleContent_i85q"><p>Check if:</p><ul>
 <li>The user has enough information (email, first name, last name);</li>
 <li>Or the user has correct credentials information (with password and not temporary status)</li>
 <li>Or the user has finished all the "required user actions" (setting up OTP, update password, etc...). In this simple example, such actions are out of scope, and we will not be going that far.</li>
-</ul>
-</blockquote>
+</ul></div></div></details>
 <p>TBA</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="conclusion">Conclusion<a href="https://vulinh64.github.io/blog/spring-boot-3-keycloak-integration#conclusion" class="hash-link" aria-label="Direct link to Conclusion" title="Direct link to Conclusion">​</a></h2>
 <p>We have successfully created our Spring Boot 3 application and integrated with KeyCloak as an authorization server. The setup provides JWT-based authentication with role-based access control, which is exactly what you need for modern microservices.</p>
@@ -504,8 +499,9 @@ Let's just say it exists, it's complicated, and it makes your concurrent code no
             <link>https://vulinh64.github.io/blog/string-immutability-truth</link>
             <guid>https://vulinh64.github.io/blog/string-immutability-truth</guid>
             <pubDate>Tue, 24 Jun 2025 00:00:00 GMT</pubDate>
-            <description><![CDATA[Picture this: You're sitting in an interview, feeling all confident and stuff. The interviewer leans back and hits you]]></description>
-            <content:encoded><![CDATA[<p>Picture this: You're sitting in an interview, feeling all confident and stuff. The interviewer leans back and hits you
+            <description><![CDATA[The title is not a clickbait. Because it isn't. Let's have a deep dive towards the actual immutability of our beloved String class!]]></description>
+            <content:encoded><![CDATA[<p>The title is not a clickbait. Because it isn't. Let's have a deep dive towards the actual immutability of our beloved <code>String</code> class!</p>
+<p>You're sitting in an interview, feeling all confident and stuff. The interviewer leans back and hits you
 with the classic "So, tell me about Java String immutability." You're thinking "Pfft, easy money!" and you start
 rattling off how String is totally immutable, just like you learned in your bootcamp or that dusty computer science
 textbook.</p>
