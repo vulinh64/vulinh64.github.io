@@ -75,6 +75,9 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {name: 'keywords', content: 'java, blog, programming, tech, spring boot'}
+      ],
       // Replace with your project's social card
       image: 'https://avatars.githubusercontent.com/u/35946488',
       navbar: {
@@ -90,7 +93,7 @@ const config = {
             label: 'GitHub',
           },
           {
-            href: 'http://linkedin.com/in/vulinh64',
+            href: 'https://linkedin.com/in/vulinh64',
             label: 'LinkedIn'
           }
         ],

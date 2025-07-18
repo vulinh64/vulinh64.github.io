@@ -3,9 +3,10 @@ slug: openfeign-querydsl
 title: OpenFeign's QueryDSL
 authors: [vulinh64]
 tags: [java, querydsl, openfeign]
+description: How to use new OpenFeign's QueryDSL
 ---
 
-# OpenFeign's New Approach to Use QueryDSL 
+# OpenFeign's New Approach to Use QueryDSL
 
 Guide on how to make use of new QueryDSL fork by OpenFeign team.
 
@@ -57,13 +58,14 @@ alternative.
 
 You can visit the fork here: https://github.com/OpenFeign/querydsl
 
-> Note: This article is intended for the new Jakarta EE Persistence API, but the same principles can also be applied to
-> older or legacy projects if possible (you run into risk of CVEs when using old version anyway).
+:::note
+
+This article is intended for the new Jakarta EE Persistence API, but the same principles can also be applied to older or
+legacy projects if possible (you run into risk of CVEs when using old version anyway).
+
+:::
 
 ## Old Implementation
-
-> NOTE: The `querydsl.version` property is **predefined** and **reserved** by the Spring Boot parent POM! Its latest
-> possible version is `5.1.0`. Changing this to higher value will lead to a compilation failure.
 
 ### Dependency Declaration
 
@@ -119,6 +121,13 @@ You can visit the fork here: https://github.com/OpenFeign/querydsl
     <version>${openfeign.querydsl.version}</version>
 </dependency>
 ```
+
+:::warning
+
+The `querydsl.version` property is **predefined** and **reserved** by the Spring Boot parent POM! Its latest
+possible version is `5.1.0`. Changing this to higher value will lead to a compilation failure.
+
+:::
 
 Note that we need to use `openfeign.querydsl.version` property name here. The key point is that we can use any property
 name, as long as it is not `querydsl.version`, for the reasons outlined above.

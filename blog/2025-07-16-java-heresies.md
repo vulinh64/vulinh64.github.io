@@ -3,21 +3,18 @@ slug: java-heresies
 title: "Java's Little Heresies"
 authors: [vulinh64]
 tags: [java]
+description: Some of Java's strangest and weird quirks
 ---
 
-# Java's Little Heresies: A Tour of Its Funniest Quirks
+You can be sure that Java does have its set of intricate and quirks. Are they funny or harmful. You will decide right away!
 
-Let's get one thing straight: Java is a titan of the programming world. It's robust, powerful, and has been the trusted workhorse for countless corporations for over three decades. Powering everything from tiny smart cards to colossal enterprise systems, its reputation for stability is well-earned.
-
-And that's precisely what makes its oddities so delightful.
+<!-- truncate -->
 
 Over its long and storied journey, Java has collected a fascinating gallery of quirks: vestiges of a different era, curious design trade-offs, and syntax that just makes you tilt your head. Some might even call them... heresies.
 
 So today, let's put aside the serious architectural discussions and take a lighthearted tour through some of Java's most amusing quirks. These are the moments that make us chuckle, scratch our heads, and appreciate that even the most mature languages have a peculiar side.
 
 And no, those heresies won't get you ~~or Java~~ get incinerated by the inquisitors. But knowing those may help you a little bit more when it comes to work.
-
-<!--truncate-->
 
 ## When 1000 is **NOT** 1000
 
@@ -387,7 +384,7 @@ If you need utility classes, use a standard class with a private constructor. Af
 
 For extra security, throw an exception in the constructor to block reflection-based instantiation.
 
-![img.png](../static/img/2025-07-16-img-0001.png)
+![img.png](./../static/img/2025-07-16-img-0001.png)
 
 Yes, even `java.util.Objects` class make use of this "feature", so why shouldn't you?
 

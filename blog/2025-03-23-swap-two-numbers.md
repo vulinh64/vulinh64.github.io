@@ -3,9 +3,14 @@ slug: swap-two-numbers-intricate
 title: Swap Two Numbers Intricate
 authors: [vulinh64]
 tags: [java]
+description: Swapping two numbers in Java and its intricate.
 ---
 
-So you want to swap two variables in Java? Cool, cool. Let me guess -- you learned the classic way back in CS 101:
+The classic swapping two numbers. But there are more than it seems!
+
+<!--truncate-->
+
+Look here, the classic CS 101 swapping two variables:
 
 ```java
 int tmp = a;
@@ -18,10 +23,6 @@ judge you for it. Your grandmother could read this code and nod approvingly whil
 
 But what if I told you there are other ways? Ways that make your code look like you either failed math class
 spectacularly or discovered some forbidden programming knowledge that normal people aren't supposed to know about?
-
-Buckle up, buttercup -- we're about to go down a rabbit hole.
-
-<!--truncate-->
 
 ## Method 1: The "I'm Too Cool for Temporary Variables" Approach
 
@@ -48,7 +49,7 @@ I've tested this thing with numbers so big they make your computer wheeze, and i
 works. Java's two's complement arithmetic is like that friend who always has your back -- even when everything goes
 sideways, it somehow makes things work out in the end. It's math, but the kind of math that feels like cheating.
 
-> Source: trust me bro 💀
+> ~~Source: trust me bro 💀~~
 
 Don't believe? Test it yourself.
 

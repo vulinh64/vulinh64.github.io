@@ -3,6 +3,7 @@ slug: string-immutability-truth
 title: String Immutability Truth
 authors: [vulinh64]
 tags: [java, string]
+description: Is String truly immutable?
 ---
 
 # String Immutability Truth
