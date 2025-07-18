@@ -89,6 +89,10 @@ const config = {
             href: 'https://github.com/vulinh64/vulinh64.github.io',
             label: 'GitHub',
           },
+          {
+            href: 'http://linkedin.com/in/vulinh64',
+            label: 'LinkedIn'
+          }
         ],
       },
       footer: {

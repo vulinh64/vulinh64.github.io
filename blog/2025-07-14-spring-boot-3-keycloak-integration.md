@@ -703,15 +703,23 @@ docker-compose exec keycloak-db psql -U keycloak -d keycloak -c "\l"
 
 ### 1. "Client not allowed for direct access grants" error
 
-> Check if "Direct Access grants" is enabled for the client.
+<details>
+
+Check if "Direct Access grants" is enabled for the client.
+
+</details>
 
 ### 2. "Account is not fully set up" even with correct credentials
 
-> Check if:
->
-> - The user has enough information (email, first name, last name);
-> - Or the user has correct credentials information (with password and not temporary status)
-> - Or the user has finished all the "required user actions" (setting up OTP, update password, etc...). In this simple example, such actions are out of scope, and we will not be going that far.
+<details>
+
+Check if:
+
+- The user has enough information (email, first name, last name);
+- Or the user has correct credentials information (with password and not temporary status)
+- Or the user has finished all the "required user actions" (setting up OTP, update password, etc...). In this simple example, such actions are out of scope, and we will not be going that far.
+
+</details>
 
 TBA
 

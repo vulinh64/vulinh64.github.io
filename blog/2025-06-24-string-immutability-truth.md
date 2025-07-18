@@ -5,14 +5,18 @@ authors: [vulinh64]
 tags: [java, string]
 ---
 
-Picture this: You're sitting in an interview, feeling all confident and stuff. The interviewer leans back and hits you
+# String Immutability Truth
+
+The title is not a clickbait. Because it isn't. Let's have a deep dive towards the actual immutability of our beloved `String` class!
+
+<!--truncate-->
+
+You're sitting in an interview, feeling all confident and stuff. The interviewer leans back and hits you
 with the classic "So, tell me about Java String immutability." You're thinking "Pfft, easy money!" and you start
 rattling off how String is totally immutable, just like you learned in your bootcamp or that dusty computer science
 textbook.
 
 Well, I am gonna bust your bubble. You may call me heretic and blasphemous, but it is what it is!
-
-<!--truncate-->
 
 ## The Answer That'll Make Your Interviewer Do a Double-Take
 
