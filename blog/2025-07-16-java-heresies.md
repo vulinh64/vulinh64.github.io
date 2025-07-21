@@ -384,7 +384,7 @@ If you need utility classes, use a standard class with a private constructor. Af
 
 For extra security, throw an exception in the constructor to block reflection-based instantiation.
 
-![img.png](./../static/img/2025-07-16-img-0001.png)
+![img.png](img/2025-07-16-img-0001.png)
 
 Yes, even `java.util.Objects` class make use of this "feature", so why shouldn't you?
 
