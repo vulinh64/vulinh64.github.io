@@ -75,10 +75,27 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      blog: {
+        sidebar: {
+          groupByYear: false
+        }
+      },
+      announcementBar: {
+        id: 'help_me',
+        content: 'This website is a work in progress. Share your feedback on the <a target="_blank" rel="noopener noreferrer" href="https://github.com/vulinh64/vulinh64.github.io/issues">GitHub Issues</a> page to help me improve.',
+        isCloseable: true
+      },
+      // Light mode is for the heretics!!!
+      colorMode: {
+        defaultMode: 'dark',
+        disableSwitch: true,
+      },
       metadata: [
-        {name: 'keywords', content: 'java, blog, programming, tech, spring boot'}
+        {
+          name: 'keywords',
+          content: 'java, blog, programming, tech, spring boot'
+        }
       ],
-      // Replace with your project's social card
       image: 'https://avatars.githubusercontent.com/u/35946488',
       navbar: {
         title: 'VuLinh64\'s Tech Articles',
@@ -107,7 +124,7 @@ const config = {
         theme: prismThemes.vsLight,
         darkTheme: prismThemes.vsDark,
         additionalLanguages: ["java", "javascript", "typescript", "python", "powershell"],
-      },
+      }
     }),
 };
 
