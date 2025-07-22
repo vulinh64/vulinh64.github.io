@@ -142,7 +142,7 @@ A typo and a sad face: the perfect combo for anyone who's ever been stuck debugg
 
 **Bonus round:** In the same class at line 1392, there's this absolute gem:
 
-![smile face](2025-07-21-img-0009.png)
+![smile face](img/2025-07-21-img-0009.png)
 
 Modal dialogs are inherently tricky beasts: they block input to other windows, but what happens when a blocker is itself blocked?
 
