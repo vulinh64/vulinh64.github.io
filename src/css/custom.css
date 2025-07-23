@@ -26,7 +26,7 @@ article pre code {
 }
 
 article details {
-  background-color: var(--ifm-code-background);
+  background-color: transparent;
 }
 
 article blockquote {
@@ -41,7 +41,7 @@ article blockquote {
 }
 
 :not(pre) > code {
-  color: #FF6961; /* Change inline code color to dark red */
+  color: lightcoral; /* Change inline code color to dark red */
   vertical-align: baseline;
   overflow-x: auto;
   white-space: nowrap;
