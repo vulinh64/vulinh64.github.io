@@ -10,6 +10,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+  plugins: [
+    'docusaurus-plugin-zooming',
+  ],
   title: 'VuLinh64\'s Tech Articles',
   tagline: 'Random stuff I wrote (with some assistance from ChatGPT)',
   favicon: 'img/favicon.ico',
@@ -75,6 +78,15 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      zooming: {
+        selector: '.markdown img',
+        delay: 500,
+        background: {
+          light: 'rgba(101,108,133,0.8)',
+          dark: 'rgba(9,10,17,0.8)'
+        },
+        options: {}
+      },
       blog: {
         sidebar: {
           groupByYear: false

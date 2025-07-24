@@ -35,9 +35,7 @@ Here are some legit scenarios where having just one instance makes total sense:
 
 :::warning
 
-Just because you *can* make something a singleton doesn't mean you *should*. Singletons can make testing harder and create hidden dependencies.
-
-Use them sparingly and only when you genuinely need global access to a single instance.
+Just because you *can* make something a singleton doesn't mean you *should*. Singletons can make testing harder and create hidden dependencies. Use them sparingly and only when you genuinely need global access to a single instance.
 
 :::
 
@@ -122,17 +120,29 @@ Congratulations! You've just created a singleton that works perfectly... until s
 
 <summary>Nightmare fuels go here</summary>
 
-:::danger[The nightmare scenario]
-
 Multiple threads can simultaneously pass the `instance == null` check, and each thread will happily create its own instance. Sure, only one of them gets to actually assign to the static field (the last one wins), but you've just wasted resources creating multiple expensive objects!
 
 If your singleton does heavy initialization - like loading configuration files, establishing database connections, or computing complex data structures - you're doing all that expensive work multiple times for absolutely no benefit.
 
-This ranges from mildly annoying (wasting memory and making your CPU work overtime for nothing) to absolutely catastrophic.
+This ranges from mildly annoying (wasting memory and making your CPU work overtime for nothing) to absolutely catastrophic:
 
-The real nightmare scenario happens when your initialization has side effects that aren't idempotent - fancy computer science speak for "doing it twice breaks everything."
+It is when your initialization has side effects that aren't idempotent - fancy computer science speak for "doing it twice breaks everything."
 
-Think: incrementing counters, sending welcome emails, reserving resources, or writing to audit logs. Suddenly your "harmless" threading bug becomes a production incident where users get triple-charged, your database connections are exhausted, or your audit trail looks like it was written by someone having a seizure.
+:::danger[Side effects]
+
+Can either be:
+
+* incrementing counters;
+
+* sending welcome emails;
+
+* reserving resources;
+
+* or writing to audit logs;
+
+* other unspeakable horrors that should not happen more than once;
+
+Your "harmless" threading bug becomes a production incident where users get triple-charged, your database connections are exhausted, or your audit trail looks like it was reading the Bible in a loop.
 
 :::
 
@@ -163,7 +173,11 @@ This works, but now every single call to `getInstance()` has to wait in line lik
 
 In this case, only one thread can execute the method at a time - even after the instance exists and no more creation is needed, threads are still forming an orderly queue for absolutely no reason. Your app's performance just took a nosedive, and that's particularly painful in high-throughput environments.
 
-**Culprit**: `synchronized` modifier for the method here acts like an overzealous security officer who checks everyone's ID even after they're already inside the building, have been working for two hours, and are clearly not going anywhere (his reason may be justified, but still...).
+:::info
+
+`synchronized` modifier for the method here acts like an overzealous security officer who checks everyone's ID even after they're already inside the building, have been working for two hours, and are clearly not going anywhere (his reason may be justified, but still...).
+
+:::
 
 You can only hope that the JVM is smart enough to optimize this section.
 
@@ -198,7 +212,7 @@ Look at this beautiful monstrosity! Your simple singleton has evolved into somet
 
 The `volatile` keyword is doing the heavy lifting here. Without it, threads might cache the `instance` variable locally, leading to situations where one thread creates the singleton but another thread is still looking at its cached copy where `instance` is still null. The `volatile` keyword ensures all threads see the same, up-to-date value from main memory.
 
-:::info[Historical context]
+:::note[Historical Background]
 
 **This pattern was completely broken in JDK versions prior to 1.5!** 
 
@@ -244,7 +258,7 @@ Hungry for more? Behold the **Malbolge** equivalent: a mind-shattering incantati
 `CB]V?Tx<uVtT`Rpo3NlF.Jh++FdbCBA@?]!~|4XzyTT43Qsqq(Lnmkj"Fhg${z@>
 ```
 
-So yeah, I might have overestimate the complexity of double-checked singleton, but you get the point.
+So yeah, I might have overestimated the complexity of double-checked singleton, but you get the point: double-checked locking pattern IS complicated.
 
 </details>
 
@@ -475,7 +489,15 @@ This gives you lazy loading with lock-free thread safety, but honestly, just use
 
 The era of wrestling with `synchronized` keywords and double-checked locking patterns is basically over (thank goodness). Modern Java development is about leveraging what the JVM already does well instead of trying to outsmart it with "clever" solutions that usually backfire spectacularly.
 
-Use enum singletons for 90% of your needs. Use Bill Pugh for the remaining 10% where lazy loading is critical. Everything else is mostly historical curiosity at this point.
+:::tip
+
+Use enum singletons for 90% of your needs.
+
+Use Bill Pugh for the remaining 10% where lazy loading is critical.
+
+Everything else is mostly historical curiosity at this point.
+
+:::
 
 So go forth and singleton responsibly! And remember - if someone asks you to implement a singleton in an interview, start with the enum version. If they look impressed, you're in good company. If they look confused and insist on seeing the double-checked locking version, well... you probably don't want to work there anyway.
 
