@@ -718,29 +718,6 @@ If we obtain the correct access token, we can access `/test` just fine.
 
 The endpoint `/test/admin` requires `role_admin`, and cannot be accessed if the access token doesn't have this role.
 
-### Quick Docker Compose debugging commands:
-
-<details>
-
-<summary>Quick Docker commands</summary>
-
-```shell
-# Check service status
-docker-compose ps
-
-# View logs for specific service
-docker-compose logs keycloak
-docker-compose logs keycloak-db
-
-# Restart specific service
-docker-compose restart keycloak
-
-# Check database connection
-docker-compose exec keycloak-db psql -U keycloak -d keycloak -c "\l"
-```
-
-</details>
-
 ## Troubleshooting
 
 ### 1. "Client not allowed for direct access grants" error
