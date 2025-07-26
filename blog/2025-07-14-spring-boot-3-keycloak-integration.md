@@ -147,6 +147,10 @@ Keycloak's user interface is rather straightforward, though it can be overwhelmi
 
 ### Step-by-step KeyCloak Configuration:
 
+<details>
+
+<summary>KeyCloak basic info</summary>
+
 1. **Create a Realm:**
     - Realm name: `spring-boot-realm`
 
@@ -163,6 +167,8 @@ Keycloak's user interface is rather straightforward, though it can be overwhelmi
    - `admin` with role `role_admin`, password `123456` (or your own choice of password)
    - `user` with role `role_user`, password `123456` or your own choice
 
+</details>
+
 After you configured KeyCloak, it is time to write our Spring Boot application.
 
 ## Kickstart Our Spring Boot Application
@@ -170,6 +176,8 @@ After you configured KeyCloak, it is time to write our Spring Boot application.
 ### Dependency
 
 We start with the very basic of a Maven project:
+
+<details>
 
 #### Spring Boot Parent POM
 
@@ -197,9 +205,8 @@ We start with the very basic of a Maven project:
 
 We will be needing these dependencies (and yes, I'm using Maven because I am not used to work with Gradle much, but same principles could):
 
-<details>
 
-<summary>Basic dependencies</summary>
+<summary>Maven's POM</summary>
 
 ```xml
 <!-- Basic dependencies -->
@@ -239,13 +246,9 @@ We will be needing these dependencies (and yes, I'm using Maven because I am not
 </dependencies>
 ```
 
-</details>
-
 #### Build Configurations
 
 If you want to use Lombok (and you should, unless you enjoy writing boilerplate code), then you need to do additional configurations:
-
-<details>
 
 <summary>Maven build settings</summary>
 
@@ -290,6 +293,10 @@ You can always visit [Spring Initializr](https://start.spring.io/) to generate y
 
 ### The `application.yaml` Hero We Need (and Deserve!)
 
+<details>
+
+<summary>`application.yaml` Example</summary>
+
 YAML is GOAT.
 
 Period.
@@ -298,9 +305,6 @@ Period.
 
 Therefore, rename the ~~peasant~~ `application.properties` into a more elegant `application.yaml` and start adding properties, for example:
 
-<details>
-
-<summary>`application.yaml` Example</summary>
 
 ```yaml
 application-properties:
@@ -328,9 +332,9 @@ logging.level:
    org.springframework.security.oauth2: TRACE
 ```
 
-</details>
-
 Note that our KeyCloak instance is running on port `8080`, and therefore, we will be using a different port (`8088`) for our Spring Boot application, as defined in `server.port` property.
+
+</details>
 
 ### Using Java Record Like a Sir to Inject Application Properties
 
@@ -341,6 +345,10 @@ Spring Boot 3 requires Java 17 as minimum baseline, and with that, we gain acces
 :::
 
 Create our own record to store application properties, like this:
+
+<details>
+
+<summary>`ApplicationProperties.class` file</summary>
 
 ```java
 // Import omitted for brevity
@@ -353,7 +361,13 @@ public record ApplicationProperties(
 
 Look at the `application.yaml` file above, we are storing our properties in `application-properties` part. And therefore, we will be using prefix `application-properties` in our record class.
 
+</details>
+
 And finally, register your configuration properties in the main class:
+
+<details>
+
+<summary>Spring Boot's main class</summary>
 
 ```java
 // Import omitted for brevity
@@ -368,6 +382,8 @@ public class Application {
 }
 
 ```
+
+</details>
 
 ### Our Security Configuration
 
@@ -486,8 +502,6 @@ public class SecurityConfig {
 
 ```
 
-</details>
-
 And `UserRole` enum:
 
 ```java
@@ -497,7 +511,13 @@ public enum UserRole {
 }
 ```
 
+</details>
+
 We are using the default KeyCloak JWT payload, which would look like this:
+
+<details>
+
+<summary>JSON Example</summary>
 
 ```json
 {
@@ -524,7 +544,13 @@ The `resource_access` claim is where KeyCloak stores the client-specific roles. 
 
 :::
 
+</details>
+
 To get our access token, import the following CURL to your Postman:
+
+<details>
+
+<summary>Example CURL command</summary>
 
 ```shell
 curl --location 'http://localhost:8080/realms/spring-boot-realm/protocol/openid-connect/token' \
@@ -535,17 +561,19 @@ curl --location 'http://localhost:8080/realms/spring-boot-realm/protocol/openid-
 --data-urlencode 'password=123456'
 ```
 
+</details>
+
 The response will contain an `access_token` field - copy that value and use it in your Authorization header as `Bearer {token}`.
 
 #### `JwtConverter` class
 
-And this is our custom `JwtConverter` class, the protagonist of this project:
-
-~~(We are still responsible for mapping KeyCloak roles into Spring Security roles and authority, too bad)~~
-
 <details>
 
 <summary>`JwtConverter` Class</summary>
+
+And this is our custom `JwtConverter` class, the protagonist of this project:
+
+~~(We are still responsible for mapping KeyCloak roles into Spring Security roles and authority, too bad)~~
 
 ```java
 // Import omitted for brevity
@@ -618,10 +646,6 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
 
 ```
 
-</details>
-
-#### Custom `AuthorizationException` class
-
 And `AuthorizationException`, our simple exception we throw when something goes wrong:
 
 ```java
@@ -635,10 +659,11 @@ public class AuthorizationException extends RuntimeException {
     super(message);
   }
 }
-
 ```
 
 Nothing spectacular here, just a custom exception to make debugging easier.
+
+</details>
 
 That's basically the core of our application!
 
@@ -649,6 +674,10 @@ And all hail the `var` keyword.
 ### Testing Our Application
 
 Create a simple `@RestController` and start testing:
+
+<details>
+
+<summary>`Controller` class</summary>
 
 ```java
 // Import omitted for brevity
@@ -675,6 +704,8 @@ public class Controller {
 
 ```
 
+</details>
+
 You can access [Swagger UI](http://localhost:8088/swagger-ui/index.html) and test the APIs by yourself, or using Postman to make API calls. The Swagger UI link requires no authorization to access.
 
 **Testing scenarios:**
@@ -688,6 +719,10 @@ If we obtain the correct access token, we can access `/test` just fine.
 The endpoint `/test/admin` requires `role_admin`, and cannot be accessed if the access token doesn't have this role.
 
 ### Quick Docker Compose debugging commands:
+
+<details>
+
+<summary>Quick Docker commands</summary>
 
 ```shell
 # Check service status
@@ -703,6 +738,8 @@ docker-compose restart keycloak
 # Check database connection
 docker-compose exec keycloak-db psql -U keycloak -d keycloak -c "\l"
 ```
+
+</details>
 
 ## Troubleshooting
 
@@ -723,6 +760,14 @@ Check if:
 - The user has enough information (email, first name, last name);
 - Or the user has correct credentials information (with password and not temporary status)
 - Or the user has finished all the "required user actions" (setting up OTP, update password, etc...). In this simple example, such actions are out of scope, and we will not be going that far.
+
+</details>
+
+### 3. "Realm does not exist" error
+
+<details>
+
+Check if the realm `spring-boot-realm` is created properly.
 
 </details>
 
