@@ -68,7 +68,7 @@ while `final` sounds unbreakable, Java's Reflection API can (and will) make it w
 
 ### Traditional Immutable Classes
 
-The classic way to go immutable is with final classes and final fields. It's like putting your variables in a vault and throwing away the key:
+The classic way to go immutable is with final classes and final fields. It's like putting your variables in a vault and throwing away the key.
 
 <details>
 
@@ -87,13 +87,7 @@ public final class Point {
 }
 ```
 
-</details>
-
-### Lombok-Enhanced Immutability
-
 If you're rocking Lombok (and why wouldn't you be?), you can achieve immutability with way less typing. Because who has time for boilerplate?
-
-<details>
 
 ```java
 import lombok.*;
@@ -185,6 +179,14 @@ You can use `@lombok.With` to automatically generate "wither" methods for your d
 :::
 
 ## The `synchronized` Chronicles: When Immutability Is Insufficient
+
+:::info[Are you here before?]
+
+If you are here for the first time, continue reading!
+
+If you came here from [this part](#the-volatile-keyword-always-up-to-date), well, click there and go back!
+
+:::
 
 Alright, let's face it. Data changes. It's the circle of life in programming. And sometimes, you just have to let your data be mutable. Or maybe you're in a situation where multiple threads trying to do the same thing at once would cause utter chaos: data corruption, race conditions (the digital equivalent of everyone trying to grab the last cookie), and general state inconsistencies.
 
@@ -348,17 +350,17 @@ public class GlobalState {
 
 ```
 
+This pattern is ideal for scenarios like caching systems, configuration management, or any data structure with frequent reads and infrequent writes.
+
 </details>
 
-Key characteristics:
+#### Key characteristics
 
 * Multiple concurrent readers: Go nuts, read all you want, as long as no one's scribbling in the margins.
 
 * Exclusive writer: One writer, one lock. No one else gets in (readers or writers) until the writer is done.
 
 * Read-write coordination: Readers don't block other readers, and writers have the whole place to themselves. Great for when you read a lot more than you write!
-
-This pattern is ideal for scenarios like caching systems, configuration management, or any data structure with frequent reads and infrequent writes.
 
 :::tip
 
@@ -367,6 +369,8 @@ Lombok comes with the support of both `Lock` and `ReadWriteLock`. The above code
 <details>
 
 <summary>Example of Lombok's Lock annotations</summary>
+
+Just a heads-up: You'll need Lombok `1.18.32` or higher. Read the detail [Lombok's Lock article](https://projectlombok.org/features/Locked) for more details.
 
 ```java
 import lombok.Locked;
@@ -394,15 +398,7 @@ public class GlobalState {
 
 </details>
 
-Just a heads-up: these "shortcut" annotations don't come with all the bells and whistles like fairness or timeouts. And you'll need Lombok `1.18.32` or higher. Read the detail [Lombok's Lock article](https://projectlombok.org/features/Locked) for more details.
-
 :::
-
-#### A Note Regarding Virtual Threads in JDK 21+
-
-Okay, listen up. JDK 21 brought us virtual threads (Project Loom), which are super lightweight and awesome for tasks that spend a lot of time waiting (like talking to a database or a web service). But here's the catch: good old synchronized blocks can "pin" these virtual threads to heavier platform threads, slowing things down. Not cool. So, for virtual threads, you'll want to lean on `ReentrantLock` or `ReentrantReadWriteLock` to avoid this pinning problem, as JEP 444 warned us.
-
-Even though JEP 491 (JDK 24) fixes some of the pinning with `synchronized`, enterprise environments are like giant cargo ships -- they don't turn on a dime. So, until JDK 25 (the next LTS) is universally adopted, sticking with the `Lock` implementations for virtual threads is the smart move. Better safe than sorry, right?
 
 ### Using `Semaphore` for Resource Control
 
@@ -450,7 +446,7 @@ In this example, `Semaphore` is like the bouncer letting only three threads into
 
 </details>
 
-Key Characteristics of `Semaphore`:
+#### Key Characteristics of `Semaphore`
 
 * Permit-based access: _"Only 3 cars at a time on this bridge!"_
 
@@ -466,6 +462,16 @@ Use `Semaphore` when you need to put a cap on how many threads can use a fixed n
 
 :::
 
+### Caveats with Virtual Threads in JDK 21+
+
+Okay, listen up. JDK 21 brought us virtual threads (Project Loom), which are super lightweight and awesome for tasks that spend a lot of time waiting (like talking to a database or a web service). But here's the catch: good old synchronized blocks can "pin" these virtual threads to heavier platform threads, slowing things down. Not cool. So, for virtual threads, you'll want to lean on `ReentrantLock` or `ReentrantReadWriteLock` to avoid this pinning problem, as JEP 444 warned us.
+
+:::note
+
+Even though JEP 491 (JDK 24) fixes some of the pinning with `synchronized`, enterprise environments are like giant cargo ships -- they don't turn on a dime. So, until JDK 25 (the next LTS) is universally adopted, sticking with the `Lock` implementations for virtual threads is the smart move. Better safe than sorry, right?
+
+:::
+
 ## The `volatile` Keyword: Always Up-to-Date
 
 You know how threads sometimes get a little too comfortable and cache variables in their own little bubbles (CPU registers or local memory)? That's like them having an old copy of a newspaper when the breaking news just hit! If another thread changes the shared variable, the first thread might be reading stale news, leading to all sorts of inconsistent reads.
@@ -475,6 +481,8 @@ Enter the `volatile` keyword! It's like making sure every read and write to a va
 Plus, `volatile` is like a strict editor: it prevents the JVM and CPU from reordering instructions around the variable's access. This is super important because compiler optimizations, while usually good, can sometimes play tricks with the order of operations, leading to bizarre bugs. So, when threads are just reading shared state without much writing, but visibility is key, volatile is your friend.
 
 Here's our [previous](#the-synchronized-chronicles-when-immutability-is-insufficient) example again, now with volatile for that extra visibility boost:
+
+### With `volatile`
 
 <details>
 
@@ -494,16 +502,6 @@ public class GlobalState {
 ```
 
 </details>
-
-### When to Use `volatile`
-
-The `volatile` keyword is perfect for:
-
-* Single-writer, multiple-reader scenarios: When one thread is like the news anchor updating a status, and everyone else is just watching, volatile makes sure readers see the latest broadcast without needing heavy synchronized locks for every glance.
-
-* Lightweight synchronization: When you just need visibility, not a full-blown bouncer. volatile avoids the overhead of locks.
-
-* Preventing instruction reordering: It's like telling the compiler, _"No funny business with the order of these operations!"_ Keeps your program's logic intact.
 
 ### Example: Using `volatile` for a Status Flag
 
@@ -535,6 +533,16 @@ public class TaskController {
 In this example, if `isRunning` wasn't `volatile`, the `runTask()` thread might keep a cached `isRunning = true` value and run forever, even after `stopTask()` sets it to false. `volatile` saves the day by forcing it to check the main memory, seeing the updated `false`, and stopping the task. Phew!
 
 </details>
+
+### When to Use `volatile`
+
+The `volatile` keyword is perfect for:
+
+* Single-writer, multiple-reader scenarios: When one thread is like the news anchor updating a status, and everyone else is just watching, volatile makes sure readers see the latest broadcast without needing heavy synchronized locks for every glance.
+
+* Lightweight synchronization: When you just need visibility, not a full-blown bouncer. volatile avoids the overhead of locks.
+
+* Preventing instruction reordering: It's like telling the compiler, _"No funny business with the order of these operations!"_ Keeps your program's logic intact.
 
 ### Limitations of `volatile`
 
@@ -589,16 +597,6 @@ In this example, `AtomicInteger` makes `incrementAndGet()` thread-safe without n
 
 </details>
 
-### Key Features of Atomic Classes:
-
-* Atomic operations: `incrementAndGet()`, `compareAndSet()` – these are like tiny, perfectly executed transactions.
-
-* Lock-free design: They use CAS, which is often more efficient than traditional locks, especially with less contention.
-
-* Visibility guarantees: Just like `volatile`, atomic classes ensure updates are seen by all threads.
-
-* Flexible updates: Need to do something more complex than just incrementing? Methods like `updateAndGet()` let you define custom logic, all atomically!
-
 ### Example: Using `AtomicReference` for Complex Objects
 
 For thread-safe updates to objects, `AtomicReference` is useful:
@@ -632,6 +630,17 @@ public class ConfigurationManager {
 Here, `AtomicReference` ensures your `String` configuration is updated safely across threads. `compareAndSet(T, T)` lets you update conditionally without getting tangled in locks.
 
 </details>
+
+
+### Key Features of Atomic Classes:
+
+* Atomic operations: `incrementAndGet()`, `compareAndSet()` – these are like tiny, perfectly executed transactions.
+
+* Lock-free design: They use CAS, which is often more efficient than traditional locks, especially with less contention.
+
+* Visibility guarantees: Just like `volatile`, atomic classes ensure updates are seen by all threads.
+
+* Flexible updates: Need to do something more complex than just incrementing? Methods like `updateAndGet()` let you define custom logic, all atomically!
 
 ### When to Use Atomic Classes
 
