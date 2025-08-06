@@ -14,18 +14,18 @@ const NON_TAXABLE_INCOME_DEDUCTION = 11000000;
 const DEDUCTION_PER_DEPENDANT = 4400000;
 const PROBATION_TAX_RATE = 0.1;
 const MINIMUM_BASIC_SALARY = 3450000;
+const MAXIMUM_BASIC_SALARY = 46800000;
 const MINIMUM_PROBATION_PERCENTAGE = 85;
 const MAXIMUM_PROBATION_PERCENTAGE = 100;
 
-// Tax brackets for progressive tax calculation
 const TAX_LEVELS = [
-  { threshold: 0, rate: 0.05, bracketSize: 5000000 },
-  { threshold: 5000000, rate: 0.1, bracketSize: 5000000 },
-  { threshold: 10000000, rate: 0.15, bracketSize: 8000000 },
-  { threshold: 18000000, rate: 0.2, bracketSize: 14000000 },
-  { threshold: 32000000, rate: 0.25, bracketSize: 20000000 },
-  { threshold: 52000000, rate: 0.3, bracketSize: 28000000 },
-  { threshold: 80000000, rate: 0.35, bracketSize: Infinity },
+  { threshold: 0, rate: 0.05 },
+  { threshold: 5000000, rate: 0.1 },
+  { threshold: 10000000, rate: 0.15 },
+  { threshold: 18000000, rate: 0.2 },
+  { threshold: 32000000, rate: 0.25 },
+  { threshold: 52000000, rate: 0.3 },
+  { threshold: 80000000, rate: 0.35 },
 ];
 
 export default function TaxCalculator() {
@@ -37,6 +37,7 @@ export default function TaxCalculator() {
     probationPercentage: "",
   });
   const [errors, setErrors] = useState({});
+  const [warnings, setWarnings] = useState({});
   const [result, setResult] = useState(null);
 
   const calculateVietnamTax = (
@@ -46,6 +47,9 @@ export default function TaxCalculator() {
     isProbation = false,
     probationPercentage = 100
   ) => {
+    // Cap basic salary at MAXIMUM_BASIC_SALARY for calculations
+    const cappedBaseSalary = Math.min(baseSalary, MAXIMUM_BASIC_SALARY);
+
     if (isProbation) {
       const probationSalary = grossSalary * (probationPercentage / 100);
       const taxedAmount = Math.round(probationSalary * PROBATION_TAX_RATE);
@@ -57,12 +61,13 @@ export default function TaxCalculator() {
         netSalary: Math.round(netSalary),
         isProbation: true,
         probationSalary: Math.round(probationSalary),
+        cappedBaseSalary: Math.round(cappedBaseSalary),
       };
     }
 
-    const socialInsurance = baseSalary * INSURANCE_RATES.social;
-    const healthInsurance = baseSalary * INSURANCE_RATES.health;
-    const unemploymentInsurance = baseSalary * INSURANCE_RATES.unemployment;
+    const socialInsurance = cappedBaseSalary * INSURANCE_RATES.social;
+    const healthInsurance = cappedBaseSalary * INSURANCE_RATES.health;
+    const unemploymentInsurance = cappedBaseSalary * INSURANCE_RATES.unemployment;
     const insuranceAmount =
       socialInsurance + healthInsurance + unemploymentInsurance;
 
@@ -76,28 +81,38 @@ export default function TaxCalculator() {
       taxableIncome = 0;
     }
 
-    let taxedAmount = 0;
-    let remainingTaxableIncome = taxableIncome;
+    let taxAmount = 0;
+    let taxLevelOrdinal = 0;
 
-    for (const element of TAX_LEVELS) {
-      const { rate, bracketSize } = element;
+    while (taxLevelOrdinal < TAX_LEVELS.length - 1) {
+      const currentLevel = TAX_LEVELS[taxLevelOrdinal];
+      const nextLevel = TAX_LEVELS[taxLevelOrdinal + 1];
+      const deltaToNextLevel = taxableIncome - currentLevel.threshold;
 
-      if (remainingTaxableIncome > 0) {
-        const amountInBracket = Math.min(remainingTaxableIncome, bracketSize);
-        taxedAmount += amountInBracket * rate;
-        remainingTaxableIncome -= amountInBracket;
-      } else {
+      if (deltaToNextLevel <= 0) {
         break;
       }
+
+      const delta =
+        taxableIncome < nextLevel.threshold
+          ? deltaToNextLevel
+          : nextLevel.threshold - currentLevel.threshold;
+
+      if (delta > 0) {
+        taxAmount += delta * nextLevel.rate;
+      }
+
+      taxLevelOrdinal++;
     }
 
-    const netSalary = grossSalary - insuranceAmount - taxedAmount;
+    const netSalary = grossSalary - insuranceAmount - taxAmount;
 
     return {
       insuranceAmount: Math.round(insuranceAmount),
-      taxedAmount: Math.round(taxedAmount),
+      taxedAmount: Math.round(taxAmount),
       netSalary: Math.round(netSalary),
       isProbation: false,
+      cappedBaseSalary: Math.round(cappedBaseSalary),
     };
   };
 
@@ -112,6 +127,9 @@ export default function TaxCalculator() {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+    if (warnings[name]) {
+      setWarnings((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   useEffect(() => {
@@ -120,6 +138,7 @@ export default function TaxCalculator() {
 
   const validateForm = () => {
     const newErrors = {};
+    const newWarnings = {};
 
     if (
       !formData.basicSalary ||
@@ -129,6 +148,8 @@ export default function TaxCalculator() {
       newErrors.basicSalary = "Hãy nhập số hợp lệ";
     } else if (parseFloat(formData.basicSalary) < MINIMUM_BASIC_SALARY) {
       newErrors.basicSalary = `Lương đóng BHXH không được thấp hơn ${MINIMUM_BASIC_SALARY.toLocaleString()}`;
+    } else if (parseFloat(formData.basicSalary) > MAXIMUM_BASIC_SALARY) {
+      newWarnings.basicSalary = `Mức lương đóng BH tối đa là ${MAXIMUM_BASIC_SALARY.toLocaleString()} VNĐ`;
     }
 
     if (
@@ -167,6 +188,7 @@ export default function TaxCalculator() {
     }
 
     setErrors(newErrors);
+    setWarnings(newWarnings);
 
     return Object.keys(newErrors).length === 0;
   };
@@ -178,7 +200,7 @@ export default function TaxCalculator() {
       const result = calculateVietnamTax(
         parseFloat(formData.basicSalary),
         parseFloat(formData.grossSalary),
-        parseInt(formData.dependants) || 0, // Ensure dependants is an integer or defaults to 0
+        parseInt(formData.dependants) || 0,
         formData.onProbation,
         formData.onProbation ? parseFloat(formData.probationPercentage) : 100
       );
@@ -201,11 +223,15 @@ export default function TaxCalculator() {
               onChange={handleInputChange}
               className={clsx(
                 styles.input,
-                errors.basicSalary && styles.borderRed
+                errors.basicSalary && styles.borderRed,
+                warnings.basicSalary && styles.borderYellow
               )}
             />
             {errors.basicSalary && (
               <p className={styles.error}>{errors.basicSalary}</p>
+            )}
+            {warnings.basicSalary && (
+              <p className={styles.warning}>{warnings.basicSalary}</p>
             )}
           </div>
 
@@ -258,7 +284,7 @@ export default function TaxCalculator() {
 
           {formData.onProbation && (
             <div className={styles.formGroup}>
-              <label className={styles.label}>Mức lương thử việc</label>
+              <label className={styles.label}>% mức lương cơ bản (85-100)</label>
               <input
                 type="number"
                 name="probationPercentage"
@@ -288,8 +314,8 @@ export default function TaxCalculator() {
               <div className={styles.resultItem}>
                 <span>Lương đóng BH:</span>
                 <span className={styles.resultValue}>
-                  {formData.basicSalary && !isNaN(formData.basicSalary)
-                    ? `${Number(formData.basicSalary).toLocaleString()} đ`
+                  {result.cappedBaseSalary && !isNaN(result.cappedBaseSalary)
+                    ? `${Number(result.cappedBaseSalary).toLocaleString()} đ`
                     : "N/A"}
                 </span>
               </div>
@@ -304,7 +330,6 @@ export default function TaxCalculator() {
               <div className={styles.resultItem}>
                 <span>Số người phụ thuộc:</span>
                 <span className={styles.resultValue}>
-                  {/* Now always a number due to default state. */}
                   {Number(formData.dependants).toLocaleString()}
                 </span>
               </div>

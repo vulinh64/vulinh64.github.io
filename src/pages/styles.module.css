@@ -14,6 +14,13 @@
 .borderRed {
     border-color: #ef4444;
 }
+.borderYellow {
+    border-color: #eab308;
+}
+.warning {
+    color: #eab308;
+    font-size: 0.875rem;
+}
 .input {
     width: 100%;
     padding: 0.75em;
@@ -38,7 +45,6 @@
     cursor: pointer;
 }
 .checkbox {
-    /* This targets the actual input[type="checkbox"] */
     -webkit-appearance: none;
     appearance: none;
     width: 1.25rem;
@@ -52,12 +58,10 @@
 }
 .checkbox:checked {
     background-color: var(--ifm-color-primary);
-    /* Use a Docusaurus variable for a consistent theme */
     border-color: var(--ifm-color-primary);
 }
 .checkbox:checked::before {
     content: "✓";
-    /* Use a checkmark or an SVG */
     color: var(--ifm-color-white);
     font-size: 1rem;
     position: absolute;
