@@ -124,6 +124,11 @@ const config = {
           {
             href: 'https://linkedin.com/in/vulinh64',
             label: 'LinkedIn'
+          },
+          {
+            to: '/salary-calculator',
+            label: 'Tính thuế TNCN',
+            position: 'left',
           }
         ],
       },
