@@ -126,7 +126,7 @@ const config = {
             label: 'LinkedIn'
           },
           {
-            to: '/salary-calculator',
+            to: '/tax-calculator',
             label: 'Tính thuế TNCN',
             position: 'left',
           }

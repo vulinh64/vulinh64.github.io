@@ -28,7 +28,7 @@ const TAX_LEVELS = [
   { threshold: 80000000, rate: 0.35, bracketSize: Infinity },
 ];
 
-export default function SalaryCalculator() {
+export default function TaxCalculator() {
   const [formData, setFormData] = useState({
     basicSalary: "",
     grossSalary: "",
