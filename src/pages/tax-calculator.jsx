@@ -19,13 +19,14 @@ const MINIMUM_PROBATION_PERCENTAGE = 85;
 const MAXIMUM_PROBATION_PERCENTAGE = 100;
 
 const TAX_LEVELS = [
-  { threshold: 0, rate: 0.05 },
-  { threshold: 5000000, rate: 0.1 },
-  { threshold: 10000000, rate: 0.15 },
-  { threshold: 18000000, rate: 0.2 },
-  { threshold: 32000000, rate: 0.25 },
-  { threshold: 52000000, rate: 0.3 },
-  { threshold: 80000000, rate: 0.35 },
+    { threshold: 0, rate: 0.0 },
+    { threshold: 5_000_000, rate: 0.05 },
+    { threshold: 10_000_000, rate: 0.10 },
+    { threshold: 18_000_000, rate: 0.15 },
+    { threshold: 32_000_000, rate: 0.20 },
+    { threshold: 52_000_000, rate: 0.25 },
+    { threshold: 80_000_000, rate: 0.30 },
+    { threshold: Number.MAX_VALUE, rate: 0.35 }
 ];
 
 export default function TaxCalculator() {
