@@ -14,8 +14,6 @@ Java's getting a makeover, and honestly, it's about time. Let's see how the JDK 
 
 But before we dive into the main event, let's take a moment to appreciate some truly cursed Java history. Back in the stone age (pre-Java 7), there was an even more sinister way to print "Hello, World!" that would make modern developers weep:
 
-<details>
-
 ```java
 static {
   System.out.println("Hello, World!");
@@ -28,14 +26,13 @@ Of course, your program wouldn't actually run properly after this black magic, b
 
 So yeah, things could always be worse. At least `public static void main(String[] args)` actually makes some sense compared to... whatever that was.
 
-</details>
-
-## The `public static void main string args` Ritual of Doom
+## The "public static void main string args" Ritual of Doom
 
 Ah yes, the legendary Java incantation that has traumatized countless programming newbies since the dawn of time:
 
 ```java
 class Main {
+    
   public static void main(String[] args) {
     System.out.println("Hello, World!");
   }
@@ -44,7 +41,7 @@ class Main {
 
 Look at this beautiful disaster! Want to print a simple greeting? Sure, but first you must appease the Java gods with this 47-character ceremonial chant. It's like needing a PhD in ancient linguistics just to say "hi" to your computer.
 
-Look at this beautiful code from Python:
+Take a look at this beautiful code from Python:
 
 ```python
 print("Hello, World!")
@@ -64,13 +61,13 @@ Buckle up, because we're about to decode this ancient prophecy:
 
 * `class`: Welcome to Java's obsession with object-oriented programming! Everything must live inside a class. Want to add `2+2`? Better make a class for it. It's classes all the way down, baby.
 
-* `public`: This is Java saying "Hey everyone, come look at my method!" It's the programming equivalent of shouting in a library. Other classes can access this stuff, which is great when you actually have other classes (spoiler: you don't, you just want to print something). But you need `public` access modifier so that JVM can detect your program's entry point.
+* `public`: This is Java saying "Hey everyone, come look at my method!" It's the programming equivalent of shouting in a library. Other classes can access this stuff, which is great when you actually have other classes (spoiler: you don't, you just want to print something. But you need `public` access modifier so that JVM can detect your program's entry point.
 
-* `static`: The "no assembly required" keyword. This means the method belongs to the class itself, not to any particular instance of it. Think of it as the class's personal method that doesn't need you to create an object first. Very convenient, very confusing for beginners.
+* `static`: The "no assembly required" keyword. This means the method belongs to the class itself, not to any particular instance of it. Think of it as the class's personal method that does not need you to create an object first. Very convenient, very confusing for beginners.
 
-* `void`: The method's way of saying "I'm not giving you anything back, deal with it" (read: a method that returns nothing).  It's like asking someone for directions, and they just grunt and walk away.
+* `void`: The method's way of saying "I'm not giving you anything back, deal with it" (read: a method that returns nothing). It's like asking someone for directions, and they just grunt and walk away.
 
-* `main`: The chosen one! Java looks specifically for this name when you hit run. Call it maine, mane, or bob and Java will give you the cold shoulder faster than a coffee shop hipster.
+* `main`: The chosen one! Java looks specifically for this name when you hit run. Call it maine, mane, or bob and Java will just give you a simple nope and walk away nonchalantly.
 
 * `String[] args`: The phantom parameter that 99% of beginner programs completely ignore. It's for command-line arguments, which is fancy talk for "stuff you type after the program name."
 
@@ -80,7 +77,9 @@ Want to pass arguments like this?
 java Main "I love Java" "Just kidding"
 ```
 
-Then `args[0]` would be `I love Java` and `args[1]` would be `Just kidding`. But let's be real: you're probably not going to touch this for months, so it just sits there, taking up space like that exercise bike in your bedroom. Even more advanced enterprise-grade projects rarely make use of this "feature", so you can rest assured that you won't need to know what it is for now.
+Then `args[0]` would be `I love Java` and `args[1]` would be `Just kidding`. But let's be real: you're probably not going to touch this for months, so it just sits there, taking up space like that exercise bike in your bedroom.
+
+Even more advanced enterprise-grade projects rarely make use of this "feature", so you can rest assured that you won't need to know what it is for now.
 
 Finally, what's `System.out.println` anyway? Think of it as Java's unnecessarily complicated way of talking to your screen. `System` is a class for accessing system resources, `out` is a `PrintStream` object (trust me, you don't need to understand that right now), and `println` is the only part that matters: it prints your text. Why make beginners wrestle with this three-headed monster just to say `Hello, World!`? It's programming hazing, basically.
 
@@ -96,6 +95,8 @@ This is a preview feature, which is Java's way of saying "We're 90% sure this wo
 
 You'll need to add `--enable-preview` to your JVM arguments to try it out.
 
+Some IDEs may support the option to enable the preview features via graphical interface if you don't want to be bothered with manually inputting the parameters.
+
 :::
 
 Behold! **JEP 445** has blessed us with this revolutionary concept:
@@ -108,13 +109,11 @@ void main() {
 
 Look at that beauty! No more `class` declaration cluttering up the place, no more `public static` doing whatever mysterious things they do, and (praise the coding gods) no more `String[] args` sitting there like an unwanted dinner guest. Just a clean, simple `void main()` that actually makes sense to human beings.
 
-Sure, we're still stuck with the `System.out.println` monstrosity (baby steps, people), but this is like going from writing a novel to send a text message to just... sending a text message. It's the programming equivalent of finally being able to order coffee without knowing the barista's life story.
-
 It's giving me serious "Apple finally adding a feature that Android had 5 years ago" vibes, but hey, progress is progress! Sometimes the best innovations are just removing the unnecessary crud that nobody asked for in the first place.
 
 And don't worry, all your favorite Java verbosity is still available if you're into that sort of thing. You can still add your `class` declaration, throw in those `String[] args` if you're feeling nostalgic, or stick with the classic `public static void main(String[] args)` if you enjoy the pain. JEP 445 is like having a "simple mode": it's there when you need it, but all the complicated stuff is still lurking in the background, waiting for when you're ready to embrace the chaos.
 
-:::info
+:::tip
 
 One beautiful thing about this change: with the old main method approach, adding any helper functions meant decorating everything with the `static` modifier and diving into the wonderful world of "what's the difference between static and instance members?" Talk about adding another layer of complexity to your spell book! Why write simple functions when you can first master Java's philosophical treatise on object identity?
 
@@ -204,26 +203,21 @@ For beginners and grizzled Java veterans alike, this feels like waking up from a
 
 And yes, this will be a final feature, which means no more `--enable-preview`. Cheers!
 
-### A Mild Complain
+## A Mild Complaint (Or: Why Did We Wait 30 Years for This?)
 
-Seriously, even without instance main methods or compact source files, they could have easily created this `IO` class decades ago to save us from the `System.out.println` torture (although IDEs have been gladly auto-completing that monstrosity for us). Still a welcoming change nonetheless.
+Don't get me wrong – I'm thrilled that Java finally decided to join the "simple syntax" party. But there's something deliciously frustrating about this whole evolution that I can't shake off.
 
-Just. Look. At. The source code of `java.lang.IO` class, and you'll understand why this feels like a facepalm moment:
+Here's the thing that'll make you want to bang your head against your keyboard: take a peek at the source code of that shiny new `java.lang.IO` class that's supposedly revolutionizing Java development:
 
 <details>
 
 ```java
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
 public final class IO {
 
-  // other methods not shown
+  // Other methods
 
   public static void println(Object obj) {
-    System.out.println(obj);
+    System.out.println(obj); // Wait... what?
   }
 
   public static void print(Object obj) {
@@ -250,13 +244,18 @@ public final class IO {
 }
 
 ```
-They're literally just wrapper methods around the same old `System.out` and `BufferedReader` we've always had! Nothing fancy, no rocket science, just some basic convenience methods with a sprinkle of encoding configuration. Even the use of `BufferedReader` instead of `Scanner` is straightforward enough.
-
-So why? Just WHY did we have to wait 30 years for someone to write these 20 lines of wrapper code? This could have been done in Java 1.0! It's like discovering that the cure for a headache was always just taking an aspirin, but everyone insisted on performing ancient rituals with crystals for three decades instead.
 
 </details>
 
-### Bonus Round: Even Spring Boot Gets a Makeover!
+That's it. That's literally it. We've been doing ceremonial dances around `System.out.println` for three decades, and the "revolutionary" solution is... a wrapper method that calls `System.out.println` internally.
+
+This isn't rocket science. This isn't some breakthrough in computer science that required years of research. This is literally 20 lines of wrapper code that any junior developer could have written during their lunch break in 1995. Yet here we are in 2025, celebrating it like we've just invented the wheel.
+
+It's like discovering that the cure for your daily headache was always just taking an aspirin, but everyone insisted on performing elaborate rituals with crystals and ancient chants for thirty years instead.
+
+So yes, I'm mildly complaining about the timing, but I'm also celebrating the outcome. Java is finally growing up, and it's better late than never!
+
+## Bonus Round: Even Spring Boot Gets a Makeover!
 
 To lighten the mood, I have a bonus for you:
 
@@ -315,8 +314,6 @@ Java's growing up, learning to be more approachable while keeping all the enterp
 <details>
 
 * [JEP 445: Unnamed Classes and Instance Main Methods (Preview)](https://openjdk.org/jeps/445)
-
-* [JEP 445: Unnamed Classes and Instance Main Methods (Preview)](https://openjdk.org/jeps/463)
 
 * [JEP 463: Implicitly Declared Classes and Instance Main Methods (Second Preview)](https://openjdk.org/jeps/463)
 
