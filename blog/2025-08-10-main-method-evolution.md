@@ -10,6 +10,26 @@ Java's getting a makeover, and honestly, it's about time. Let's see how the JDK 
 
 <!-- truncate -->
 
+## The Ancient Dark Arts (Pre-JDK 7)
+
+But before we dive into the main event, let's take a moment to appreciate some truly cursed Java history. Back in the stone age (pre-Java 7), there was an even more sinister way to print "Hello, World!" that would make modern developers weep:
+
+<details>
+
+```java
+static {
+  System.out.println("Hello, World!");
+}
+```
+
+That's it. No main method, no nothing. Just a static initialization block sitting there like some kind of programming demon summoning ritual. You could literally print `Hello, World!` just by loading the class, not even running it properly! It was like Java's equivalent of a haunted house: just walking through the door was enough to trigger the ghosts.
+
+Of course, your program wouldn't actually run properly after this black magic, but hey, at least you got your greeting out! Thankfully, the Java gods put an end to this madness in JDK 7, so no more confusing shenanigan!
+
+So yeah, things could always be worse. At least `public static void main(String[] args)` actually makes some sense compared to... whatever that was.
+
+</details>
+
 ## The `public static void main string args` Ritual of Doom
 
 Ah yes, the legendary Java incantation that has traumatized countless programming newbies since the dawn of time:
@@ -32,7 +52,7 @@ print("Hello, World!")
 
 For someone who just wants to dip their toes into programming, this verbal nonsense is about as welcoming as a calculus textbook written in moonrunes. You're trying to learn basic concepts, but Java's over here like:
 
-> FIRST, YOU MUST UNDERSTAND THE SACRED MYSTERIES OF ACCESS MODIFIERS AND METHOD SIGNATURES!
+> ***FIRST, YOU MUST UNDERSTAND THE SACRED MYSTERIES OF ACCESS MODIFIERS AND METHOD SIGNATURES!***
 
 If you are a beginner but curious? Expand the below section.
 
@@ -154,6 +174,8 @@ Now `println` speaks the same Unicode language as `System.out.println`, which me
 
 It's like Java finally learned that not everyone lives in ASCII-ville. About time! Now your glorious multicultural identity can be properly displayed without looking like your keyboard had a seizure.
 
+Again, don't forget your `--enable-preview` flag!
+
 ## The Victory Lap: [JEP 512](https://openjdk.org/jeps/512)
 
 After 25 versions of Java across 30 glorious years, and 4 JEPs worth of digital therapy, we've finally reached the promised land! **JEP 512** (dropping in September 2025) is here to put the cherry on top of this beautiful transformation:
@@ -164,11 +186,13 @@ void main() {
 }
 ```
 
-(And yes, 512 = 2<sup>9</sup> for all you binary nerds out there. Very satisfying! Though rumor has it that they are saving JEP 1024 for something truly spectacular (maybe the day Java learns to read our minds or so).
+And yes, 512 = 2<sup>9</sup> for all you binary nerds out there. Very satisfying! Though rumor has it that they are saving JEP 1024 for something truly spectacular (maybe the day Java learns to read our minds or so).
 
-So what changed from the previous episodes of this makeover show? The `println` method packed up and moved from `java.io.IO` to the fancier `java.lang.IO` neighborhood. And as we all know, everything in `java.lang` gets the VIP "no import required" treatment. It's like having a backstage pass to Java's inner circle.
+So what changed from the previous episodes of this makeover show? The `println` method packed up and moved from `java.io.IO` to the fancier `java.lang.IO` neighborhood. 
 
-But wait, there's more! [JEP 511](https://openjdk.org/jeps/511) decided to go full Oprah and give EVERYONE access to `java.base` goodies: "You get automatic imports! And you get automatic imports! EVERYBODY gets automatic imports!"
+And as we all know, everything in `java.lang` gets the VIP "no import required" treatment. It's like having a backstage pass to Java's inner circle. Therefore, we can use the `IO` class directly and invoke its methods without importing.
+
+But wait, there's more! [JEP 511](https://openjdk.org/jeps/511) gives EVERYONE access to `java.base` goodies: "You get automatic imports! And you get automatic imports! EVERYBODY gets automatic imports!"
 
 And `println` didn't come alone to this party. It brought friends:
 
@@ -180,9 +204,63 @@ For beginners and grizzled Java veterans alike, this feels like waking up from a
 
 And yes, this will be a final feature, which means no more `--enable-preview`. Cheers!
 
-## Bonus Round: Even Spring Boot Gets a Makeover!
+### A Mild Complain
 
-Remember Spring Boot applications with their intimidating startup ceremonies? Well, they're getting the simplification treatment too:
+Seriously, even without instance main methods or compact source files, they could have easily created this `IO` class decades ago to save us from the `System.out.println` torture (although IDEs have been gladly auto-completing that monstrosity for us). Still a welcoming change nonetheless.
+
+Just. Look. At. The source code of `java.lang.IO` class, and you'll understand why this feels like a facepalm moment:
+
+<details>
+
+```java
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
+public final class IO {
+
+  // other methods not shown
+
+  public static void println(Object obj) {
+    System.out.println(obj);
+  }
+
+  public static void print(Object obj) {
+    var out = System.out;
+    out.print(obj);
+    out.flush();
+  }
+
+  public static String readln(String prompt) {
+    print(prompt);
+    return readln();
+  }
+
+  private static BufferedReader br;
+
+  static synchronized BufferedReader reader() {
+    if (br == null) {
+      String enc = System.getProperty("stdin.encoding", "");
+      Charset cs = Charset.forName(enc, StandardCharsets.UTF_8);
+      br = new BufferedReader(new InputStreamReader(System.in, cs));
+    }
+    return br;
+  }
+}
+
+```
+They're literally just wrapper methods around the same old `System.out` and `BufferedReader` we've always had! Nothing fancy, no rocket science, just some basic convenience methods with a sprinkle of encoding configuration. Even the use of `BufferedReader` instead of `Scanner` is straightforward enough.
+
+So why? Just WHY did we have to wait 30 years for someone to write these 20 lines of wrapper code? This could have been done in Java 1.0! It's like discovering that the cure for a headache was always just taking an aspirin, but everyone insisted on performing ancient rituals with crystals for three decades instead.
+
+</details>
+
+### Bonus Round: Even Spring Boot Gets a Makeover!
+
+To lighten the mood, I have a bonus for you:
+
+Remember Spring Boot applications with their intimidating startup ceremonies? Well, they now can make use of this simplification treatment too:
 
 <details>
 
@@ -190,8 +268,9 @@ Remember Spring Boot applications with their intimidating startup ceremonies? We
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-// Spring Boot apps still need a class to annotate with @SpringBootApplication
-// and String[] args for additional command line arguments
+// Spring Boot app still needs a class to be annotated
+// with @SpringBootApplication
+// It still needs String[] args for additional command line arguments
 @SpringBootApplication
 class SpringBootMain {
     
