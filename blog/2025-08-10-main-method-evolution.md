@@ -4,11 +4,16 @@ title: The Evolution of Java's Main Method
 authors: [ vulinh64 ]
 tags: [ java, jdk8, jdk21, jdk25 ]
 description: From very verbose to less verbose
+thumbnail: 2025-08-10-main-method-evolution.png
 ---
+
+import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 
 Java's getting a makeover, and honestly, it's about time. Let's see how the JDK is slowly but surely making Java less intimidating for folks who just want to print "Hello, World!" without summoning the ancient spirits of enterprise development.
 
 <!-- truncate -->
+
+![New main method](img/2025-08-10-img-0001.png "Compact main method")
 
 ## The Ancient Dark Arts (Pre-JDK 7)
 
@@ -308,6 +313,16 @@ It's like Java finally looked in the mirror and realized it had been wearing a t
 For beginners, this means you can actually focus on learning programming concepts instead of memorizing magic spells. For veterans, this means you can finally stop explaining why Java needs 548 keywords just to print "Hello" (though let's be honest, you'll probably miss complaining about it).
 
 Java's growing up, learning to be more approachable while keeping all the enterprise-grade power that made it famous. It's like your favorite coffee shop finally figured out how to make ordering a simple latte less complicated than filing your taxes.
+
+As a bonus, please watch this video:
+
+<details>
+
+<summary>Finalizing the Java On-ramp - Inside Java Newscast #90</summary>
+
+<YoutubePlayer videoId="4WjXTe_FKO4" />
+
+</details>
 
 ## 📝 References
 
