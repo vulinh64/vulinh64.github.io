@@ -296,6 +296,7 @@
         <updated>2025-08-10T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[From very verbose to less verbose]]></summary>
         <content type="html"><![CDATA[<p>Java's getting a makeover, and honestly, it's about time. Let's see how the JDK is slowly but surely making Java less intimidating for folks who just want to print "Hello, World!" without summoning the ancient spirits of enterprise development.</p>
+<p><img decoding="async" loading="lazy" alt="New main method" src="https://vulinhjava.io.vn/assets/images/2025-08-10-img-0001-000b6b07206940caefece190f5b174cd.png" title="Compact main method" width="1204" height="295" class="img_ev3q"></p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="the-ancient-dark-arts-pre-jdk-7">The Ancient Dark Arts (Pre-JDK 7)<a href="https://vulinhjava.io.vn/blog/java-main-method-evolution#the-ancient-dark-arts-pre-jdk-7" class="hash-link" aria-label="Direct link to The Ancient Dark Arts (Pre-JDK 7)" title="Direct link to The Ancient Dark Arts (Pre-JDK 7)">​</a></h2>
 <p>But before we dive into the main event, let's take a moment to appreciate some truly cursed Java history. Back in the stone age (pre-Java 7), there was an even more sinister way to print "Hello, World!" that would make modern developers weep:</p>
 <div class="language-java codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#1E1E1E"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-java codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#1E1E1E"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token keyword" style="color:rgb(86, 156, 214)">static</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(212, 212, 212)">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">  </span><span class="token class-name" style="color:rgb(78, 201, 176)">System</span><span class="token punctuation" style="color:rgb(212, 212, 212)">.</span><span class="token plain">out</span><span class="token punctuation" style="color:rgb(212, 212, 212)">.</span><span class="token function" style="color:rgb(220, 220, 170)">println</span><span class="token punctuation" style="color:rgb(212, 212, 212)">(</span><span class="token string" style="color:rgb(206, 145, 120)">"Hello, World!"</span><span class="token punctuation" style="color:rgb(212, 212, 212)">)</span><span class="token punctuation" style="color:rgb(212, 212, 212)">;</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain"></span><span class="token punctuation" style="color:rgb(212, 212, 212)">}</span><br></span></code></pre></div></div>
@@ -403,6 +404,24 @@
 <p>It's like Java finally looked in the mirror and realized it had been wearing a tuxedo to go grocery shopping for three decades. Sometimes the best innovation isn't adding more features: it's having the courage to <del>throw out</del> store away the unnecessary baggage.</p>
 <p>For beginners, this means you can actually focus on learning programming concepts instead of memorizing magic spells. For veterans, this means you can finally stop explaining why Java needs 548 keywords just to print "Hello" (though let's be honest, you'll probably miss complaining about it).</p>
 <p>Java's growing up, learning to be more approachable while keeping all the enterprise-grade power that made it famous. It's like your favorite coffee shop finally figured out how to make ordering a simple latte less complicated than filing your taxes.</p>
+<p>As a bonus, please watch this video:</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Finalizing the Java On-ramp - Inside Java Newscast #90</summary><div><div class="collapsibleContent_i85q"><!--$--><youtube-video style="display:block;width:100%;height:auto;aspect-ratio:16/9" src="https://www.youtube.com/watch?v=4WjXTe_FKO4" controls=""><template shadowrootmode="open">
+    <style>
+      :host {
+        display: inline-block;
+        line-height: 0;
+        position: relative;
+        min-width: 300px;
+        min-height: 150px;
+      }
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+    <iframe src="https://www.youtube.com/embed/4WjXTe_FKO4?preload=metadata&amp;enablejsapi=1&amp;showinfo=0&amp;rel=0&amp;iv_load_policy=3&amp;modestbranding=1" frameborder="0" width="100%" height="100%" allow="accelerometer; fullscreen; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+  </template></youtube-video><!--/$--></div></div></details>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="-references">📝 References<a href="https://vulinhjava.io.vn/blog/java-main-method-evolution#-references" class="hash-link" aria-label="Direct link to 📝 References" title="Direct link to 📝 References">​</a></h2>
 <details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Details</summary><div><div class="collapsibleContent_i85q"><ul>
 <li>
