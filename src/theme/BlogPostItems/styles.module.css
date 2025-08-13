@@ -1,0 +1,15 @@
+.blogPostContainer {
+    display: inline-grid;
+    gap: 1em;
+}
+
+.thumbnailContainer {
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail {
+    max-width: 100%;
+    height: auto;
+}
