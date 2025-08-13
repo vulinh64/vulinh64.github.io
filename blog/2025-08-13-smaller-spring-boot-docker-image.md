@@ -7,7 +7,7 @@ description: Your Docker images are probably fatter than they need to be. Let's 
 thumbnail: 2025-08-13-smaller-spring-boot-docker-image.png
 ---
 
-Today we're going on a container diet journey that'll make your Spring Boot apps leaner than the bloated things you often see during your Docker building.
+Today we're going on a container diet journey that'll make your Spring Boot apps leaner than the bloated things you often see during your Docker builds.
 
 <!-- truncate -->
 
@@ -148,15 +148,15 @@ COPY src/ src/
 RUN ./mvnw clean package -DskipTests
 ```
 
-We're copying the Maven files first because Docker layer caching is basically magic. If your `pom.xml` doesn't change, Docker will "remember" this and use the cache to speed up the building process. Thank the almighty Docker God!
+We're copying the Maven files first because Docker layer caching is basically magic. If your `pom.xml` doesn't change, Docker will "remember" this and use the cache to speed up the build process. Thank the almighty Docker Gods!
 
 > If your project does not have Maven wrapper (`.mvnw` folder and `mvnw` file), you can visit [here](https://start.spring.io/) to get your own
 
-Still, consult with your DevOps engineers and ask them if caching is viable (and also the option to purge the cache in case of caching problems).
+Still, consult with your DevOps engineers and ask them if caching is viable (and also about the option to purge the cache in case of caching problems).
 
 :::tip[Fun Fact]
 
-During the build stage, you can spam `RUN` commands like you're texting your crush. Since these layers won't make it to the final image, go wild! Your future debugging self will appreciate the granular steps. It also helps with caching too!
+During the build stage, you can spam `RUN` commands like you're texting your crush. Since these layers won't make it to the final image, go wild! Your future debugging self will appreciate the granular steps. It helps with caching too!
 
 :::
 
@@ -181,7 +181,9 @@ RUN echo "Required Java modules:" && cat deps.info
 
 :::tip[Pro Developer Move]
 
-I added that console log so you can see what modules `jdeps` thinks you need. You could even copy-paste this list and hardcode it for *slightly* faster builds. Is the performance gain worth it? Probably not. Will it make you feel like a optimization ninja? Absolutely! 🥷
+I added that console log so you can see what modules `jdeps` thinks you need. You could even copy-paste this list and hardcode it for *slightly* faster builds.
+
+Is the performance gain worth it? Probably not. Will it make you feel like an optimization hack? Absolutely!
 
 :::
 
@@ -250,7 +252,7 @@ Don't be that person. Create a nice, boring user account that can't accidentally
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-XX:MaxMetaspaceSize=512m", "-XX:+UseG1GC", "-jar", "app.jar"]
 ```
 
-These JVM flags are like seasoning for your container, that the right amount makes everything better:
+These JVM flags are like seasoning for your container, and the right amount makes everything better:
 
 - `MaxRAMPercentage=75.0`: "Hey Java, don't be a memory hog"
 - `InitialRAMPercentage=50.0`: "Start reasonable, scale as needed"
@@ -259,7 +261,7 @@ These JVM flags are like seasoning for your container, that the right amount mak
 
 ## The Results
 
-This approach typically shrinks your images by 60-80%! That's like going from a SUV to a smart car – same functionality, way less bulk, and your wallet will thank you when those storage bills come in.
+This approach typically shrinks your images by 60-80%! That's like going from an SUV to a smart car – same functionality, way less bulk, and your wallet will thank you when those storage bills come in.
 
 As you can see, the image size is around 150 MB, compared to what might have been 400-500 MB initially with "naive" full JDK inclusion method.
 
