@@ -66,7 +66,8 @@ const config = {
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
           blogSidebarTitle: 'All Posts',
-          blogSidebarCount: 'ALL'
+          blogSidebarCount: 'ALL',
+          postsPerPage: 5,
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -140,7 +141,7 @@ const config = {
       prism: {
         theme: prismThemes.vsLight,
         darkTheme: prismThemes.vsDark,
-        additionalLanguages: ["java", "javascript", "typescript", "python", "powershell"],
+        additionalLanguages: ["java", "javascript", "typescript", "python", "powershell", "docker"],
       }
     }),
 };

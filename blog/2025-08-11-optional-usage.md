@@ -234,7 +234,7 @@ var result = Optional.ofNullable(fastValue)
     .orElseGet(() -> expensiveComputation());
 ```
 
-On the other hand, using Optional.orElseGet with an already computed value is wasteful: you pay the cost of creating a pointless `Supplier<T>` just to return a constant, when you could return the value directly.
+On the other hand, using `Optional.orElseGet` with an already computed value is wasteful: you pay the cost of creating a pointless `Supplier<T>` just to return a constant, when you could return the value directly.
 
 ## The Secret SonarQube Hack Nobody Talks About
 
