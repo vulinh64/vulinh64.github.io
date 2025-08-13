@@ -320,7 +320,7 @@ As a bonus, please watch this video:
 
 <summary>Finalizing the Java On-ramp - Inside Java Newscast #90</summary>
 
-<YoutubePlayer videoId="4WjXTe_FKO4" />
+<YoutubePlayer videoId="4WjXTe_FKO4"></YoutubePlayer>
 
 </details>
 
