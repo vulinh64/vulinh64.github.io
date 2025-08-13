@@ -194,6 +194,48 @@ var user = findUser(id).orElseThrow(
 );
 ```
 
+## The Critical `orElse` vs `orElseGet` Gotcha
+
+This one trips up literally everyone, so pay attention. It's the difference between "always do the thing" and "only do the thing when needed."
+
+### `orElse`: The Eager Beaver
+
+Use `orElse` for simple, already-computed values:
+
+```java
+// Good - these values already exist
+var name = Optional.ofNullable(user.getName()).orElse("Anonymous");
+var timeout = Optional.ofNullable(config.getTimeout()).orElse(DEFAULT_TIMEOUT);
+```
+
+### `orElseGet`: The Lazy Genius
+
+Use `orElseGet` when you need to compute something or call a method:
+
+```java
+// Good - only calls the expensive method if needed
+var content = Optional.ofNullable(cache.get(key))
+    .orElseGet(() -> expensiveDbQuery(key));
+
+// Good - only creates new objects when necessary
+var user = Optional.ofNullable(currentUser)
+    .orElseGet(() -> createGuestUser());
+```
+
+### The Trap That Gets Everyone
+
+```java
+// NOOOO - this calls expensiveComputation() EVERY TIME
+var result = Optional.ofNullable(fastValue)
+    .orElse(expensiveComputation());
+
+// YES - this only calls it when fastValue is null
+var result = Optional.ofNullable(fastValue)
+    .orElseGet(() -> expensiveComputation());
+```
+
+On the other hand, using Optional.orElseGet with an already computed value is wasteful: you pay the cost of creating a pointless `Supplier<T>` just to return a constant, when you could return the value directly.
+
 ## The Secret SonarQube Hack Nobody Talks About
 
 Here's a fun secret: SonarQube may get confused by `Optional` chains and often thinks they have lower cognitive complexity than traditional null checks. So not only does your code look better, but your static analysis tools think you're a genius (maybe not). It's like getting an A+ for showing your work in a way that's actually cleaner.
@@ -282,55 +324,13 @@ This bad boy brings `Optional` performance much closer to traditional null check
 
 Of course, it's a third-party dependency, so weigh that against your team's tolerance for external libraries and your deployment complexity. But hey, sometimes you gotta live a little!
 
-## The Critical `orElse` vs `orElseGet` Gotcha
-
-This one trips up literally everyone, so pay attention. It's the difference between "always do the thing" and "only do the thing when needed."
-
-### `orElse`: The Eager Beaver
-
-Use `orElse` for simple, already-computed values:
-
-```java
-// Good - these values already exist
-var name = Optional.ofNullable(user.getName()).orElse("Anonymous");
-var timeout = Optional.ofNullable(config.getTimeout()).orElse(DEFAULT_TIMEOUT);
-```
-
-### `orElseGet`: The Lazy Genius
-
-Use `orElseGet` when you need to compute something or call a method:
-
-```java
-// Good - only calls the expensive method if needed
-var content = Optional.ofNullable(cache.get(key))
-    .orElseGet(() -> expensiveDbQuery(key));
-
-// Good - only creates new objects when necessary
-var user = Optional.ofNullable(currentUser)
-    .orElseGet(() -> createGuestUser());
-```
-
-### The Trap That Gets Everyone
-
-```java
-// NOOOO - this calls expensiveComputation() EVERY TIME
-var result = Optional.ofNullable(fastValue)
-    .orElse(expensiveComputation());
-
-// YES - this only calls it when fastValue is null
-var result = Optional.ofNullable(fastValue)
-    .orElseGet(() -> expensiveComputation());
-```
-
-The first version is like hiring a personal chef to make you a sandwich every day, even when you've already got a sandwich. The second version only calls the chef when your lunch bag is empty. Be the second version.
-
 ## The Rules to Live By
 
 1. **Use `Optional` for return types** (but not method parameters, but you can use it as Spring Boot controller's method parameter).
 
 2. **Don't put `Optional` in fields**, seriously, don't.
 
-3. **Master the orElse vs orElseGet difference**, your performance metrics will thank you.
+3. **Master the `orElse` vs `orElseGet` difference**, your performance metrics will thank you.
 
 4. **Chain operations like a boss**, where `Optional` truly shines.
 
