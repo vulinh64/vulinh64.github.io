@@ -20,18 +20,25 @@ Java's getting a makeover, and honestly, it's about time. Let's see how the JDK 
 But before we dive into the main event, let's take a moment to appreciate some truly cursed Java history. Back in the stone age (pre-Java 7), there was an even more sinister way to print "Hello, World!" that would make modern developers weep:
 
 ```java
-static {
-  System.out.println("Hello, World!");
+class TheStatic {
+    
+  static {
+    System.out.println("Hello, World!");
+  }
 }
 ```
 
 That's it. No main method, no nothing. Just a static initialization block sitting there like some kind of programming demon summoning ritual. You could literally print `Hello, World!` just by loading the class, not even running it properly! It was like Java's equivalent of a haunted house: just walking through the door was enough to trigger the ghosts.
 
-Of course, your program wouldn't actually run properly after this black magic, but hey, at least you got your greeting out! Thankfully, the Java gods put an end to this madness in JDK 7, so no more confusing shenanigan!
+Of course, your program wouldn't manage to run properly by using this dark magic, but hey, at least you got your greeting out! Thankfully, the Java gods put an end to this madness in JDK 7, so no more confusing shenanigan!
 
-So yeah, things could always be worse. At least `public static void main(String[] args)` actually makes some sense compared to... whatever that was.
+Things could have always been worse. At least `public static void main(String[] args)` actually makes some sense compared to... whatever that was.
+
+~~(Yes, it broke the styling of my blog because I enforced the code block to be inline)~~
 
 ## The "public static void main string args" Ritual of Doom
+
+~~(I have to not use the tilde characters to wrap the public static void main string args because it is too long)~~
 
 Ah yes, the legendary Java incantation that has traumatized countless programming newbies since the dawn of time:
 
@@ -94,16 +101,6 @@ Starting from JDK 21, Project Amber promises a "solution" to this torture!
 
 ## The First Baby Step: [JEP 445](https://openjdk.org/jeps/445)
 
-:::note
-
-This is a preview feature, which is Java's way of saying "We're 90% sure this won't break your computer, but no promises!".
-
-You'll need to add `--enable-preview` to your JVM arguments to try it out.
-
-Some IDEs may support the option to enable the preview features via graphical interface if you don't want to be bothered with manually inputting the parameters.
-
-:::
-
 Behold! **JEP 445** has blessed us with this revolutionary concept:
 
 ```java
@@ -113,6 +110,16 @@ void main() {
 ```
 
 Look at that beauty! No more `class` declaration cluttering up the place, no more `public static` doing whatever mysterious things they do, and (praise the coding gods) no more `String[] args` sitting there like an unwanted dinner guest. Just a clean, simple `void main()` that actually makes sense to human beings.
+
+:::note
+
+This is a preview feature, which is Java's way of saying "We're 90% sure this won't break your computer, but no promises!".
+
+You'll need to add `--enable-preview` to your JVM arguments to try it out.
+
+Some IDEs may support the option to enable the preview features via graphical interface if you don't want to be bothered with manually inputting the parameters.
+
+:::
 
 It's giving me serious "Apple finally adding a feature that Android had 5 years ago" vibes, but hey, progress is progress! Sometimes the best innovations are just removing the unnecessary crud that nobody asked for in the first place.
 
@@ -208,7 +215,7 @@ For beginners and grizzled Java veterans alike, this feels like waking up from a
 
 And yes, this will be a final feature, which means no more `--enable-preview`. Cheers!
 
-## A Mild Complaint (Or: Why Did We Wait 30 Years for This?)
+## A Mild Complaint
 
 Don't get me wrong – I'm thrilled that Java finally decided to join the "simple syntax" party. But there's something deliciously frustrating about this whole evolution that I can't shake off.
 
@@ -288,7 +295,9 @@ class SpringBootMain {
 
 Look at that! No more `public static` everywhere. Sure, Spring Boot still needs its `@SpringBootApplication` annotation and some others (some things never change), and you'll still want those `String[] args` for command-line shenanigans, but hey, progress is progress! Even enterprise Java is learning to chill out a little.
 
-## The End of an Era (And the Beginning of a Better One)
+## The End of an Era
+
+~~*And the Beginning of a Better One*~~
 
 We've gone from this medieval incantation:
 
@@ -324,9 +333,7 @@ As a bonus, please watch this video:
 
 </details>
 
-## 📝 References
-
-<details>
+## References
 
 * [JEP 445: Unnamed Classes and Instance Main Methods (Preview)](https://openjdk.org/jeps/445)
 
@@ -339,5 +346,3 @@ As a bonus, please watch this video:
 * [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512)
 
 * [JEP 511: Module Import Declarations](https://openjdk.org/jeps/511)
-
-</details>
