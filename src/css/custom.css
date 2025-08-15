@@ -16,7 +16,9 @@
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --admonition-alpha-intensity: 10%;
-    --admonition-alpha-less-intensity: 20%
+    --admonition-alpha-less-intensity: 20%;
+    --details-border-color: rgb(76, 179, 212);
+    --token-interface-color: #3D8F7F;
 }
 
 .markdown p, li {
@@ -29,12 +31,14 @@
 
 .markdown blockquote {
     border-left: 0.35em solid var(--ifm-color-primary-darkest);
-    border-top: 0.05em groove transparent;
-    border-right: 0.05em groove transparent;
-    border-bottom: 0.05em groove transparent;
-    padding: 0.75em 0.75em 0.75em 1.5em;
+    border-top: 0.05em solid var(--ifm-color-primary-darkest);
+    border-right: 0.05em solid var(--ifm-color-primary-darkest);
+    border-bottom: 0.05em solid var(--ifm-color-primary-darkest);
+    border-radius: 1em;
+    padding: 1em 1em 1em 1.5em;
     margin: 1em 0;
-    background-color: var(--ifm-code-background);
+    font-style: italic;
+    background-color: rgba(100, 100, 100, 0.1);
 }
 
 :not(pre) > code {
@@ -112,4 +116,17 @@ article details {
     color: #FFC66D !important;
     font-weight: bold;
     font-style: italic;
+}
+
+.token.annotation {
+    color: var(--token-interface-color) !important;
+}
+
+.markdown details {
+    border: 0.1em dotted var(--details-border-color);
+    background-color: transparent;
+}
+
+.markdown details [class*="collapsibleContent"] {
+    border-top: 0.1em dotted var(--details-border-color);
 }

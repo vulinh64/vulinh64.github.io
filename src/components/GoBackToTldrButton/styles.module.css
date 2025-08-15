@@ -1,0 +1,54 @@
+.goBackButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75em 1.25em;
+    margin: 1.5em 0;
+    border-radius: 0.5em;
+    color: var(--ifm-hero-text-color);
+    transition: all 0.25s ease-in-out;
+    border: 0.1em dotted var(--ifm-color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.8em;
+    white-space: nowrap;
+    min-height: 2.5em;
+    gap: 0.5em;
+}
+
+.goBackButton::before {
+    content: "⏮️";
+    flex-shrink: 0;
+}
+
+.goBackButton::after {
+    content: "⏮️";
+    flex-shrink: 0;
+}
+
+.goBackButton:hover,
+.goBackButton:focus-visible {
+    background-color: var(--ifm-color-primary-darkest);
+    color: var(--ifm-hero-text-color);
+    border: 0.125em solid var(--ifm-color-primary-darkest);
+    text-decoration: none;
+    box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .goBackButton {
+        transition: background-color 0.25s ease-in-out;
+    }
+
+    .goBackButton:hover,
+    .goBackButton:focus-visible {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .goBackButton:active {
+        transform: none;
+        box-shadow: none;
+    }
+}
