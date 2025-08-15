@@ -26,9 +26,9 @@ Here is the list of the tricks we can use to maximize the potential of Lombok:
 
 * [Without Java Records](#before-java-records-in-jdk-14-the-dark-ages)
 
-* [Use `@SneakyThrows](#the-sneaky-sneakythrows-the-exception-ninja)
+* [Use `@SneakyThrows`](#the-sneaky-sneakythrows-the-exception-ninja)
 
-* [The `RequiredArgsConstructor` underrated hero](#the-underrated-requiredargsconstructor-the-unsung-hero-of-dependency-injection)
+* [The `@RequiredArgsConstructor` underrated hero](#the-underrated-requiredargsconstructor-the-unsung-hero-of-dependency-injection)
 
 * [The `@Locked` over `@Synchronized` battle](#the-cool-kid-locked-over-big-boss-synchronized)
 
@@ -720,8 +720,6 @@ It's like having a personal army of annotations working behind the scenes to mak
 ## The Sneaky `@SneakyThrows` (The Exception Ninja)
 
 <GoBackToTldrButton></GoBackToTldrButton>
-
-### Usage
 
 The `@SneakyThrows` annotation allows you to bypass handling checked exceptions explicitly, effectively letting the flow be interrupted when necessary (like a polite interruption, but less polite).
 
