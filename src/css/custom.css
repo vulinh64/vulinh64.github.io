@@ -22,6 +22,7 @@
     --token-class-color: #39C8B0;
     --token-keyword-color: #499CD5;
     --token-constant-color: #FFC66D;
+    --token-punctuation-color: #D4D4D4;
 }
 
 .markdown p, li {
@@ -129,8 +130,12 @@ article details {
     color: var(--token-class-color) !important;
 }
 
-.token.annotation.punctuation {
+.token.annotation {
     color: var(--token-interface-color) !important;
+}
+
+.token.import.namespace.punctuation {
+    color: var(--token-punctuation-color) !important;
 }
 
 .markdown details {
