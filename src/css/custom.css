@@ -19,6 +19,9 @@
     --admonition-alpha-less-intensity: 20%;
     --details-border-color: rgb(76, 179, 212);
     --token-interface-color: #3D8F7F;
+    --token-class-color: #39C8B0;
+    --token-keyword-color: #499CD5;
+    --token-constant-color: #FFC66D;
 }
 
 .markdown p, li {
@@ -113,12 +116,20 @@ article details {
 }
 
 .token.constant {
-    color: #FFC66D !important;
+    color: var(--token-constant-color) !important;
     font-weight: bold;
     font-style: italic;
 }
 
-.token.annotation {
+.token.boolean {
+    color: var(--token-keyword-color) !important;
+}
+
+.token.import.namespace {
+    color: var(--token-class-color) !important;
+}
+
+.token.annotation.punctuation {
     color: var(--token-interface-color) !important;
 }
 

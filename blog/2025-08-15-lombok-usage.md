@@ -44,7 +44,7 @@ You can skip this section if your project already has proper Lombok configuratio
 
 Click [here](#basic-jpa-entities) to start exploring.
 
-### Step 1: Transitive Dependency (The Easy Part, Surprisingly)
+### Step 1: Transitive Dependency
 
 <details>
 
@@ -147,7 +147,7 @@ When running the application in your local environment, click `Enable annotation
 
 ![Enable annotation processing](img/2025-08-15-img-0002.png "Enable annotation processing")
 
-#### Final Check (The Prayer Circle)
+#### Final Check
 
 Finally, do a clean Maven build to verify if your project can compile successfully, or if it will explode spectacularly:
 
@@ -402,7 +402,7 @@ var modifiedList = lists.stream()
 However, functional programming purists will hunt you down if you use object mutation during the pipeline (and they have valid concerns about thread safety and data integrity issues). If possible, try making use of object transformation instead, for example, use this instead:
 
 ```java
-s.withId(UUID.randomUUID()).withName("New")
+s.withId(UUID.randomUUID()).withName("New");
 ```
 
 The chaining setters are meant for single object modification, not for turning your streams into mutable chaos.
@@ -697,10 +697,13 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.With;
 
+import java.util.UUID;
+
 @Value
 @Builder
 @With
 public class EmployeeData {
+
   UUID id;
   String name;
   // No access modifiers needed, @Value has got your back
