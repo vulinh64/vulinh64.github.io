@@ -421,9 +421,9 @@ You can check [this article](https://jpa-buddy.com/blog/hopefully-the-final-arti
 
 ### Recommended `boolean equals(Object)` and `int hashCode()` Implementations
 
-Below is the recommended implementation of both methods:
-
 <details>
+
+Below is the recommended implementation of both methods:
 
 ```java
 import jakarta.persistence.Entity;
@@ -474,11 +474,7 @@ public class EmployeeEntity {
 
 ```
 
-</details>
-
 You can also extract both methods into an abstract base class, which other concrete JPA entities can extend, like this architectural masterpiece:
-
-<details>
 
 ```java
 import java.util.Objects;
@@ -552,7 +548,7 @@ Those annotations below are optional and situational:
 
 * `@Accessors(chain = true)` - For "chaining" setters, because why call one method when you can call ten in a row?
 
-#### Example
+### Basic Example
 
 ```java
 import lombok.*;
@@ -597,7 +593,11 @@ And annotate a field you chose to be the object's "representative" when comparin
 private String equalityField; // This field speaks for all of us
 ```
 
-#### Example
+The complete package is here:
+
+<details>
+
+<summary>Example of `@EqualsAndHashCode.Include`</summary>
 
 ```java
 import lombok.Data;
@@ -622,11 +622,15 @@ public class Department {
 
 This approach is particularly useful when you have DTOs with lots of fields but only want to compare equality based on specific ones (like judging a book by its cover, but intentionally and with good reason).
 
+</details>
+
 ## Java Records
 
 <GoBackToTldrButton></GoBackToTldrButton>
 
 If your project uses JDK 14 or later, consider using **Java Records** to create truly immutable data classes that make other developers go "ooh, fancy!" Records automatically generate accessors (in fluent style rather than the traditional JavaBeans `getX()` format, because who has time for all those extra letters?), along with implementations for `toString()`, `equals(Object)`, and `hashCode()`. It's like having a personal assistant for your data classes.
+
+Think of Java Records as "named" tuples in other languages like Python or JavaScript, but with more ceremony because Java is still a static typing language where everything has to associate with a certain type (and we wouldn't have it any other way, because we enjoy knowing what we're dealing with). 
 
 Most Lombok annotations are not compatible with Java Records, but in most cases they aren't needed anyway (Records are basically Lombok's cool younger sibling who doesn't need as much help).
 
@@ -639,6 +643,8 @@ One limitation of using Java Records is that Lombok's `@EqualsAndHashCode` annot
 That said, Lombok still offers two annotations that can significantly enhance the capabilities of Java Records: `@With` and `@Builder`. These annotations can improve immutability handling and object construction, respectively, making Records even more versatile than a Swiss Army knife.
 
 ### `@With` Annotation
+
+<details>
 
 The `@With` annotation enables the creation of transitional objects using the *wither* pattern (not to be confused with withering away from debugging). This is especially useful when working with immutable types like Records, where modifying a single field requires creating a new instance instead of just changing it like a caveman.
 
@@ -662,7 +668,11 @@ Employee original = new Employee(UUID.randomUUID(), "Linh Nguyen");
 Employee newEmployee = original.withName("Java Developer");
 ```
 
-### `@Builder` Annotation (The Construction Wizard)
+</details>
+
+### `@Builder` Annotation
+
+<details>
 
 The `@Builder` annotation allows you to construct Record instances without having to call the canonical constructor directly, which can become unwieldy when the record has many fields (nobody wants to count parameters like they're doing inventory). With `@Builder`, you get a more readable and maintainable way to instantiate complex records that won't make your future self curse your past self.
 
@@ -682,7 +692,7 @@ Employee employee = Employee.builder()
     .build(); // *chef's kiss* for readability
 ```
 
-Think of Java Records as "named" tuples in other languages like Python or JavaScript, but with more ceremony because Java is still a static typing language where everything has to associate with a certain type (and we wouldn't have it any other way, because we enjoy knowing what we're dealing with).
+</details>
 
 ## Before Java Records in JDK 14 (The Dark Ages)
 
@@ -690,7 +700,9 @@ Think of Java Records as "named" tuples in other languages like Python or JavaSc
 
 If your projects use JDK version below 14, but you wanted to create a "data class" (something that other languages like Kotlin or C# have done very successfully for years while Java developers watched enviously from the sidelines), you can opt for using `@Value` annotation as a consolation prize.
 
-### Example (The Pre-Records Survival Guide)
+### Example
+
+<details>
 
 ```java
 import lombok.Builder;
@@ -718,7 +730,7 @@ A "value" class in Java is basically Records before Records were cool:
 
 * Implicitly contains those annotations: `@ToString` (for debugging adventures), `@EqualsAndHashCode` (for comparing things properly), `@AllArgsConstructor` (for when you want everything), `@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)` (for keeping things locked down), and `@Getter` (for accessing your precious data).
 
-It's like having a personal army of annotations working behind the scenes to make your immutable classes actually usable without making you write a novel's worth of boilerplate code.
+</details>
 
 ## The Sneaky `@SneakyThrows` (The Exception Ninja)
 
@@ -738,7 +750,18 @@ Be pragmatic in your approach, and carefully weigh the benefits against the pote
 
 :::
 
+
+Only use `@SneakyThrows` where you know that handling a checked exception makes little sense, such as:
+
+* When the exception indicates a programming error rather than a recoverable condition
+
+* In utility methods where rethrowing as a `RuntimeException` is the only sensible option
+
+* When you're feeling rebellious and want to stick it to Java's exception hierarchy.
+
 ### Example
+
+<details>
 
 Instead of manually wrapping your checked exceptions in unchecked exception `throw` statements like a responsible adult:
 
@@ -775,21 +798,9 @@ public void execute() {
 }
 ```
 
+</details>
+
 It is still advisable to wrap checked exceptions in custom unchecked exceptions when you actually care about handling them properly. This approach ensures that your application's global exception handling, typically defined in a `@ControllerAdvice`-annotated class using `@ExceptionHandler` methods, can catch and process them consistently and effectively.
-
-Only use `@SneakyThrows` where you know that handling a checked exception makes little sense, such as:
-
-* When the exception indicates a programming error rather than a recoverable condition 
-
-* In utility methods where rethrowing as a `RuntimeException` is the only sensible option
-
-* When you're feeling rebellious and want to stick it to Java's exception hierarchy.
-
-:::warning[A Word of the Cautious]
-
-With great power comes great responsibility, and `@SneakyThrows` is like having exception handling superpowers. Use them wisely, or you might end up debugging invisible exceptions, wondering where everything went wrong.
-
-:::
 
 ## The Underrated `@RequiredArgsConstructor` (The Unsung Hero of Dependency Injection)
 
@@ -927,6 +938,8 @@ This annotation is preferable over Lombok's own `@Synchronized` (sorry `@Synchro
 
 #### Lombok Code (The Easy Button)
 
+<details>
+
 ```java
 import lombok.Locked;
 
@@ -948,6 +961,8 @@ public class YourBusinessService {
   }
 }
 ```
+
+</details>
 
 As of the time of writing (2025-06-17), it is currently not possible to specify fairness of the locks (Lombok hasn't figured out how to be fair yet), and you will have to resort to vanilla Java code for better fine-tuning, or doing something like this masterpiece:
 
@@ -1133,8 +1148,10 @@ It's like having a translator who automatically converts between two languages, 
 
 ### The Verdict (Choose Your Fighter)
 
-- **Traditional approach**: Explicit, clear, but requires writing boilerplate (like explaining a joke)
-- **Lombok trick**: Clever, concise, but might confuse junior developers (like a magic trick)
-- **Records interface**: Elegant, modern, but requires creating an additional interface (like building a bridge to cross a small stream)
+* **Traditional approach**: Explicit, clear, but requires writing boilerplate (like explaining a joke)
+
+* **Lombok trick**: Clever, concise, but might confuse junior developers (like a magic trick)
+
+* **Records interface**: Elegant, modern, but requires creating an additional interface (like building a bridge to cross a small stream)
 
 Choose based on your team's comfort level with "clever" code versus explicit code. Remember: future you (and your colleagues) will either thank you or curse your name depending on which approach you choose!
