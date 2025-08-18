@@ -142,6 +142,12 @@ const config = {
         theme: prismThemes.vsLight,
         darkTheme: prismThemes.vsDark,
         additionalLanguages: ["java", "javascript", "typescript", "python", "powershell", "docker"],
+      },
+      algolia: {
+        appId: 'OUZDRHL5AP',
+        apiKey: '5d4d49bdeb0170a26d68c7f0a6c5199e',
+        indexName: 'Default Crawler',
+        searchPagePath: 'search'
       }
     }),
 };
