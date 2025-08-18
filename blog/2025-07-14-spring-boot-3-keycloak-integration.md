@@ -2,7 +2,7 @@
 slug: spring-boot-3-keycloak-integration
 title: Spring Boot 3 + KeyCloak Integration
 authors: [vulinh64]
-tags: [java, spring boot, keycloak, spring security, oauth2, docker]
+tags: [java, spring-boot, keycloak, spring-security, oauth2, docker]
 description: How to integrate your Spring Boot 3 application with KeyCloak
 ---
 

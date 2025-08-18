@@ -1,0 +1,98 @@
+design-patterns:
+  label: "design patterns"
+  description: "Reusable solutions to common software design problems."
+  permalink: /design-patterns
+
+docker:
+  label: "docker"
+  description: "A platform for containerizing and running applications."
+  permalink: /docker
+
+hashmap:
+  label: "hashmap"
+  description: "A Java collection for storing key-value pairs with fast lookup."
+  permalink: /hashmap
+
+java:
+  label: "java"
+  description: "A versatile, object-oriented programming language for building applications."
+  permalink: /java
+jdk8:
+  label: "jdk8"
+  description: "Java Development Kit version 8, widely used and stable release."
+  permalink: /jdk8
+
+jdk11:
+  label: "jdk11"
+  description: "Java Development Kit version 11, a long-term support (LTS) release."
+  permalink: /jdk11
+
+jdk17:
+  label: "jdk17"
+  description: "Java Development Kit version 17, a long-term support (LTS) release."
+  permalink: /jdk17
+
+jdk21:
+  label: "jdk21"
+  description: "Java Development Kit version 21, the latest long-term support release."
+  permalink: /jdk21
+
+jdk25:
+  label: "jdk25"
+  description: "Future Java Development Kit release (upcoming version in September 2025)."
+  permalink: /jdk25
+
+keycloak:
+  label: "keycloak"
+  description: "An open-source identity and access management solution."
+  permalink: /keycloak
+
+lombok:
+  label: "lombok"
+  description: "A Java library that reduces boilerplate code with annotations."
+  permalink: /lombok
+
+oauth2:
+  label: "oauth2"
+  description: "An open standard for secure authorization and access delegation."
+  permalink: /oauth2
+
+openfeign:
+  label: "openfeign"
+  description: "A Java HTTP client for building declarative REST clients."
+  permalink: /openfeign
+
+optional:
+  label: "optional"
+  description: "A Java container object used to avoid null checks and represent optional values."
+  permalink: /optional
+
+querydsl:
+  label: "querydsl"
+  description: "A Java framework for constructing type-safe database queries."
+  permalink: /querydsl
+
+singleton:
+  label: "singleton"
+  description: "A design pattern ensuring a class has only one instance."
+  permalink: /singleton
+
+spring-boot:
+  label: "spring boot"
+  description: "A framework for building production-ready Spring applications quickly."
+  permalink: /spring-boot
+
+spring-security:
+  label: "spring security"
+  description: "A Java framework providing authentication and access control for applications."
+  permalink: /spring-security
+
+string:
+  label: "string"
+  description: "A Java class representing sequences of characters."
+  permalink: /string
+
+thread-safety:
+  label: "thread safety"
+  description: "A property of code that ensures correct behavior when accessed by multiple threads."
+  permalink: /thread-safety
