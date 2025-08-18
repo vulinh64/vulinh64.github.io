@@ -68,12 +68,14 @@ The current version of `openfeign.querydsl.version` is `6.11`, as the time of th
 > Get your latest `openfeign.querydsl.version` value here:
 > 
 > https://mvnrepository.com/artifact/io.github.openfeign.querydsl/querydsl-jpa/7.0
+>
+> You can visit the fork here: https://github.com/OpenFeign/querydsl
 
-You can visit the fork here: https://github.com/OpenFeign/querydsl
-
-## Old Implementation
+## ~~Old Implementation~~
 
 <details>
+
+<summary>~~For reference only~~</summary>
 
 ### Dependency Declaration
 

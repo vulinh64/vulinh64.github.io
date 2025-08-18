@@ -37,8 +37,11 @@ If you managed to reach this part, congratulations, your brain is still working 
 In this example, we need:
 
 * An instance of KeyCloak (Docker recommended unless you enjoy pain)
+
 * A demo Spring Boot 3 application
+
 * Basic understanding of OAuth2 and JWT (if you don't know these, go learn them first)
+
 * Coffee (optional but highly recommended)
 
 ## Installing KeyCloak
@@ -81,21 +84,29 @@ This setup is... fragile, and all your configurations will be vaporized the mome
 
 For a more robust setup that includes PostgreSQL persistence and proper data management, the source code repository already includes a comprehensive `docker-compose.yaml` file that sets up:
 
-- **KeyCloak server** with proper configuration
-- **PostgreSQL database** for data persistence
-- **External volumes** for data that survives container restarts
-- **Health checks** to ensure proper startup order
-- **Network isolation** for security
+* **KeyCloak server** with proper configuration
+
+* **PostgreSQL database** for data persistence
+
+* **External volumes** for data that survives container restarts
+
+* **Health checks** to ensure proper startup order
+
+* **Network isolation** for security
 
 If you are lazy, go to [TL;DR](#tldr), again. The backing source code is there. Download it, or clone it.
 
 **Why use the Docker Compose setup instead of the simple container?**
 
-- **Data persistence:** Your configurations, users, and realms won't disappear when you restart containers
-- **Production-ready:** Uses PostgreSQL instead of the default H2 database
-- **Better performance:** Proper JVM tuning and dedicated database
-- **Easier management:** Start/stop everything with simple commands
-- **Health checks:** Containers wait for dependencies to be healthy before starting
+* **Data persistence:** Your configurations, users, and realms won't disappear when you restart containers
+
+* **Production-ready:** Uses PostgreSQL instead of the default H2 database
+
+* **Better performance:** Proper JVM tuning and dedicated database
+
+* **Easier management:** Start/stop everything with simple commands
+
+* **Health checks:** Containers wait for dependencies to be healthy before starting
 
 **To use the Docker Compose setup from the repository:**
 
@@ -120,10 +131,14 @@ docker-compose down -v
 ```
 
 **Important Notes:**
-- Change the default passwords in production!
-- PostgreSQL data is persisted in external volumes
-- If you need to reset everything, use `docker-compose down -v` to remove volumes
-- The setup includes health checks to ensure proper startup order
+
+* Change the default passwords in production!
+
+* PostgreSQL data is persisted in external volumes
+
+* If you need to reset everything, use `docker-compose down -v` to remove volumes
+
+* *The setup includes health checks to ensure proper startup order
 
 </details>
 
@@ -152,20 +167,28 @@ Keycloak's user interface is rather straightforward, though it can be overwhelmi
 <summary>KeyCloak basic info</summary>
 
 1. **Create a Realm:**
+
     - Realm name: `spring-boot-realm`
 
 2. **Create a Client:**
-    - Client ID: `spring-boot-client`
-    - Client type: `OpenID Connect`
-    - Remember to tick the "**Direct Access grants**" checkbox
+
+   * Client ID: `spring-boot-client`
+   
+   * Client type: `OpenID Connect`
+   
+   * Remember to tick the "**Direct Access grants**" checkbox
    
 3. **Create Client Roles:**
-   - `role_admin` (for administrator privilege)
-   - `role_user` (for normal user privilege)
+
+   * `role_admin` (for administrator privilege)
+   
+   * `role_user` (for normal user privilege)
 
 4. **Create Users:**
-   - `admin` with role `role_admin`, password `123456` (or your own choice of password)
-   - `user` with role `role_user`, password `123456` or your own choice
+
+   * `admin` with role `role_admin`, password `123456` (or your own choice of password)
+   
+   * `user` with role `role_user`, password `123456` or your own choice
 
 </details>
 
@@ -711,7 +734,9 @@ You can access [Swagger UI](http://localhost:8088/swagger-ui/index.html) and tes
 **Testing scenarios:**
 
 1. **No token:** Should return 401 Unauthorized, but can access `/test/free`
+
 2. **Valid token with role_user:** Can access `/test`, BUT NOT `/test/admin`
+
 3. **Valid token with role_admin:** Can access everything due to role hierarchy
 
 If we obtain the correct access token, we can access `/test` just fine.
@@ -720,29 +745,31 @@ The endpoint `/test/admin` requires `role_admin`, and cannot be accessed if the 
 
 ## Troubleshooting
 
-### 1. "Client not allowed for direct access grants" error
-
 <details>
+
+<summary>"Client not allowed for direct access grants" error</summary>
 
 Check if "Direct Access grants" is enabled for the client.
 
 </details>
 
-### 2. "Account is not fully set up" even with correct credentials
-
 <details>
+
+<summary>"Account is not fully set up" even with correct credentials</summary>
 
 Check if:
 
 - The user has enough information (email, first name, last name);
+
 - Or the user has correct credentials information (with password and not temporary status)
+
 - Or the user has finished all the "required user actions" (setting up OTP, update password, etc...). In this simple example, such actions are out of scope, and we will not be going that far.
 
 </details>
 
-### 3. "Realm does not exist" error
-
 <details>
+
+<summary>"Realm does not exist" error</summary>
 
 Check if the realm `spring-boot-realm` is created properly.
 

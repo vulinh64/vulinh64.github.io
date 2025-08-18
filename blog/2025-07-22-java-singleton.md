@@ -19,17 +19,17 @@ Here are some legit scenarios where having just one instance makes total sense:
 <details>
 <summary>Real-world singleton use cases</summary>
 
-- **Database Connection Pools**: You need one single pool to manage all connections efficiently.
+* **Database Connection Pools**: You need one single pool to manage all connections efficiently.
 
-- **Logging Services**: One logger to rule them all - multiple loggers writing to the same file is a recipe for chaos.
+* **Logging Services**: One logger to rule them all - multiple loggers writing to the same file is a recipe for chaos.
 
-- **Configuration Managers**: Having multiple config managers is like having more than one micromanaging bosses (nobody wants that).
+* **Configuration Managers**: Having multiple config managers is like having more than one micromanaging bosses (nobody wants that).
 
-- **Cache Managers**: Multiple cache instances can lead to inconsistent data and memory waste.
+* **Cache Managers**: Multiple cache instances can lead to inconsistent data and memory waste.
 
-- **Thread Pool Executors**: One executor to coordinate all your background tasks.
+* **Thread Pool Executors**: One executor to coordinate all your background tasks.
 
-- **Application State Managers**: Single source of truth for your app's global state.
+* **Application State Managers**: Single source of truth for your app's global state.
 
 </details>
 
@@ -47,8 +47,9 @@ Just because you *can* make something a singleton doesn't mean you *should*. Sin
 
 Look, I know you just want the solution. There are several ways to create singleton objects in Java, but really only two that matter:
 
-- **Using static fields with lazy initialization** (the "I enjoy pain" way)
-- **Using enums** (the "why didn't anyone tell me this from day one?" way)
+* **Using static fields with lazy initialization** (the "I enjoy pain" way)
+
+* **Using enums** (the "why didn't anyone tell me this from day one?" way)
 
 The static field approach means making your constructor private so people can't just `new` their way to chaos. But spoiler alert: the enum approach is almost always better, and you'll understand why after reading this.
 
@@ -87,9 +88,9 @@ This is actually not terrible! It's simple, thread-safe (thanks, JVM!), and the 
 
 So we have a pattern that:
 
-- ✅ Simple, thread-safe, foolproof
+* ✅ Simple, thread-safe, foolproof
 
-- ⚠️ But no lazy loading: instance created even if never used
+* ⚠️ But no lazy loading: instance created even if never used
 
 ## "But What If I Don't Need It Right Away?": Lazy Loading Gone Wrong
 
@@ -124,13 +125,9 @@ Multiple threads can simultaneously pass the `instance == null` check, and each 
 
 If your singleton does heavy initialization - like loading configuration files, establishing database connections, or computing complex data structures - you're doing all that expensive work multiple times for absolutely no benefit.
 
-This ranges from mildly annoying (wasting memory and making your CPU work overtime for nothing) to absolutely catastrophic:
+This ranges from mildly annoying (wasting memory and making your CPU work overtime for nothing) to absolutely catastrophic: when your initialization has side effects that aren't idempotent - fancy computer science speak for "doing it twice breaks everything."
 
-It is when your initialization has side effects that aren't idempotent - fancy computer science speak for "doing it twice breaks everything."
-
-:::danger[Side effects]
-
-Can either be:
+**Side effects** can either be, but not limited to:
 
 * incrementing counters;
 
@@ -144,11 +141,9 @@ Can either be:
 
 Your "harmless" threading bug becomes a production incident where users get triple-charged, your database connections are exhausted, or your audit trail looks like it was reading the Bible in a loop.
 
-:::
-
 </details>
 
-## "I'll Just Add synchronized!": The Performance Assassin
+## "I'll Just Add synchronized!"
 
 So you opt for a fix. And then comes your next "brilliant" idea (not yours, but maybe from **StackOverflow** or some random IT blogs, who knows?):
 
@@ -367,11 +362,15 @@ EnumSingleton.INSTANCE.incrementCounter();
 
 This little beauty gives you:
 
-- **JVM-level thread safety**: The JVM guarantees safe initialization
-- **Reflection immunity**: Try to reflect your way in - the JVM will laugh at you and throw exceptions
-- **Serialization safety**: Enum serialization is handled specially by the JVM
-- **Simplicity**: Clean, readable, and hard to mess up
-- **No boilerplate**: No private constructors, no static methods, no inner classes
+* **JVM-level thread safety**: The JVM guarantees safe initialization
+
+* **Reflection immunity**: Try to reflect your way in - the JVM will laugh at you and throw exceptions
+
+* **Serialization safety**: Enum serialization is handled specially by the JVM
+
+* **Simplicity**: Clean, readable, and hard to mess up
+
+* **No boilerplate**: No private constructors, no static methods, no inner classes
 
 ### The Fine Print on Thread Safety
 
@@ -424,29 +423,29 @@ If you absolutely, positively need lazy loading (maybe your singleton is expensi
 
 **Use Enum Singleton if:**
 
-- You want maximum simplicity and bulletproof protection (90% of cases)
+* You want maximum simplicity and bulletproof protection (90% of cases)
 
-- You don't need lazy loading
+* You don't need lazy loading
 
-- You want the most maintainable code
+* You want the most maintainable code
 
-- You're tired of writing boilerplate
+* You're tired of writing boilerplate
 
 **Use Bill Pugh Pattern if:**
 
-- You absolutely need lazy loading
+* You absolutely need lazy loading
 
-- You're willing to deal with slightly more complexity
+* You're willing to deal with slightly more complexity
 
-- You need the singleton to extend a class (enums can't extend classes)
+* You need the singleton to extend a class (enums can't extend classes)
 
 **Avoid everything else unless:**
 
-- You're studying for interviews (learn them to understand the evolution)
+* You're studying for interviews (learn them to understand the evolution)
 
-- You're working with legacy code that already uses them
+* You're working with legacy code that already uses them
 
-- You enjoy explaining complex threading concepts to confused teammates
+* You enjoy explaining complex threading concepts to confused teammates
 
 </details>
 

@@ -281,6 +281,8 @@ The `UnsupportedOperationException` is everywhere, lurking in the shadows of the
 
 ### Survival Guide for the Paranoid Developer
 
+<details>
+
 #### **Assume everything is immutable until proven otherwise.** 
 
 Seriously, it's safer that way, and you'll sleep better at night.
@@ -300,6 +302,8 @@ Your trusty `ArrayList` and `HashMap` are like that chill friend who accepts eve
 #### **Still feeling paranoid?** 
 
 Check the source code. Sometimes you need to see exactly what kind of monster you're dealing with.
+
+</details>
 
 :::note
 
@@ -350,53 +354,6 @@ public enum MySingleton {
     }
 }
 ```
-
-But are there times when other approaches are better?
-
-### **Need Lazy Initialization?** 
-
-Consider the Bill Pugh singleton pattern for on-demand instantiation:
-
-```java
-public class BillPughSingleton {
-    
-    private BillPughSingleton() {}
-
-    private static class SingletonHelper {
-        private static final BillPughSingleton INSTANCE = new BillPughSingleton();
-    }
-
-    public static BillPughSingleton getInstance() {
-        return SingletonHelper.INSTANCE;
-    }
-}
-```
-
-The Bill Pugh pattern is a strong runner-up for singleton design, especially when lazy loading is a priority.
-
-### **You Want Inheritance?**
-
-Be aware that enum-based singletons cannot extend other classes. Since enums can only implement interfaces, you must use a traditional class implementation if your singleton needs to inherit from a superclass.
-
-### **Want a Utility Class?** 
-
-If you need utility classes, use a standard class with a private constructor. After all, there’s no reason to create an instance of a utility class. Why incur the overhead of object instantiation for something that exists solely to group utility methods?
-
-For extra security, throw an exception in the constructor to block reflection-based instantiation.
-
-![img.png](img/2025-07-16-img-0001.png)
-
-Yes, even `java.util.Objects` class make use of this "feature", so why shouldn't you?
-
-Consider skipping `implements Serializable` if you’re feeling extra cautious.
-
-Some may argue that utility classes stray from pure object-oriented programming (OOP), but remember: Java isn’t strictly OOP either, with its primitives and static members. It’s okay to bend the rules a bit for the sake of efficiency and your own sanity. We’re here to solve real-world problems, not to show off or blindly follow programming dogma.
-
-:::info
-
-Tired of private constructor boilerplate? Use Lombok’s `@NoArgsConstructor(access = AccessLevel.PRIVATE)` for clean, copy-paste-ready code.
-
-:::
 
 Still, a heresy, although a cute one.
 

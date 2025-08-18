@@ -38,6 +38,7 @@ When you crack open the String class like it's a mystery novel, you'll find two 
 as `final`:
 
 * `hash`
+
 * `hashIsZero`.
 
 Look here:
@@ -165,10 +166,13 @@ as good as any other immutable classes you know and love.
 This whole situation is actually a masterclass in pragmatic programming. They chose the path that gives you all the
 benefits of immutability that you actually care about:
 
-- Thread safety without the headache of synchronization
-- You can pass Strings around like they're going out of style without worrying about side effects
-- HashMaps won't have nervous breakdowns
-- No need for defensive copying (still, `toCharArray()` provides a defensive copy by creating a new array, thereby
+* Thread safety without the headache of synchronization
+
+* You can pass Strings around like they're going out of style without worrying about side effects
+
+* HashMaps won't have nervous breakdowns
+
+* No need for defensive copying (still, `toCharArray()` provides a defensive copy by creating a new array, thereby
   ensuring the String's internal array remains unchanged and upholding its effective immutability. This design is
   crucial until truly immutable "frozen arrays" become available.).
 
@@ -189,6 +193,7 @@ Yes, there is no beating around the bush here. Just straight up cold and hard fa
 ## Bonus: The Future is Looking Bright (And Actually Immutable?)
 
 <details>
+
 <summary>A better future?</summary>
 
 (At the time of writing: 2025-06-24)

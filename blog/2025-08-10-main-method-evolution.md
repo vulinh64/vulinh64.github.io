@@ -335,14 +335,14 @@ As a bonus, please watch this video:
 
 ## References
 
-* [JEP 445: Unnamed Classes and Instance Main Methods (Preview)](https://openjdk.org/jeps/445)
+[JEP 445: Unnamed Classes and Instance Main Methods (Preview)](https://openjdk.org/jeps/445)
 
-* [JEP 463: Implicitly Declared Classes and Instance Main Methods (Second Preview)](https://openjdk.org/jeps/463)
+[JEP 463: Implicitly Declared Classes and Instance Main Methods (Second Preview)](https://openjdk.org/jeps/463)
 
-* [JEP 477: Implicitly Declared Classes and Instance Main Methods (Third Preview)](https://openjdk.org/jeps/477)
+[JEP 477: Implicitly Declared Classes and Instance Main Methods (Third Preview)](https://openjdk.org/jeps/477)
 
-* [JEP 495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495)
+[JEP 495: Simple Source Files and Instance Main Methods (Fourth Preview)](https://openjdk.org/jeps/495)
 
-* [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512)
+[JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512)
 
-* [JEP 511: Module Import Declarations](https://openjdk.org/jeps/511)
+[JEP 511: Module Import Declarations](https://openjdk.org/jeps/511)

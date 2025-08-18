@@ -118,6 +118,12 @@ It's like the code learned to speak in complete sentences instead of stuttering 
 
 - **`isEmpty`** (JDK 11): Because `!isPresent()` made everyone's brain hurt.
 
+### Specialized Types of `Optional`:
+
+The default `Optional` is good for object, but not for primitive types. You have to incur the cost of boxing your primitive value.
+
+They are: `OptionalInt` (for `int` number), `OptionalLong` (for `long` value, obviously), and `OptionalDouble` (when you want to use some floating point magic).
+
 ## Modern `Optional`: Now With 50% More Awesome
 
 ### `ifPresentOrElse`, The Complete Package Deal
@@ -284,23 +290,23 @@ You can read this article to see how much your performance will degrade with the
 
 #### When NOT to use `Optional`
 
-- Hot paths where every microsecond counts and you're doing this millions of times
+* Hot paths where every microsecond counts and you're doing those operations millions of times
 
-- Simple, single null checks where the traditional way is actually clearer
+* Simple, single null checks where the traditional way is actually clearer
 
-- When you're already in performance hell and need every optimization you can get
+* When you're already in performance hell and need every optimization you can get
 
-- Tight loops where short-circuiting could save significant time
+* Tight loops where short-circuiting could save significant time
 
 #### When to DEFINITELY use `Optional`
 
-- Complex null-checking scenarios (the nested nightmares)
+* Complex null-checking scenarios (the nested nightmares)
 
-- Public APIs where you want to be clear about what might be missing
+* Public APIs where you want to be clear about what might be missing
 
-- When code readability matters more than squeezing out every nanosecond
+* When code readability matters more than squeezing out every nanosecond
 
-- One-off operations where the performance difference is negligible
+* One-off operations where the performance difference is negligible
 
 ### The Light at the End of the Tunnel
 
@@ -343,12 +349,6 @@ Of course, it's a third-party dependency, so weigh that against your team's tole
 8. **Integrate with streams like a pro**.
    
 9. **Know when to stop**. Apparently, not everything needs to be wrapped in `Optional`.
-
-## Specialized Types of `Optional`:
-
-The default `Optional` is good for object, but not for primitive types. You have to incur the cost of boxing your primitive value.
-
-They are: `OptionalInt` (for `int` number), `OptionalLong` (for `long` value, obviously), and `OptionalDouble` (when you want to use some floating point magic). 
 
 ## The Final Verdict
 
