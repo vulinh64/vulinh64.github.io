@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "@theme/Layout";
 import clsx from "clsx";
-import styles from "./styles.module.css";
+import styles from "./tax-calculator.styles.module.css";
 
 // Constants for tax calculation
 const INSURANCE_RATES = {
