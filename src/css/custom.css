@@ -159,7 +159,7 @@ article details {
 }
 
 .markdown h2 {
-    border-bottom: 0.05em dotted var(--ifm-color-primary-darkest);
+    border-bottom: 0.05em solid var(--ifm-toc-border-color);
     padding-bottom: 0.5em;
 }
 
@@ -194,10 +194,10 @@ article details {
 }
 
 .markdown details {
-    border: 0.1em dotted var(--details-border-color);
+    border: 0.1em solid var(--ifm-toc-border-color);
     background-color: transparent;
 }
 
 .markdown details [class*="collapsibleContent"] {
-    border-top: 0.1em dotted var(--details-border-color);
+    border-top: 0.1em solid var(--ifm-toc-border-color);
 }
