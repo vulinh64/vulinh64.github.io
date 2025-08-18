@@ -1,0 +1,13 @@
+.container {
+    border: 0.1em solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-code-border-radius);
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background-color: var(--ifm-code-background);
+}
+
+.container:hover {
+    border-color: var(--ifm-color-primary);
+    transition: border-color 0.2s ease;
+}
