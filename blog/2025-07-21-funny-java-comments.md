@@ -12,9 +12,9 @@ Here are some of the funniest comments I've discovered while "spelunking" throug
 
 ## Jackson Team Was Clearly Annoyed by Eclipse (But Not IntelliJ)
 
-<details>
+From `com.fasterxml.jackson.core.JacksonException`, line 15:
 
-<summary>From `com.fasterxml.jackson.core.JacksonException`, line 15</summary>
+<details>
 
 ![jackson](img/2025-07-21-img-0001.png)
 
@@ -30,9 +30,9 @@ It's as if they said, "Fine, Eclipse, here's your precious ID: as vanilla as hum
 
 ## That Byte Is Stupid
 
-<details>
+From `javax.swing.text.rtf.AbstractFilter`, line 156:
 
-<summary>From `javax.swing.text.rtf.AbstractFilter`, line 156</summary>
+<details>
 
 ![stupid bytes](img/2025-07-21-img-0002.png)
 
@@ -44,9 +44,9 @@ Sometimes you just have to call a spade a spade: or in this case, call a frustra
 
 ## When URL Is Malformed... Somewhat
 
-<details>
+From `jakarta.xml.bind.DatatypeConverterImpl`, line 401:
 
-<summary>From `jakarta.xml.bind.DatatypeConverterImpl`, line 401</summary>
+<details>
 
 ![bad url](img/2025-07-21-img-0003.png)
 
@@ -60,9 +60,9 @@ It's the programming equivalent of putting up a "Wet Floor" sign for a floor tha
 
 ## ~~This. Is. Sparta!~~
 
-<details>
+From `jdk.internal.net.http.hpack.NaiveHuffman`, line 181:
 
-<summary>From `jdk.internal.net.http.hpack.NaiveHuffman`, line 181</summary>
+<details>
 
 ![not sparta](img/2025-07-21-img-0004.png)
 
@@ -76,9 +76,9 @@ Though honestly, it would've been absolutely perfect with an image of King Leoni
 
 ## Yes, Truncate That Sucker!
 
-<details>
+From `com.sun.org.apache.xml.internal.utils.FastStringBuffer`, line 381:
 
-<summary>From `com.sun.org.apache.xml.internal.utils.FastStringBuffer`, line 381</summary>
+<details>
 
 ![sucker!](img/2025-07-21-img-0005.png)
 
@@ -90,9 +90,9 @@ There's something refreshingly honest about this no-nonsense attitude. No euphem
 
 ## "Lucky" WebSocket
 
-<details>
+From `jdk.internal.net.http.websocket.OpeningHandshake`, line 80:
 
-<summary>From `jdk.internal.net.http.websocket.OpeningHandshake`, line 80</summary>
+<details>
 
 ![very lucky](img/2025-07-21-img-0006.png)
 
@@ -106,9 +106,9 @@ Just a little geeky wit from the JDK folks, proving that even the most standardi
 
 ## Funny Progress Bar
 
-<details>
+From `javax.swing.plaf.basic.BasicProgressBarUI`, line 916:
 
-<summary>From `javax.swing.plaf.basic.BasicProgressBarUI`, line 916</summary>
+<details>
 
 ![funny bar](img/2025-07-21-img-0007.png)
 
@@ -124,9 +124,9 @@ Sometimes the best humor is completely unintentional.
 
 ## The "Wierd" `:(` Sad Face
 
-<details>
+From `java.awt.Dialog`, line 945:
 
-<summary>From `java.awt.Dialog`, line 945</summary>
+<details>
 
 ![sad face](img/2025-07-21-img-0008.png)
 
@@ -163,3 +163,5 @@ Until the next installment, happy coding!
 **Remember:** Programming demands precision, accuracy, and ruthless efficiency. Yet behind every semicolon and curly brace, it's humans who breathe life into code. These humorous comments: tucked away like secret messages in bottles: reveal the very human touches of effort, creativity, and occasional existential frustration that shape the technology defining our digital world.
 
 After all, we're not robots. At least, not yet.
+
+Also, [part 2](2025-08-20-funny-java-comments-2.md) is now available!
