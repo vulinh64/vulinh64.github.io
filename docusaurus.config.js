@@ -52,6 +52,7 @@ const config = {
       ({
         docs: false,
         blog: {
+          blogDescription: 'List of all my tech blog posts',
           showReadingTime: true,
           feedOptions: {
             type: ['rss', 'atom'],
@@ -136,7 +137,7 @@ const config = {
       footer: {
         style: 'dark',
         links: [],
-        copyright: `Copyright whatever lololol (why would you even consider copywriting here?)`,
+        copyright: `Welcome to my blog!`,
       },
       prism: {
         theme: prismThemes.vsLight,
