@@ -16,29 +16,3 @@
     align-items: center;
     justify-content: center;
 }
-
-.blogPostItem {
-    font-size: 1em;
-    padding: 1em 1em;
-    margin: 0.5em 1em;
-    display: block; /* instead of flex */
-    transition: background 1s ease;
-    width: 80%;
-}
-
-.blogPostItem:hover {
-    background: var(--ifm-color-emphasis-200);
-    cursor: pointer;
-}
-
-.blogPostTitle {
-    font-size: 1.5em;
-    font-weight: 600;
-    margin-bottom: 0.25em; /* space between title and date */
-    border-bottom: 0.1em solid var(--ifm-toc-border-color);
-}
-
-.blogPostDate {
-    font-size: 0.9em;
-    color: var(--ifm-color-secondary);
-}

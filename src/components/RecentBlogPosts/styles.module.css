@@ -1,0 +1,24 @@
+.blogPostItem {
+    font-size: 1em;
+    padding: 1em 1em;
+    margin: 0.5em 1em;
+    display: inline-block;
+    transition: background 0.5s ease;
+    width: 80%;
+}
+
+.blogPostItem:hover {
+    background: var(--ifm-color-emphasis-300);
+    cursor: pointer;
+}
+
+.blogPostTitle {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 0.25em;
+}
+
+.blogPostDate {
+    font-size: 1em;
+    color: var(--ifm-color-secondary);
+}
