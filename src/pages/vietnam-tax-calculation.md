@@ -1,7 +1,8 @@
 ---
 slug: vietnam-tax-calculation
 title: Cách Tính Thuế TNCN Đơn Giản (Cập Nhật 2025)
-image: "./img/vietnam-tax-calculation-banner.png"
+image: ../static/img/vietnam-tax-calculation-thumbnail.jpg
+description: Cách Tính Thuế TNCN Đơn Giản (Cập Nhật 2025)
 ---
 
 import Link from '@docusaurus/Link';
@@ -10,11 +11,13 @@ import Link from '@docusaurus/Link';
 
 <hr />
 
+Đây là bài viết hướng dẫn nhanh cách các bạn tự tính thuế TNCN và thu nhập thực nhận của bạn theo luật LĐ của Việt Nam, tính đến thời điểm hiện tại (2025).
+
+<!-- truncate -->
+
 <sub>Nguồn ảnh: [luatvietnam.vn](https://english.luatvietnam.vn/latest-news/2-cases-are-ineligible-for-personal-income-tax-exemption-in-house-trading-4727-97267-article.html)</sub>
 
-![img.png](img/vietnam-tax-calculation-banner.png)
-
-Đây là bài viết hướng dẫn nhanh cách các bạn tự tính thuế TNCN và thu nhập thực nhận của bạn theo luật LĐ của Việt Nam, tính đến thời điểm hiện tại (2025).
+![Tax calculation](../../static/img/vietnam-tax-calculation-thumbnail.jpg "Tax Calculation")
 
 Bạn có thể trải nghiệm công cụ tính thuế TNCN dưới đây:
 
