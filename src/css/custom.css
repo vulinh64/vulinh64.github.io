@@ -65,6 +65,7 @@
     white-space: nowrap;
     font-family: var(--code-font-family), monospace;
     font-size: var(--ifm-code-font-size);
+    font-feature-settings: "liga" 0, "calt" 0;
 }
 
 .markdown blockquote {
