@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "@theme/Layout";
 import clsx from "clsx";
 import styles from "./tax-calculator.styles.module.css";
+import Link from "@docusaurus/Link";
 
 // Constants for tax calculation
 const INSURANCE_RATES = {
@@ -53,7 +54,9 @@ export default function TaxCalculator() {
 
     if (isProbation) {
       const probationSalary = grossSalary * (probationPercentage / 100);
-      const taxedAmount = Math.round(probationSalary * PROBATION_TAX_RATE);
+      const taxedAmount = probationSalary < 11000000.0
+            ? 0
+            : Math.round(probationSalary * PROBATION_TAX_RATE);
       const netSalary = probationSalary - taxedAmount;
 
       return {
@@ -369,6 +372,10 @@ export default function TaxCalculator() {
               </div>
             </details>
           )}
+
+          <hr className={styles.hr} />
+
+          <Link to='/vietnam-tax-calculation'><i>Tham khảo cách tính thuế TNCN tại đây</i></Link>
         </form>
       </div>
     </Layout>

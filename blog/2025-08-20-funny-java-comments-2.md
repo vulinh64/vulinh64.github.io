@@ -12,7 +12,7 @@ Continuing from [part 1](2025-07-21-funny-java-comments.md), we bask ourselves i
 
 ## What Was a [Charmander](https://www.pokemon.com/us/pokedex/charmander) Doing Here?
 
-From `com.google.common.base.CharMatcher`, line 68:
+From `com.google.common.base.CharMatcher` class, line 68:
 
 <details>
 
@@ -24,7 +24,7 @@ Because `CharMatcher` sounds like Charmander (maybe), a Pokémon, we get beautif
 
 ## Yuck! Please Shut Up, Compiler!
 
-From `com.sun.org.apache.xpath.internal.axes.BasicTestIterator`, line 162
+From `com.sun.org.apache.xpath.internal.axes.BasicTestIterator` class, line 162
 
 <details>
 
@@ -36,7 +36,7 @@ Yes, compiler, please stop nagging me with that senseless variable assignment!
 
 ## Oops! I Couldn't Load the Native Library
 
-From `java.lang.ClassLoader`, line 2283:
+From `java.lang.ClassLoader` class, line 2283:
 
 <details>
 
@@ -48,7 +48,7 @@ Oops, all attempts at loading the native library failed! Too bad!
 
 ## Ouch! No Hard Drives Found!
 
-From `sun.awt.shell.Win32ShellFolder2`, line 411:
+From `sun.awt.shell.Win32ShellFolder2` class, line 411:
 
 <details>
 
@@ -64,7 +64,7 @@ Here's some consolation: don't worry if you write bad code, you will improve. Ev
 
 ## I Dare You To Mock that `List`
 
-From `org.mockito.Mockito`, line 3128 (yes, finding the class declaration at line 1775 requires archaeological skills, and I'm convinced the JavaDoc-to-code ratio here violates several laws of physics):
+From `org.mockito.Mockito` class, line 3128 (yes, finding the class declaration at line 1775 requires archaeological skills, and I'm convinced the JavaDoc-to-code ratio here violates several laws of physics):
 
 <details>
 
@@ -73,5 +73,17 @@ From `org.mockito.Mockito`, line 3128 (yes, finding the class declaration at lin
 The Mockito codebase reads like a developer comedy special: equal parts helpful advice and existential dread about bad testing practices. But their dramatic warnings come with genuinely good sense: don't mock `List` when `ArrayList` and `LinkedList` are sitting right there, eager to be actual lists in your tests. It's the difference between hiring a stunt double to breathe for you versus just... breathing.
 
 ~~Don't burn in hell, please!~~
+
+</details>
+
+## Oh Mighty Aphrodite, Please Bless Us With Security
+
+From `sun.security.provider.JavaKeyStore` class, line 824:
+
+<details>
+
+![img.png](img/2025-08-20-img-0006.png)
+
+You need such a ~~mighty~~ secure salt to add into your password for extra ~~salty~~ safety!
 
 </details>

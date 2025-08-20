@@ -86,10 +86,12 @@
     font-weight: bold;
     margin: 0.5rem;
 }
-.hr {
-    border: 0;
-    border-top: 0.1em solid #aaa;
+
+hr {
+    border-top: 0.1em solid var(--ifm-toc-border-color);
+    margin: 2em 0;
 }
+
 .resultItem {
     margin: 0.5em;
     display: flex;

@@ -66,8 +66,8 @@ const config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
-          blogSidebarTitle: 'All Posts',
-          blogSidebarCount: 'ALL',
+          blogSidebarTitle: 'Recent Posts',
+          blogSidebarCount: 10,
           postsPerPage: 5,
         },
         theme: {
