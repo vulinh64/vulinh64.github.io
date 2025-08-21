@@ -290,6 +290,7 @@ Now you can write sensible code:
 
 ```java
 abstract class Member {
+
   private final String name;
 
   protected Member(String name) {
@@ -298,6 +299,7 @@ abstract class Member {
 }
 
 public class ClubMember extends Member {
+
   private final int age;
 
   public ClubMember(String name, int age) {
@@ -328,6 +330,7 @@ private static String parseName(String name) {
   if (name == null || name.isBlank()) {
     throw new IllegalArgumentException("Name cannot be empty");
   }
+  
   return name;
 }
 
@@ -335,6 +338,7 @@ private static int parseAge(int age) {
   if (age < 18) {
     throw new IllegalArgumentException("Must be an adult to register!");
   }
+  
   return age;
 }
 ```

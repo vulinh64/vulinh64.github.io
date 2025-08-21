@@ -284,7 +284,7 @@ This bad boy runs the whole gauntlet. Each `map` call creates a new `Optional` o
 
 :::info
 
-You can read this article to see how much your performance will degrade with the overusage of `Optional`: https://pkolaczk.github.io/overhead-of-optional/
+You can read this article to see how much your performance will degrade with the overusage of `Optional` [here](https://pkolaczk.github.io/overhead-of-optional).
 
 :::
 
@@ -324,7 +324,7 @@ There's a sneaky little dependency that might scratch your itch:
 </dependency>
 ```
 
-Instruction can be found here: https://github.com/Auties00/Optionless
+Instruction can be found [here](https://github.com/Auties00/Optionless).
 
 This bad boy brings `Optional` performance much closer to traditional null checks. It's like getting a time machine to the post-Valhalla future, but for your `Optional` chains.
 

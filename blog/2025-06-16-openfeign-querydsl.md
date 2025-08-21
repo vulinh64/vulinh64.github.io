@@ -62,14 +62,12 @@ works fine for the time being (tested on both `mvn clean install` and IntelliJ's
 reason (IntelliJ's Rebuild Project has failed before, but works now, maybe the latest version of OpenFeign QueryDSL
 works).
 
-The current version of `openfeign.querydsl.version` is `6.11`, as the time of this writing (2025-06-16 @ 15:00 UTC +7).
+The current version of `openfeign.querydsl.version` is `6.11`, as the time of this writing (`2025-06-16 @ 15:00 UTC +7`).
 
 
-> Get your latest `openfeign.querydsl.version` value here:
-> 
-> https://mvnrepository.com/artifact/io.github.openfeign.querydsl/querydsl-jpa/7.0
+> Get your latest `openfeign.querydsl.version` value [here](https://mvnrepository.com/artifact/io.github.openfeign.querydsl/querydsl-jpa/7.0).
 >
-> You can visit the fork here: https://github.com/OpenFeign/querydsl
+> You can visit the fork [here](https://github.com/OpenFeign/querydsl)
 
 ## ~~Old Implementation~~
 

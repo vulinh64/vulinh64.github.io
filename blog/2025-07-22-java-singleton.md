@@ -17,6 +17,7 @@ Before we dive into the "how," let's talk about the "when".
 Here are some legit scenarios where having just one instance makes total sense:
 
 <details>
+
 <summary>Real-world singleton use cases</summary>
 
 * **Database Connection Pools**: You need one single pool to manage all connections efficiently.
@@ -41,9 +42,9 @@ Just because you *can* make something a singleton doesn't mean you *should*. Sin
 
 ## TL;DR for the Impatient
 
-<details>
+Yes, I got you, here is your `TL;DR`:
 
-<summary>Just give me the answer already!</summary>
+<details>
 
 Look, I know you just want the solution. There are several ways to create singleton objects in Java, but really only two that matter:
 
@@ -59,7 +60,7 @@ The static field approach means making your constructor private so people can't 
 
 Come back to this article later and read the whole content if you want more insight. I won't blame you!
 
-## The "I Just Learned Java" Approach: Eager Initialization
+## The Eager ~~Beaver~~ Initialization
 
 Every Java developer's first singleton looks something like this:
 
@@ -88,11 +89,11 @@ This is actually not terrible! It's simple, thread-safe (thanks, JVM!), and the 
 
 So we have a pattern that:
 
-* ✅ Simple, thread-safe, foolproof
+✅ Simple, thread-safe, foolproof
 
-* ⚠️ But no lazy loading: instance created even if never used
+⚠️ But no lazy loading: instance created even if never used
 
-## "But What If I Don't Need It Right Away?": Lazy Loading Gone Wrong
+## When Lazy Loading Gone Wrong
 
 Then you discover lazy loading and think you're being clever:
 
@@ -143,7 +144,7 @@ Your "harmless" threading bug becomes a production incident where users get trip
 
 </details>
 
-## "I'll Just Add synchronized!"
+## Just Add `synchronized` Then?
 
 So you opt for a fix. And then comes your next "brilliant" idea (not yours, but maybe from **StackOverflow** or some random IT blogs, who knows?):
 
@@ -176,7 +177,7 @@ In this case, only one thread can execute the method at a time - even after the 
 
 You can only hope that the JVM is smart enough to optimize this section.
 
-## "I'm A Threading Wizard!": Double-Checked Locking Madness
+## Double-Checked Locking Madness and Losing Your Mind
 
 So you get the fancy idea of double-checked locking:
 
@@ -257,7 +258,7 @@ So yeah, I might have overestimated the complexity of double-checked singleton, 
 
 </details>
 
-## The Bill Pugh "Wait, That Actually Works?" Solution
+## The Clever Bill Pugh Solution
 
 Then Bill Pugh comes along like a programming superhero and shows us this elegant solution:
 
@@ -285,7 +286,7 @@ The JVM's class loading mechanism ensures that the `SingletonHolder` class is lo
 
 :::
 
-## The "Oops, I Can Break It" Problem
+## The Ultimate Jailbreak Cheat Codes
 
 But wait! Even our fancy singletons have vulnerabilities. Behold, the potential "jailbreaks":
 
@@ -302,6 +303,8 @@ var impostorInstance = constructor.newInstance(); // A wild second instance appe
 ```
 
 It's both amazing and terrifying how human ingenuity can make wonders... and then immediately figure out how to break those wonders in the most creative ways possible. We're like cats - give us a perfectly designed system, and we'll find seventeen different ways to knock it off the table.
+
+## Accidental ~~Innuendo~~ Mutation
 
 But here's another vulnerability that's easier to overlook: **accidental mutation from within the class itself**. Remember our lazy singleton approaches? They're not using `final`:
 
@@ -327,7 +330,7 @@ Now, before you start having nightmares - these aren't "attacks" that hackers ar
 
 However, if your application logic genuinely depends on having exactly one instance (like for managing a hardware resource), these shenanigans could cause some serious head-scratching problems.
 
-## The Enum Singleton: The Hero We Deserved All Along
+## The Enum Singleton, the Hero We Deserved All Along
 
 And finally, the solution that makes you wonder why anyone bothered teaching you all those other complicated approaches first:
 
@@ -417,9 +420,9 @@ If you absolutely, positively need lazy loading (maybe your singleton is expensi
 
 ## Your Decision Tree: Choosing the Right Approach
 
-<details>
+Still unsure which approach to use? Click below for guidance:
 
-<summary>Still unsure which approach to use? Click for guidance!</summary>
+<details>
 
 **Use Enum Singleton if:**
 

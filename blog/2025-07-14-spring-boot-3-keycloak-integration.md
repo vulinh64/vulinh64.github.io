@@ -14,13 +14,11 @@ This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot
 
 ## TL;DR
 
+⚠️ If you are lazy and do not want to read this whole article, click below! 💀
+
 <details>
 
-<summary>⚠️ If you are lazy and do not want to read this whole article, click here!</summary>
-
-If you are impatient and don't want to read (we are now in the era of absolute *brainrot* and A.I infesting, damaging and corroding our own lives), there is a link to the GitHub repository that backs this article, here:
-
-> https://github.com/vulinh64/spring-boot-3-keycloak-integration
+If you are impatient and don't want to read (we are now in the era of absolute *brainrot* and A.I infesting, damaging and corroding our own lives), there is [a link to the GitHub repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) that backs this article.
 
 ### **Quick Summary:** 
 
@@ -310,9 +308,9 @@ If you want to use Lombok (and you should, unless you enjoy writing boilerplate 
 </build>
 ```
 
-</details>
-
 You can always visit [Spring Initializr](https://start.spring.io/) to generate your own project, and then make your own changes to fit your preferences.
+
+</details>
 
 ### The `application.yaml` Hero We Need (and Deserve!)
 

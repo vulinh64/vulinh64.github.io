@@ -12,7 +12,7 @@ Here are some of the funniest comments I've discovered while "spelunking" throug
 
 ## Jackson Team Was Clearly Annoyed by Eclipse (But Not IntelliJ)
 
-From `com.fasterxml.jackson.core.JacksonException`, line 15:
+From `com.fasterxml.jackson.core.JacksonException` class, line 15:
 
 <details>
 
@@ -30,7 +30,7 @@ It's as if they said, "Fine, Eclipse, here's your precious ID: as vanilla as hum
 
 ## That Byte Is Stupid
 
-From `javax.swing.text.rtf.AbstractFilter`, line 156:
+From `javax.swing.text.rtf.AbstractFilter` class, line 156:
 
 <details>
 
@@ -44,7 +44,7 @@ Sometimes you just have to call a spade a spade: or in this case, call a frustra
 
 ## When URL Is Malformed... Somewhat
 
-From `jakarta.xml.bind.DatatypeConverterImpl`, line 401:
+From `jakarta.xml.bind.DatatypeConverterImpl` class, line 401:
 
 <details>
 
@@ -60,7 +60,7 @@ It's the programming equivalent of putting up a "Wet Floor" sign for a floor tha
 
 ## ~~This. Is. Sparta!~~
 
-From `jdk.internal.net.http.hpack.NaiveHuffman`, line 181:
+From `jdk.internal.net.http.hpack.NaiveHuffman` class, line 181:
 
 <details>
 
@@ -76,7 +76,7 @@ Though honestly, it would've been absolutely perfect with an image of King Leoni
 
 ## Yes, Truncate That Sucker!
 
-From `com.sun.org.apache.xml.internal.utils.FastStringBuffer`, line 381:
+From `com.sun.org.apache.xml.internal.utils.FastStringBuffer` class, line 381:
 
 <details>
 
@@ -90,7 +90,7 @@ There's something refreshingly honest about this no-nonsense attitude. No euphem
 
 ## "Lucky" WebSocket
 
-From `jdk.internal.net.http.websocket.OpeningHandshake`, line 80:
+From `jdk.internal.net.http.websocket.OpeningHandshake` class, line 80:
 
 <details>
 
@@ -106,7 +106,7 @@ Just a little geeky wit from the JDK folks, proving that even the most standardi
 
 ## Funny Progress Bar
 
-From `javax.swing.plaf.basic.BasicProgressBarUI`, line 916:
+From `javax.swing.plaf.basic.BasicProgressBarUI` class, line 916:
 
 <details>
 
@@ -124,7 +124,7 @@ Sometimes the best humor is completely unintentional.
 
 ## The "Wierd" `:(` Sad Face
 
-From `java.awt.Dialog`, line 945:
+From `java.awt.Dialog` class, line 945:
 
 <details>
 
