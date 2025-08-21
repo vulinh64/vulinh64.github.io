@@ -14,8 +14,6 @@ Java's getting a makeover, and honestly, it's about time. Let's see how the JDK 
 
 <!-- truncate -->
 
-![New main method](img/2025-08-10-img-0001.png "Compact main method")
-
 ## The Ancient Dark Arts (Pre-JDK 7)
 
 But before we dive into the main event, let's take a moment to appreciate some truly cursed Java history. Back in the stone age (pre-Java 7), there was an even more sinister way to print "Hello, World!" that would make modern developers weep:
