@@ -5,6 +5,7 @@ authors: [ vulinh64 ]
 tags: [ java, docker, spring-boot ]
 description: Your Docker images are probably fatter than they need to be. Let's fix that!
 thumbnail: 2025-08-13-smaller-spring-boot-docker-image.png
+image: ./thumbnails/2025-08-13-smaller-spring-boot-docker-image.png
 ---
 
 Today we're going on a container diet journey that'll make your Spring Boot apps leaner than the bloated things you often see during your Docker builds.

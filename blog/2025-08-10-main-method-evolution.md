@@ -5,6 +5,7 @@ authors: [ vulinh64 ]
 tags: [ java, jdk8, jdk21, jdk25 ]
 description: From very verbose to less verbose
 thumbnail: 2025-08-10-main-method-evolution.png
+image: ./thumbnails/2025-08-10-main-method-evolution.png
 ---
 
 import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
