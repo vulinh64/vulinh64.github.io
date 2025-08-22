@@ -142,7 +142,7 @@ const config = {
       prism: {
         theme: prismThemes.vsLight,
         darkTheme: prismThemes.vsDark,
-        additionalLanguages: ["java", "javascript", "typescript", "python", "powershell", "docker"],
+        additionalLanguages: ["java", "javascript", "typescript", "python", "powershell", "docker", "yaml"],
       },
       algolia: {
         appId: 'OUZDRHL5AP',
