@@ -17,21 +17,21 @@ function useContainerClassName() {
 
 export default function BlogPostItem({children, className}) {
     const containerClassName = useContainerClassName();
-    const frontMatter = useBlogPost().metadata.frontMatter;
 
-    const slug = frontMatter.slug;
+    const {slug, title, comment, thumbnail} = useBlogPost().metadata.frontMatter;
+
     const fullUrl = `${useDocusaurusContext().siteConfig.url}/blog/${slug}`;
 
     return (
         <BlogPostItemContainer className={clsx(containerClassName, className)}>
             <BlogPostItemHeader/>
             <BlogPostItemContent>
-                {!containerClassName && <CustomBlogThumbnail filename={frontMatter.thumbnail}/>}
+                {!containerClassName && <CustomBlogThumbnail filename={thumbnail}/>}
                 {children}
             </BlogPostItemContent>
             <BlogPostItemFooter/>
 
-            {!containerClassName && (frontMatter.comment ?? true) &&
+            {!containerClassName && (comment ?? true) &&
                 <div>
                     <hr/>
 
@@ -40,7 +40,7 @@ export default function BlogPostItem({children, className}) {
                         config={{
                             url: fullUrl,
                             identifier: slug,
-                            title: frontMatter.title,
+                            title: title,
                         }}/>
                 </div>}
         </BlogPostItemContainer>
