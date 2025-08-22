@@ -6,6 +6,8 @@ import BlogPostItemHeader from '@theme/BlogPostItem/Header';
 import BlogPostItemContent from '@theme/BlogPostItem/Content';
 import BlogPostItemFooter from '@theme/BlogPostItem/Footer';
 import CustomBlogThumbnail from "../../components/CustomBlogThumbnail";
+import {DiscussionEmbed} from 'disqus-react';
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 // apply a bottom margin in list view
 function useContainerClassName() {
@@ -15,17 +17,29 @@ function useContainerClassName() {
 
 export default function BlogPostItem({children, className}) {
     const containerClassName = useContainerClassName();
+    const frontMatter = useBlogPost().metadata.frontMatter;
 
-    const thumbnail = useBlogPost().metadata?.frontMatter?.thumbnail;
+    const slug = frontMatter.slug;
+    const fullUrl = `${useDocusaurusContext().siteConfig.url}/blog/${slug}`;
 
     return (
         <BlogPostItemContainer className={clsx(containerClassName, className)}>
             <BlogPostItemHeader/>
             <BlogPostItemContent>
-                {!containerClassName && <CustomBlogThumbnail filename={thumbnail}/>}
+                {!containerClassName && <CustomBlogThumbnail filename={frontMatter.thumbnail}/>}
                 {children}
             </BlogPostItemContent>
             <BlogPostItemFooter/>
+
+            <hr/>
+
+            {(frontMatter.comment ?? true) && <DiscussionEmbed
+                shortname='vulinhjava'
+                config={{
+                    url: fullUrl,
+                    identifier: slug,
+                    title: frontMatter.title,
+                }}/>}
         </BlogPostItemContainer>
     );
 }
