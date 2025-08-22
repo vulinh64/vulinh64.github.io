@@ -31,15 +31,18 @@ export default function BlogPostItem({children, className}) {
             </BlogPostItemContent>
             <BlogPostItemFooter/>
 
-            <hr/>
+            {!containerClassName && (frontMatter.comment ?? true) &&
+                <div>
+                    <hr/>
 
-            {(frontMatter.comment ?? true) && <DiscussionEmbed
-                shortname='vulinhjava'
-                config={{
-                    url: fullUrl,
-                    identifier: slug,
-                    title: frontMatter.title,
-                }}/>}
+                    <DiscussionEmbed
+                        shortname='vulinhjava'
+                        config={{
+                            url: fullUrl,
+                            identifier: slug,
+                            title: frontMatter.title,
+                        }}/>
+                </div>}
         </BlogPostItemContainer>
     );
 }
