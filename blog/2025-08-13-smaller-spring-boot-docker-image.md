@@ -104,6 +104,14 @@ ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0"
 
 </details>
 
+Also, in the `pom.xml` file, add the following line inside the `<build>` section:
+
+```xml
+<finalName>app</finalName>
+```
+
+This ensures the generated JAR file is always named `app.jar`, instead of something like `your-awesome-project-0.0.1-SNAPSHOT.jar`. This is especially useful if you don’t need versioned filenames for your application.
+
 Still with me? Cool! Let's break this bad boy down and see what's happening under the hood.
 
 ## The THICC Problem with Default Java Images
@@ -163,7 +171,16 @@ During the build stage, you can spam `RUN` commands like you're texting your cru
 
 #### Playing with `jdeps`
 
+Before we reach the next step, a small modification for the `pom.xml` file is needed: adding the following line to the `<build>` section:
+
+```xml
+<finalName>app.jar</finalName>
+```
+
+And now, the next part:
+
 ```dockerfile
+# The app is the name we defined inside <finalName> tag
 RUN jar xf target/app.jar
 
 RUN jdeps  \
