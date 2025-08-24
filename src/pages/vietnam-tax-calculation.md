@@ -204,7 +204,7 @@ Bạn có thể xem ảnh sau:
 
 * Bạn có thể tham khảo chương trình mẫu viết bằng Java để tính thuế TNCN tại [đây](https://github.com/vulinh64/spring-base/tree/main/src/main/java/com/vulinh/service/taxcalculator)
 
-* Hoặc bạn có thể xem source code tính thuế TNCN bằng JavaScript của blog này tại [đây](https://raw.githubusercontent.com/vulinh64/vulinh64.github.io/refs/heads/main/src/pages/tax-calculator.jsx)
+* Hoặc bạn có thể xem source code tính thuế TNCN bằng JavaScript của blog này tại [đây](https://github.com/vulinh64/vulinh64.github.io) (source code của website này)
 
 * Tặng bạn chương trình viết bằng Python (dù mình không giỏi Python lắm) 😁
 
