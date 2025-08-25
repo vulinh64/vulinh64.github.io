@@ -6,7 +6,7 @@
     --ifm-color-primary-light: #33925d;
     --ifm-color-primary-lighter: #359962;
     --ifm-color-primary-lightest: #3cad6e;
-    --ifm-code-font-size: 90%;
+    --ifm-code-font-size: 80%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --admonition-alpha-intensity: 10%;
     --admonition-alpha-less-intensity: 20%;
@@ -53,7 +53,7 @@
 }
 
 .markdown pre code {
-    line-height: 2;
+    line-height: 2.2em;
     font-family: var(--code-font-family), monospace;
     font-feature-settings: "liga" 0, "calt" 0;
 }
