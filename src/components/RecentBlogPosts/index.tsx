@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
 import styles from "./styles.module.css";
+import CustomBlogThumbnail from "../CustomBlogThumbnail"
 
 const recentPosts = require("../../../.docusaurus/docusaurus-plugin-content-blog/default/blog-post-list-prop-default.json");
 
@@ -12,11 +13,20 @@ function BlogPostItem({title, date, permalink}) {
         ? new Date(date).toISOString().split("T")[0]
         : "Unknown date";
 
+    // extract slug after /blog/
+    const slug = permalink.replace(/^\/blog\//, "");
+
+    // construct expected thumbnail filename
+    const thumbnailFilename = `${formattedDate}-${slug}.png`;
+
     return (
         <Link to={permalink} className={clsx("text--no-decoration", styles.blogPostItem)}>
+            <CustomBlogThumbnail filename={thumbnailFilename} />
+
             <Heading as="h2" className={styles.blogPostTitle}>
                 {title}
             </Heading>
+
             {date && (
                 <div className={clsx(styles.blogPostDate)}>
                     <time dateTime={new Date(date).toISOString()}>{formattedDate}</time>
@@ -45,7 +55,7 @@ export default function RecentBlogPosts() {
             <div className="row">
                 {items.slice(0, MAX_RECENT_POST).map(({title, date, permalink}, index) => (
                     <div key={index} className="col col--4 margin-bottom--lg">
-                        <BlogPostItem title={title} date={date} permalink={permalink}/>
+                        <BlogPostItem title={title} date={date} permalink={permalink} />
                     </div>
                 ))}
             </div>
