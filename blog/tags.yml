@@ -17,6 +17,7 @@ java:
   label: "java"
   description: "A versatile, object-oriented programming language for building applications."
   permalink: /java
+
 jdk8:
   label: "jdk8"
   description: "Java Development Kit version 8, widely used and stable release."
@@ -71,6 +72,11 @@ querydsl:
   label: "querydsl"
   description: "A Java framework for constructing type-safe database queries."
   permalink: /querydsl
+
+rant:
+  label: "rant"
+  description: "Something I want to vent out"
+  permalink: /rant
 
 singleton:
   label: "singleton"
