@@ -258,7 +258,7 @@ JDK 25 blesses us with these shiny new features (check the dedicated OpenJDK pag
 
 ### Compact Source Files and Instance Main Methods ([JEP 512](https://openjdk.org/jeps/512))
 
-Say goodbye to the ancient incantation "public static void main string args". Read this [dedicated article](2025-08-10-main-method-evolution.md) for the full history journey.
+Say goodbye to the ancient incantation "public static void main string args". Read this [dedicated article](2025-08-10-java-main-method-evolution.md) for the full history journey.
 
 ### Module Import Declarations ([JEP 511](https://openjdk.org/jeps/511))
 

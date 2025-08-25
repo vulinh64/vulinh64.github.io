@@ -1,5 +1,5 @@
 ---
-slug: java-funny-comments-part-2
+slug: funny-java-comments-2
 title: Java's Funny Comments In Various Libraries (Part 2)
 authors: [vulinh64]
 tags: [java]
@@ -8,7 +8,7 @@ thumbnail: 2025-07-21-funny-java-comments.png
 image: ./thumbnails/2025-07-21-funny-java-comments.png
 ---
 
-Continuing from [part 1](2025-07-21-funny-java-comments.md), we bask ourselves in some of the "funniest" comments found in various Java libraries.
+Continuing from [part 1](2025-07-21-funny-java-comments-1.md), we bask ourselves in some of the "funniest" comments found in various Java libraries.
 
 <!-- truncate -->
 

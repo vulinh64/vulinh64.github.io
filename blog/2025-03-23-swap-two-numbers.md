@@ -1,5 +1,5 @@
 ---
-slug: swap-two-numbers-intricate
+slug: swap-two-numbers
 title: Swap Two Numbers Intricate
 authors: [vulinh64]
 tags: [java]

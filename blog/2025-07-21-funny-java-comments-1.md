@@ -1,5 +1,5 @@
 ---
-slug: java-funny-comments-part-1
+slug: funny-java-comments-1
 title: Java's Funny Comments In Various Libraries (Part 1)
 authors: [vulinh64]
 tags: [java]

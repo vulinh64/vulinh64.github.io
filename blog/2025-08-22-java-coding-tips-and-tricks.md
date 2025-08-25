@@ -16,7 +16,7 @@ Here are some non-exhaustive battle-tested tips and tricks for coding with Java 
 
 AKA: Stop Playing Russian Roulette with null pointers.
 
-The full deep-dive article is [here](2025-08-11-optional-usage.md), where I geek out about `java.util.Optional` like it's the best thing since sliced bread. But here's the TL;DR version with a side of common sense:
+The full deep-dive article is [here](2025-08-11-java-optional-usage.md), where I geek out about `java.util.Optional` like it's the best thing since sliced bread. But here's the TL;DR version with a side of common sense:
 
 Instead of this disaster waiting to happen:
 
