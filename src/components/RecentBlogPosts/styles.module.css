@@ -1,24 +1,27 @@
 .blogPostItem {
-    font-size: 1em;
-    padding: 1em 1em;
-    margin: 0.5em 1em;
-    display: inline-block;
-    transition: background 0.5s ease;
-    width: 80%;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensures all cards in a row have the same height */
+    padding: 2em;
+    border-radius: var(--ifm-card-border-radius); /* Use Docusaurus's variable */
+    border: 0.1em solid var(--ifm-color-emphasis-300);
+    transition: all 0.1s linear;
 }
 
 .blogPostItem:hover {
-    background: var(--ifm-color-emphasis-300);
+    border-color: var(--ifm-color-primary-darker);
     cursor: pointer;
 }
 
 .blogPostTitle {
-    font-size: 1.5em;
+    font-size: 2em;
     font-weight: 600;
-    margin-bottom: 0.25em;
+    margin-bottom: 0.5em;
+    color: var(--ifm-color-primary-darker);
 }
 
 .blogPostDate {
-    font-size: 1em;
+    font-size: 0.8em;
     color: var(--ifm-color-secondary);
+    margin-top: auto; /* ✨ Pushes the date to the bottom of the card */
 }
