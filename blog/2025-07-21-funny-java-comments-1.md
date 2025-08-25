@@ -4,8 +4,8 @@ title: Java's Funny Comments In Various Libraries (Part 1)
 authors: [vulinh64]
 tags: [java]
 description: Funny comments written by very normal human beings who definitely weren't losing their sanity while coding.
-thumbnail: 2025-07-21-funny-java-comments.png
-image: ./thumbnails/2025-07-21-funny-java-comments.png
+thumbnail: 2025-07-21-funny-java-comments-1.png
+image: ./thumbnails/2025-07-21-funny-java-comments-1.png
 ---
 
 Here are some of the funniest comments I've discovered while "spelunking" through Java's source code: from the JDK itself to various libraries. These gems prove that even the most serious enterprise code can't suppress the human spirit (and occasional frustration) of its creators.

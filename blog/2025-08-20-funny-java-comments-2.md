@@ -4,8 +4,8 @@ title: Java's Funny Comments In Various Libraries (Part 2)
 authors: [vulinh64]
 tags: [java]
 description: Funny comments written by very normal human beings who definitely weren't losing their sanity while coding (continued)
-thumbnail: 2025-07-21-funny-java-comments.png
-image: ./thumbnails/2025-07-21-funny-java-comments.png
+thumbnail: 2025-07-21-funny-java-comments-1.png
+image: ./thumbnails/2025-07-21-funny-java-comments-1.png
 ---
 
 Continuing from [part 1](2025-07-21-funny-java-comments-1.md), we bask ourselves in some of the "funniest" comments found in various Java libraries.
