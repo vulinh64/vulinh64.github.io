@@ -4,6 +4,8 @@ title: How to Use Project Lombok For Specialized Cases
 authors: [ vulinh64 ]
 tags: [ java, lombok ]
 description: A survival guide for Lombok users who want to avoid the pitfalls that make senior developers cry
+thumbnail: 2025-08-15-lombok-usage.png
+image: ./thumbnails/2025-08-15-lombok-usage.png
 ---
 
 import GoBackToTldrButton from '@site/src/components/GoBackToTldrButton';
