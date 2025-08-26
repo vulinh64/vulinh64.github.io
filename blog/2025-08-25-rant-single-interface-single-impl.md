@@ -8,9 +8,9 @@ thumbnail: 2025-08-25-rant-single-interface-single-impl.png
 image: ./thumbnails/2025-08-25-rant-single-interface-single-impl.png
 ---
 
-Why do we still stick to the old dogma of a single `Service` and a single `ServiceImpl`? What are the pros and cons of this kind of "methodology"?
-
 import { QuestionAnswerBox, Question, Answer } from '@site/src/components/QuestionAnswerBox';
+
+Why do we still stick to the old dogma of a single `Service` and a single `ServiceImpl`? What are the pros and cons of this kind of "methodology"?
 
 <!-- truncate -->
 
@@ -89,7 +89,7 @@ SOLID doesn't mean "interface all the things!" YAGNI trumps premature abstractio
 </Answer>
 </QuestionAnswerBox>
 
-<QuestionAnswerBox isMocked="true">
+<QuestionAnswerBox>
 <Question>But what about mocking for testing?</Question>
 <Answer>
 This argument died around 2010. Modern mocking frameworks handle concrete classes effortlessly. Mockito, the most popular Java mocking framework, has supported class mocking since version 2.0 (released in 2014).

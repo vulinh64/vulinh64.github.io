@@ -22,12 +22,10 @@ type QuestionAnswerBoxProps = {
   children:
     | [ReactElement<typeof Question>, ReactElement<typeof Answer>]
     | [ReactElement<typeof Answer>, ReactElement<typeof Question>]; // allow either order
-  isMocked?: boolean;
 };
 
 const QuestionAnswerBox: React.FC<QuestionAnswerBoxProps> = ({
-  children,
-  isMocked = false,
+  children
 }) => {
   const childrenArray = React.Children.toArray(children) as ReactElement[];
 
@@ -39,8 +37,6 @@ const QuestionAnswerBox: React.FC<QuestionAnswerBoxProps> = ({
     (child) => child.type === Answer
   ) as ReactElement<typeof Answer> | undefined;
 
-  const emoji = isMocked ? "💀" : "😁";
-
   return (
     <p>
       <details className={clsx(styles.details)}>
@@ -49,8 +45,7 @@ const QuestionAnswerBox: React.FC<QuestionAnswerBoxProps> = ({
           {question}
         </summary>
         <div className={styles.answerContent}>
-          <span className={styles.infoIcon}>{emoji}</span>
-          {answer}
+          <span className={styles.answer}>{answer}</span>
         </div>
       </details>
     </p>
