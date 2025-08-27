@@ -237,7 +237,7 @@ Not sold on Facade or Template patterns? No sweat: stick to concrete classes if 
 </Answer>
 </QuestionAnswerBox>
 
-### An Disappointing Reality
+### A Disappointing Reality
 
 These scenarios represent maybe 5% of the interfaces I've encountered in codebases. The other 95% were ceremony masquerading as engineering.
 
