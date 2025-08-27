@@ -16,3 +16,17 @@
     align-items: center;
     justify-content: center;
 }
+
+.imageContainer {
+    height: auto;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* On wider viewports, make it 70% of the viewport width */
+@media (min-width: 960px) {
+    .imageContainer {
+        max-width: 70%;
+    }
+}

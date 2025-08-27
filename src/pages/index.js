@@ -26,7 +26,9 @@ export default function Home() {
       title={`Hello from ${siteConfig.title}`}
       description="My own space for writing random stuff..."
     >
-      <HomepageHeader />
+      <section className={styles.imageContainer} >
+      <img src="./img/independence-day.jpg" alt="independence-day" />
+      </section>
       <main>
         <RecentBlogPosts />
       </main>
