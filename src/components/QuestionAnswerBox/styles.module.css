@@ -1,14 +1,14 @@
-.details {
+.customDetails {
     border: 0.1em solid var(--ifm-toc-border-color) !important;
     border-radius: 1em !important;
 }
 
-.details:hover {
+.customDetails:hover {
     border: 0.1em solid var(--ifm-color-primary-darkest) !important;
 }
 
 /* Add border-bottom when details is expanded */
-details[open] .questionBox {
+.customDetails[open] .questionBox {
     border-bottom: 0.1em solid var(--ifm-toc-border-color) !important;
 }
 
@@ -21,7 +21,7 @@ details[open] .questionBox {
 }
 
 .questionIcon::before {
-    content: "🤔"; /* default closed state */
+    content: "📘"; /* default closed state */
     font-size: 1.5em;
     padding: 0.5em;
     display: inline-block;
@@ -33,8 +33,8 @@ details[open] .questionBox {
 }
 
 /* Swap emoji when details is open */
-details[open] .questionIcon::before {
-    content: "🧐";
+.customDetails[open] .questionIcon::before {
+    content: "📖";
 }
 
 .answerContent {
