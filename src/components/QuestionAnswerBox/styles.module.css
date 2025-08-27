@@ -1,5 +1,6 @@
 .details {
     border: 0.1em solid var(--ifm-toc-border-color) !important;
+    border-radius: 1em !important;
 }
 
 .details:hover {
@@ -7,50 +8,51 @@
 }
 
 /* Add border-bottom when details is expanded */
-details[open] .summary {
+details[open] .questionBox {
     border-bottom: 0.1em solid var(--ifm-toc-border-color) !important;
 }
 
-.summary {
+.questionBox {
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: background-color 0.2s ease-in-out;
-    margin-bottom: 0.5em;
-    padding-right: 2em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
 
-.summary:hover {
-    background-color: var(--ifm-color-emphasis-100);
-}
-
-.questionIcon {
-    font-size: 1.5rem;
+.questionIcon::before {
+    content: "🤔"; /* default closed state */
+    font-size: 1.5em;
     padding: 0.5em;
-    transition: transform 0.2s ease-in-out;
+    display: inline-block;
 }
 
 .question {
     font-weight: bold;
-    padding: 0.5em;
+    font-style: italic;
+}
+
+/* Swap emoji when details is open */
+details[open] .questionIcon::before {
+    content: "🧐";
 }
 
 .answerContent {
     display: flex;
     align-items: flex-start;
-    gap: 0.5em;
-    padding: 0.1em 2em 0.1em 0.5em;
     border-radius: 0.5em;
     width: 100%; /* Ensure container takes full available width */
     box-sizing: border-box; /* Explicitly set box-sizing */
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 0.8em;
 }
 
 .answer {
     flex: 1;
     min-width: 0; /* Prevent flex item from overflowing */
-    padding-left: 0.5em;
 }
 
-.summary::-webkit-details-marker {
+.questionBox::-webkit-details-marker {
     display: none;
 }

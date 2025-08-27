@@ -218,3 +218,9 @@ article details {
 .markdown details [class*="collapsibleContent"] {
     border-top: 0.1em solid var(--ifm-toc-border-color);
 }
+
+.theme-admonition {
+    border-top: 0.1em solid var(--ifm-toc-border-color);
+    border-right: 0.1em solid var(--ifm-toc-border-color);
+    border-bottom: 0.1em solid var(--ifm-toc-border-color);
+}
