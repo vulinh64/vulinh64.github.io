@@ -247,11 +247,11 @@ The real test: if removing the interface would break something beyond compilatio
 
 Start with concrete classes. Refactor to interfaces when the need becomes real, not imaginary. Here's the practical workflow: begin with a single `PaymentProcessor` class. When you genuinely need to add Stripe alongside your existing PayPal implementation, then extract the interface. Takes 30 seconds with any decent IDE: right-click, extract interface, done. When interfaces are genuinely expected:
 
-* Environment-based implementations - Your email service logs to `stdout` in development, sends internal emails in staging, and uses SendGrid in production. Three concrete implementations serving the same contract.
+* Environment-based implementations: Your email service logs to `stdout` in development, sends internal emails in staging, and uses SendGrid in production. Three concrete implementations serving the same contract.
 
-* Payment method expansion - You're launching with credit cards but know mobile payments are coming next quarter. Not "someday maybe" but actual roadmap items.
+* Payment method expansion: You're launching with credit cards but know mobile payments are coming next quarter. Not "someday maybe" but actual roadmap items.
 
-* A/B testing scenarios - You need to swap recommendation algorithms based on feature flags.
+* A/B testing scenarios: You need to swap recommendation algorithms based on feature flags.
 
 The key difference: these are concrete, near-term requirements, not hypothetical "what-ifs."
 
@@ -372,8 +372,12 @@ Modern DI frameworks inject concrete classes just fine. Spring, Guice, and other
 
 ## Final Word
 
-Ditch the reflex to slap interfaces on every service class. Most of the time, it’s just bureaucratic bloat masquerading as best practice. Use interfaces when they solve real problems, like framework contracts, multiple implementations, or patterns like Facade and Template that actually organize complexity. Start with concrete classes, refactor when needed, and keep **YAGNI** as your guiding star to avoid overengineered nonsense.
+Ditch the reflex to slap interfaces on every service class. Most of the time, it’s just bureaucratic bloat masquerading as best practice. 
+
+Use interfaces when they solve real problems, like framework contracts, multiple implementations, or patterns like Facade and Template that actually organize complexity. Start with concrete classes, refactor when needed, and keep **YAGNI** as your guiding star to avoid overengineered nonsense.
+
+Everything has two sides, so question the pros and cons before making any decision. It is a part of our integrity.
 
 Still, I know this is a controversy topic, so if you have any comment, let me know!
 
-As a bonus, you can read this [article on Baeldung](https://www.baeldung.com/java-interface-single-implementation) for better and more technical explanation than my long rant above!
+As a bonus, you can read this [article on Baeldung](https://www.baeldung.com/java-interface-single-implementation) for a better and more technical explanation than my long rant above!
