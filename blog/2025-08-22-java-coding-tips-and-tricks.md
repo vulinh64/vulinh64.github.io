@@ -138,7 +138,7 @@ Spring Boot is surprisingly smart about this stuff:
 
 * `sqs-topics` is a list of strings, so we use `List<String>`. You could also use `Collection<String>` or `Set<String>` if you're feeling adventurous.
 
-* `no-privilege-method-urls` is where things get spicy - it's a list of objects with `method` and `url` fields. We create a custom `List<MethodUrl>` where `MethodUrl` is our inner record. Nested records are like Russian dolls, but useful.
+* `no-privilege-method-urls` is where things get spicy - it's a list of objects with `method` (an enum) and `url` (a string) fields. We create a custom `List<MethodUrl>` where `MethodUrl` is our inner record. Nested records are like Russian dolls, but useful.
 
 * `security` is a parent property with two child properties, so we create a `Security` record with `Duration jwtExpirationTime` and `Duration passwordResetCodeDuration`.
 
