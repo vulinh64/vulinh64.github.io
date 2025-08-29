@@ -1,24 +1,4 @@
-:root {
-    --ifm-color-primary: #2e8555;
-    --ifm-color-primary-dark: #29784c;
-    --ifm-color-primary-darker: #277148;
-    --ifm-color-primary-darkest: #205d3b;
-    --ifm-color-primary-light: #33925d;
-    --ifm-color-primary-lighter: #359962;
-    --ifm-color-primary-lightest: #3cad6e;
-    --ifm-code-font-size: 80%;
-    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-    --admonition-alpha-intensity: 10%;
-    --admonition-alpha-less-intensity: 20%;
-    --details-border-color: rgb(76, 179, 212);
-    --token-interface-color: #3D8F7F;
-    --token-class-color: #39C8B0;
-    --token-keyword-color: #499CD5;
-    --token-constant-color: #FFC66D;
-    --token-punctuation-color: #D4D4D4;
-    --code-font-family: 'JetBrains Mono', Consolas, 'SF Mono', 'Liberation Mono', 'Courier New';
-    --admonition-margin-vertical: 2em;
-}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 @font-face {
     font-family: 'JetBrains Mono';
@@ -47,6 +27,29 @@
     font-weight: 700;
     font-style: italic;
 }
+
+:root {
+    --ifm-color-primary: #2e8555;
+    --ifm-color-primary-dark: #29784c;
+    --ifm-color-primary-darker: #277148;
+    --ifm-color-primary-darkest: #205d3b;
+    --ifm-color-primary-light: #33925d;
+    --ifm-color-primary-lighter: #359962;
+    --ifm-color-primary-lightest: #3cad6e;
+    --ifm-code-font-size: 90%;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+    --admonition-alpha-intensity: 10%;
+    --admonition-alpha-less-intensity: 20%;
+    --details-border-color: rgb(76, 179, 212);
+    --token-interface-color: #3D8F7F;
+    --token-class-color: #39C8B0;
+    --token-keyword-color: #499CD5;
+    --token-constant-color: #FFC66D;
+    --token-punctuation-color: #D4D4D4;
+    --code-font-family: 'JetBrains Mono', Consolas, 'SF Mono', 'Liberation Mono', 'Courier New';
+    --ifm-font-family-base: "Noto Sans", "Open Sans", "Noto Color Emoji", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --admonition-margin-vertical: 2em;
+ }
 
 .markdown p, li {
     line-height: 1.8;
