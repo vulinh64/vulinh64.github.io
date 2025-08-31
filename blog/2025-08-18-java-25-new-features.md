@@ -9,10 +9,13 @@ image: ./thumbnails/2025-08-18-java-25-new-features.png
 ---
 
 import DateCountdown from '@site/src/components/DateCountdown';
+import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 
 Java 25 drops on September 25 this year (as of August 18, when I'm writing this). Will enterprises immediately jump on the Java 25 hype train? LOL, nope. They'll probably stick with Java 8 until the heat death of the universe (there are tons of breaking changes from Java 21 to Java 25, so without a solid migration plan, your services will explode spectacularly), but hey, we can still have some fun exploring what's new!
 
 <!-- truncate -->
+
+<YoutubePlayer videoId="X0-TGhktFnE"></YoutubePlayer>
 
 ## TL;DR
 
