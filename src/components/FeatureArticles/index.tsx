@@ -12,21 +12,25 @@ interface FeatureArticlesProps {
 }
 
 type Direction = 'left' | 'right' | null;
+type InteractionType = 'swipe' | 'dot' | null;
 
 const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [direction, setDirection] = useState<Direction>(null);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
+    const [interactionType, setInteractionType] = useState<InteractionType>(null);
     const touchStartX = useRef<number | null>(null);
     const touchEndX = useRef<number | null>(null);
 
     const handleDotClick = (index: number): void => {
         if (index !== currentIndex && !isAnimating) {
             setDirection(index > currentIndex ? 'right' : 'left');
+            setInteractionType('dot');
             setIsAnimating(true);
             setTimeout(() => {
                 setCurrentIndex(index);
                 setIsAnimating(false);
+                setInteractionType(null);
             }, 300);
         }
     };
@@ -48,20 +52,24 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
 
         if (Math.abs(deltaX) > swipeThreshold && !isAnimating) {
             if (deltaX > 0 && currentIndex > 0) {
-                // Swipe right, go to previous article
-                setDirection('left');
+                // Swipe right: move to previous article, text flies right
+                setDirection('right');
+                setInteractionType('swipe');
                 setIsAnimating(true);
                 setTimeout(() => {
                     setCurrentIndex(currentIndex - 1);
                     setIsAnimating(false);
+                    setInteractionType(null);
                 }, 300);
             } else if (deltaX < 0 && currentIndex < articles.length - 1) {
-                // Swipe left, go to next article
-                setDirection('right');
+                // Swipe left: move to next article, text flies left
+                setDirection('left');
+                setInteractionType('swipe');
                 setIsAnimating(true);
                 setTimeout(() => {
                     setCurrentIndex(currentIndex + 1);
                     setIsAnimating(false);
+                    setInteractionType(null);
                 }, 300);
             }
         }
@@ -79,9 +87,13 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
                 <div
                     className={`${styles.articleContent} ${
                         isAnimating
-                            ? direction === 'left'
-                                ? styles.slideLeft
-                                : styles.slideRight
+                            ? interactionType === 'swipe'
+                                ? direction === 'left'
+                                    ? styles.swipeLeft
+                                    : styles.swipeRight
+                                : direction === 'left'
+                                    ? styles.slideLeft
+                                    : styles.slideRight
                             : styles.fadeIn
                     }`}
                     key={currentIndex}
