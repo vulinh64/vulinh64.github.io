@@ -1,0 +1,134 @@
+.featureArticles {
+    margin: 2em auto;
+    padding: 3em 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.featureArticles::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/img/feature-article.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(40%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.articleContent {
+    margin: 2em auto;
+    min-height: 12em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+    transform: translateX(0);
+    position: relative;
+}
+
+.slideLeft {
+    animation: slideLeft 0.3s ease-in-out forwards;
+}
+
+.slideRight {
+    animation: slideRight 0.3s ease-in-out forwards;
+}
+
+.fadeIn {
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes slideLeft {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideRight {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.articleTitle {
+    font-size: 2em;
+    margin-bottom: 1em;
+    color: var(--ifm-heading-color);
+    max-width: 80%;
+}
+
+.articleExcerpt {
+    font-style: italic;
+    font-size: 1.3em;
+    line-height: 2;
+    color: var(--ifm-color-content);
+}
+
+.readMoreBtn {
+    display: inline-block;
+    padding: 1em 2em;
+    background-color: var(--ifm-toc-border-color);
+    color: white;
+    border-radius: 0.5em;
+    transition: background-color 0.3s ease;
+}
+
+.readMoreBtn:hover {
+    background-color: var(--ifm-color-primary-dark);
+    text-decoration: none;
+    color: white;
+}
+
+.navigation {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 5em;
+}
+
+.dots {
+    display: flex;
+    gap: 1em;
+}
+
+.dot {
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background-color: var(--ifm-color-emphasis-300);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.activeDot {
+    background-color: white;
+}
