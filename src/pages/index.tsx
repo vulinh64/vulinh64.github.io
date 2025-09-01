@@ -5,6 +5,7 @@ import Heading from "@theme/Heading";
 import RecentBlogPosts from "../components/RecentBlogPosts";
 import FeatureArticles from "../components/FeatureArticles";
 import styles from "./index.module.css";
+import { JSX } from "react";
 
 interface SiteConfig {
   title: string;

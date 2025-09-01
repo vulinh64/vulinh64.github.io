@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, JSX } from "react";
 import clsx from "clsx";
 import styles from "./styles.module.css";
 import Link from "@docusaurus/Link";

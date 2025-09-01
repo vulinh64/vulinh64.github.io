@@ -52,14 +52,24 @@ export const calculateVietnamTax = (
   isProbation: boolean = false,
   probationPercentage: number = 100
 ): TaxCalculationResult => {
+  // Validation: Check if baseSalary meets minimum requirement
+  if (baseSalary < MINIMUM_BASIC_SALARY) {
+    throw new Error(`Base salary must be at least ${MINIMUM_BASIC_SALARY.toLocaleString()} VND`);
+  }
+
+  // Validation: Check probation percentage range
+  if (probationPercentage < MINIMUM_PROBATION_PERCENTAGE || probationPercentage > MAXIMUM_PROBATION_PERCENTAGE) {
+    throw new Error(`Probation percentage must be between ${MINIMUM_PROBATION_PERCENTAGE}% and ${MAXIMUM_PROBATION_PERCENTAGE}%`);
+  }
+
   // Cap basic salary at MAXIMUM_BASIC_SALARY for calculations
   const cappedBaseSalary: number = Math.min(baseSalary, MAXIMUM_BASIC_SALARY);
 
   if (isProbation) {
     const probationSalary: number = grossSalary * (probationPercentage / 100);
     const taxedAmount: number = probationSalary < 11000000.0
-      ? 0
-      : Math.round(probationSalary * PROBATION_TAX_RATE);
+        ? 0
+        : Math.round(probationSalary * PROBATION_TAX_RATE);
     const netSalary: number = probationSalary - taxedAmount;
 
     return {
@@ -76,13 +86,13 @@ export const calculateVietnamTax = (
   const healthInsurance: number = cappedBaseSalary * INSURANCE_RATES.health;
   const unemploymentInsurance: number = cappedBaseSalary * INSURANCE_RATES.unemployment;
   const insuranceAmount: number =
-    socialInsurance + healthInsurance + unemploymentInsurance;
+      socialInsurance + healthInsurance + unemploymentInsurance;
 
   const pretaxSalary: number = grossSalary - insuranceAmount;
   const dependantDeduction: number = numberOfDependants * DEDUCTION_PER_DEPENDANT;
 
   let taxableIncome: number =
-    pretaxSalary - NON_TAXABLE_INCOME_DEDUCTION - dependantDeduction;
+      pretaxSalary - NON_TAXABLE_INCOME_DEDUCTION - dependantDeduction;
 
   if (taxableIncome < 0) {
     taxableIncome = 0;
@@ -101,9 +111,9 @@ export const calculateVietnamTax = (
     }
 
     const delta: number =
-      taxableIncome < nextLevel.threshold
-        ? deltaToNextLevel
-        : nextLevel.threshold - currentLevel.threshold;
+        taxableIncome < nextLevel.threshold
+            ? deltaToNextLevel
+            : nextLevel.threshold - currentLevel.threshold;
 
     if (delta > 0) {
       taxAmount += delta * nextLevel.rate;
