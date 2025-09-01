@@ -17,6 +17,10 @@ Java 25 drops on September 25 this year (as of August 18, when I'm writing this)
 
 <YoutubePlayer videoId="X0-TGhktFnE"></YoutubePlayer>
 
+<hr />
+
+<DateCountdown to='2025-09-16' description='JDK 25 Release Date'></DateCountdown>
+
 ## TL;DR
 
 Too lazy to read? I've got you covered:
@@ -369,12 +373,6 @@ Can we expect [JEP 401](https://openjdk.org/jeps/401) to enter first preview in 
 !["Valhalla When?"](img/2025-08-18-img-0002.png "Valhalla When?")
 
 *Sure, the meme doesn't quite fit, but honestly, Project Valhalla has become something of a legendary meme among Java developers by now.*
-
-## Counting down to JDK 25 Release Date
-
-How many days until the big day?
-
-<DateCountdown to='2025-09-16' description='JDK 25 Release Date'></DateCountdown>
 
 ## Incompatibility Reports with JDK 25 Early Access
 
