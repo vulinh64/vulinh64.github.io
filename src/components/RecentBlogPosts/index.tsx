@@ -54,7 +54,7 @@ export default function RecentBlogPosts() {
             </Heading>
             <div className="row">
                 {items.slice(0, MAX_RECENT_POST).map(({title, date, permalink}, index) => (
-                    <div key={index} className="col col--4 margin-bottom--lg">
+                    <div key={index} className="col col--6 margin-bottom--md margin-top--md">
                         <BlogPostItem title={title} date={date} permalink={permalink} />
                     </div>
                 ))}
