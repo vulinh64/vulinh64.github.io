@@ -84,6 +84,72 @@ Here's your emergency cheat sheet (screenshot this, print it, tattoo it on your 
 
 Trust me on this one: your future self will send you a thank-you card. Your teammates will stop giving you the stink eye. Your team lead might even crack a smile. And most importantly, you won't be debugging a nasty `NullPointerException` at 2 AM while surviving on energy drinks and regret.
 
+
+## Exception Handling: Don't Let Your Errors Vanish Into the Void
+
+One of the cardinal sins in Java development is the dreaded "exception swallowing": catching an exception and then doing absolutely nothing with it. This practice is tantamount to committing programming heresy, and here's why you should never, ever do it.
+
+### The Anti-Pattern: Swallowing Exceptions
+
+```java
+// DON'T DO THIS - Exception swallowing
+try {
+    riskyOperation();
+} catch (Exception e) {
+    // Silence is NOT golden here
+}
+```
+
+When you swallow exceptions like this, you're essentially creating a black hole where errors disappear without a trace. Your application continues running, potentially in an inconsistent state, and you have no idea what went wrong when things inevitably break later.
+
+Instead, always handle exceptions properly by either logging them appropriately or rethrowing them:
+
+### Option 1: Log the Exception
+
+```java
+// For exceptional cases - use WARN or ERROR level
+try {
+    connectToDatabase();
+} catch (SQLException e) {
+    logger.warn("Database connection failed, retrying with backup", e);
+    // Handle the fallback logic
+}
+
+// For expected cases - INFO level is sufficient
+try {
+    parseOptionalConfig();
+} catch (ConfigNotFoundException e) {
+    logger.info("Optional config file not found, using defaults", e);
+    // Continue with default configuration
+}
+```
+
+### Option 2: Rethrow with Context
+
+If you need to rethrow the exception, **always include the original exception** to preserve the complete stack trace:
+
+```java
+// WRONG - Stack trace gets yeeted into the void
+try {
+    processUserData(userData);
+} catch (ValidationException e) {
+    throw new ServiceException("User processing failed");
+}
+
+// RIGHT - Original exception preserved
+try {
+    processUserData(userData);
+} catch (ValidationException e) {
+    throw new ServiceException("User processing failed", e);
+}
+```
+
+### Why This Matters
+
+Preserving the original exception in your rethrow statement maintains the complete stack trace, showing you exactly where the problem originated. Without it, you'll spend countless hours debugging issues that could have been immediately obvious with proper exception chaining.
+
+Remember: exceptions are your friends trying to tell you something went wrong. Don't silence them – listen to what they have to say!
+
 ## Spring Boot Tips: Use Java Records for Configuration Properties
 
 ~~Because Life's Too Short for Boilerplate~~
@@ -166,6 +232,8 @@ public class MySpringBootApplication {
 You can actually use Java Records to be your configuration properties since Spring Boot 2.6, but some projects will still be using JDK 8 or JDK 11, and thus, Java Records are not available to them.
 
 :::
+
+---
 
 Want the full tutorial with all the bells and whistles? Check out this excellent [Baeldung article](https://www.baeldung.com/configuration-properties-in-spring-boot) where they explain everything with the patience of a saint.
 
