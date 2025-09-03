@@ -1,6 +1,5 @@
 .featureArticles {
-    margin: 2em auto;
-    padding: 3em 0;
+    padding: 5em 0;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -23,7 +22,6 @@
 }
 
 .articleContent {
-    margin: 2em auto;
     min-height: 12em;
     display: flex;
     flex-direction: column;
@@ -104,7 +102,6 @@
 
 .articleTitle {
     font-size: 2em;
-    margin-bottom: 1em;
     color: var(--ifm-heading-color);
     max-width: 80%;
 }

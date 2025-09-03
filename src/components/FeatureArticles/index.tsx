@@ -1,5 +1,6 @@
 import React, {useState, useRef, useCallback} from 'react';
 import styles from './styles.module.css';
+import clsx from "clsx";
 
 interface FeatureArticle {
     title: string;
@@ -111,7 +112,7 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
     };
 
     return (
-        <section className={styles.featureArticles}>
+        <section className={clsx(styles.featureArticles, "margin-top--lg", "margin-bottom-lg")}>
             <div className="container">
                 <div
                     className={`${styles.articleContent} ${getAnimationClass()}`}
@@ -119,13 +120,13 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
                 >
-                    <h2 className={styles.articleTitle}>{currentArticle.title}</h2>
-                    <p className={styles.articleExcerpt}>{currentArticle.excerpt}</p>
+                    <h2 className={clsx(styles.articleTitle, "margin-bottom--lg")}>{currentArticle.title}</h2>
+                    <p className={clsx(styles.articleExcerpt, "margin-top--lg margin-bottom--lg")}>{currentArticle.excerpt}</p>
                 </div>
                 <a href={`/blog/${currentArticle.slug}`} className={styles.readMoreBtn}>
                     Read More
                 </a>
-                <div className={styles.navigation}>
+                <div className={clsx(styles.navigation, "margin-top--md")}>
                     <div className={styles.dots}>
                         {articles.map((_, index) => (
                             <span
