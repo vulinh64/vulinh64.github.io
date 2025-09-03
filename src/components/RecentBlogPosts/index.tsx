@@ -49,12 +49,12 @@ export default function RecentBlogPosts() {
 
     return (
         <section className="container margin-vert--lg">
-            <Heading as="h1" className="margin-bottom--lg text--center">
+            <Heading as="h1" className={clsx("margin-bottom--xl", "margin-top--lg", "text--center")}>
                 Recent Blog Posts
             </Heading>
             <div className="row">
                 {items.slice(0, MAX_RECENT_POST).map(({title, date, permalink}, index) => (
-                    <div key={index} className="col col--6 margin-bottom--md margin-top--md">
+                    <div key={index} className={clsx("col", "col--6", "margin-bottom--lg")}>
                         <BlogPostItem title={title} date={date} permalink={permalink} />
                     </div>
                 ))}

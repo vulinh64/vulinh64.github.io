@@ -112,7 +112,7 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
     };
 
     return (
-        <section className={clsx(styles.featureArticles, "margin-top--lg", "margin-bottom-lg")}>
+        <section className={clsx(styles.featureArticles, "margin-bottom-lg")}>
             <div className="container">
                 <div
                     className={`${styles.articleContent} ${getAnimationClass()}`}

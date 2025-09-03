@@ -39,7 +39,7 @@ const QuestionAnswerBox: React.FC<QuestionAnswerBoxProps> = ({
 
     return (
         <p>
-            <details className={clsx(styles.customDetails)}>
+            <details className={clsx(styles.customDetails, "margin-top--lg", "margin-bottom--lg")}>
                 <summary className={clsx(styles.questionBox)}>
                     <span className={styles.questionIcon}></span>
                     <span className={styles.question}>{question}</span>
