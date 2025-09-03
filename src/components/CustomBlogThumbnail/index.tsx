@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './styles.module.css';
+import clsx from "clsx";
 
 interface CustomBlogThumbnailProps {
     filename?: string;
@@ -13,7 +14,7 @@ export default function CustomBlogThumbnail({ filename }: CustomBlogThumbnailPro
     }
 
     return (
-        <div className={styles.thumbnailContainer}>
+        <div className={clsx(styles.thumbnailContainer, "margin-top--lg", "margin-bottom--lg")}>
             <img src={imageUrl} alt="thumbnail" className={styles.thumbnail} />
         </div>
     );
