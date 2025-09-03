@@ -139,6 +139,8 @@ List of JEPs: https://openjdk.org/projects/jdk/25
 
 Current status: **Finalized in JDK 24.**
 
+<YoutubePlayer videoId="jqUhObgDd5Q"></YoutubePlayer>
+
 Stream Gatherers are basically custom superpowers for your Stream API (they return another `Stream` and mostly just chill until a terminal operation shows up to actually do the work, basically intermediate operations). This JEP is like giving the Stream API steroids: now you can bend streams to your will in ways that would make previous Java developers weep tears of pure joy.
 
 Take this classic headache: filtering by a field that's not the ID.
