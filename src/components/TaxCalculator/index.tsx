@@ -127,7 +127,7 @@ export default function TaxCalculator(): JSX.Element {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={clsx(styles.container, "margin-top--xl", "margin-bottom--xl")}>
       <h1 className={styles.textCenter}>Tính thuế TNCN</h1>
 
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -220,13 +220,13 @@ export default function TaxCalculator(): JSX.Element {
 
         <button
           type="submit"
-          className="button button--outline button--primary button--lg button--block"
+          className="button button--outline button--primary button--lg button--block margin-bottom--lg margin-top--lg"
         >
           Tính thuế TNCN
         </button>
 
         {result && (
-          <details className={styles.details} open>
+          <details className={clsx(styles.details, "margin-top--lg", "margin-bottom--lg")} open>
             <summary className={styles.summary}>Kết quả</summary>
             <div className={styles.resultItem}>
               <span>Lương đóng BH:</span>
@@ -258,7 +258,7 @@ export default function TaxCalculator(): JSX.Element {
                 </span>
               </div>
             )}
-            <hr className={styles.hr} />
+            <hr />
             <div className={styles.resultItem}>
               <span>Tổng đóng BH:</span>
               <span className={styles.resultValue}>
@@ -285,8 +285,6 @@ export default function TaxCalculator(): JSX.Element {
             </div>
           </details>
         )}
-
-        <hr className={styles.hr} />
 
         <Link to='/vietnam-tax-calculation'><i>Tham khảo cách tính thuế TNCN tại đây</i></Link>
       </form>

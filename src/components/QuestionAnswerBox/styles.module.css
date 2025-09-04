@@ -1,15 +1,15 @@
 .customDetails {
-    border: 0.1em solid var(--ifm-toc-border-color) !important;
+    border: var(--border-very-thin) solid var(--ifm-toc-border-color) !important;
     border-radius: 1em !important;
 }
 
 .customDetails:hover {
-    border: 0.1em solid var(--ifm-color-primary-darkest) !important;
+    border: var(--border-very-thin) solid var(--ifm-color-primary-darkest) !important;
 }
 
 /* Add border-bottom when details is expanded */
 .customDetails[open] .questionBox {
-    border-bottom: 0.1em solid var(--ifm-toc-border-color) !important;
+    border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color) !important;
 }
 
 .questionBox {

@@ -110,7 +110,7 @@
 
     /* Appearance */
     background: var(--ifm-background-color);
-    border-left: 0.1em solid var(--ifm-color-emphasis-200);
+    border-left: var(--border-very-thin) solid var(--ifm-color-emphasis-200);
 
     /* Layout */
     display: flex;
@@ -137,7 +137,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.25rem 1.5rem;
-    border-bottom: 0.1em solid var(--ifm-color-emphasis-200);
+    border-bottom: var(--border-very-thin) solid var(--ifm-color-emphasis-200);
     background: var(--ifm-color-emphasis-100);
     flex-shrink: 0; /* Prevent header from shrinking */
 }
@@ -208,7 +208,7 @@
     color: var(--ifm-color-content-secondary);
     text-decoration: none;
     font-size: 0.9rem;
-    line-height: 1.4;
+    line-height: 2;
     transition: all 0.2s ease;
 }
 

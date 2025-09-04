@@ -1,5 +1,5 @@
 .container {
-    border: 0.1em solid var(--ifm-color-emphasis-300);
+    border: var(--border-very-thin) solid var(--ifm-color-emphasis-300);
     border-radius: var(--ifm-code-border-radius);
     padding: 1em;
     background-color: var(--ifm-code-background);

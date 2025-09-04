@@ -4,7 +4,7 @@
     height: 100%; /* Ensures all cards in a row have the same height */
     padding: 1.2em;
     border-radius: var(--ifm-card-border-radius); /* Use Docusaurus's variable */
-    border: 0.1em solid var(--ifm-toc-border-color);
+    border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     transition: all 0.5s linear;
 }
 
@@ -17,6 +17,7 @@
     font-weight: 600;
     margin-bottom: 0.5em;
     color: var(--ifm-color-primary-darker);
+    border-bottom: 0;
 }
 
 .blogPostDate {

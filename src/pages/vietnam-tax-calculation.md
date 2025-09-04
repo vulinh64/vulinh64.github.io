@@ -21,9 +21,7 @@ import Link from '@docusaurus/Link';
 
 Bạn có thể trải nghiệm công cụ tính thuế TNCN dưới đây:
 
-<Link style={{'margin-bottom': '1em', 'margin-left': 'auto', 'margin-right': 'auto'}} to='/tax-calculator' className='button button--outline button--primary button--lg button--block' className='button button--outline button--primary button--lg button--block'>Công cụ tính thuế TNCN</Link>
-
-<hr />
+<Link style={{'margin-left': 'auto', 'margin-right': 'auto'}} to='/tax-calculator' className='button button--outline button--primary button--lg button--block margin-top--sm margin-bottom--xl'>Công cụ tính thuế TNCN</Link>
 
 ## Thử Việc
 
