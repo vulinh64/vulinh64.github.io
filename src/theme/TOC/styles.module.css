@@ -104,8 +104,9 @@
     z-index: 1002;
 
     /* Sizing */
-    max-width: 50vw;
-    height: 100vh;
+    width: 60vw;
+    max-width: 60vw;
+    height: 100%;
 
     /* Appearance */
     background: var(--ifm-background-color);
@@ -246,17 +247,8 @@
         right: 1rem;
     }
 
-    .mobileNavigationPanel {
-        width: 85vw;
-        max-width: none;
-    }
-
     .navigationTitle {
-        font-size: 1.1rem;
-    }
-
-    .navigationHeader {
-        padding: 1rem 1.25rem;
+        font-size: 1.5em;
     }
 }
 

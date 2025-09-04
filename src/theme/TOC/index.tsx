@@ -87,7 +87,8 @@ const useMobileViewport = () => {
 };
 
 /**
- * Hook to detect when user has scrolled past the first H2 heading
+ * Hook to detect when user is approaching the first H2 heading
+ * Shows TOC button 1-2 lines before reaching the H2
  */
 const useScrollPastFirstH2 = () => {
     const [hasScrolledPastFirstH2, setHasScrolledPastFirstH2] = useState(false);
@@ -109,11 +110,14 @@ const useScrollPastFirstH2 = () => {
                 .getPropertyValue('--ifm-navbar-height') || '60px';
             const navbarHeightPx = parseInt(navbarHeight, 10) || 60;
 
-            // Consider "scrolled past" when the H2 is above the navbar + some buffer
-            const buffer = 20; // Small buffer for better UX
-            const hasScrolledPast = rect.bottom < (navbarHeightPx + buffer);
+            // Calculate early trigger point (1-2 lines before the H2)
+            const earlyTriggerOffset = 150;
+            const triggerPoint = navbarHeightPx + earlyTriggerOffset;
 
-            setHasScrolledPastFirstH2(hasScrolledPast);
+            // Show button when H2 is approaching the trigger point from below
+            const shouldShowButton = rect.top <= triggerPoint;
+
+            setHasScrolledPastFirstH2(shouldShowButton);
         };
 
         // Check initial position
@@ -137,23 +141,6 @@ const useScrollPastFirstH2 = () => {
     }, []);
 
     return hasScrolledPastFirstH2;
-};
-
-/**
- * Hook to prevent body scroll when mobile menu is open
- * Preserves original overflow style for proper cleanup
- */
-const useScrollLock = (shouldLockScroll: boolean) => {
-    useEffect(() => {
-        if (!shouldLockScroll) return;
-
-        const originalBodyOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-
-        return () => {
-            document.body.style.overflow = originalBodyOverflow;
-        };
-    }, [shouldLockScroll]);
 };
 
 // =============================================================================
