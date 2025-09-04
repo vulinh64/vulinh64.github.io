@@ -55,7 +55,6 @@ const config = {
                 docs: false,
                 blog: {
                     blogDescription: 'List of all my tech blog posts',
-                    showLastUpdateTime: true,
                     showReadingTime: true,
                     feedOptions: {
                         type: ['rss', 'atom'],
