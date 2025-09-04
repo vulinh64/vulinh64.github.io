@@ -50,7 +50,6 @@
     color: white;
     border: none;
     border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
     /* Layout */
     display: flex;
@@ -65,7 +64,6 @@
 .floatingTocButton:hover {
     background: var(--ifm-color-primary-dark);
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .floatingTocButton:active {
@@ -73,8 +71,7 @@
 }
 
 .floatingTocButton:focus-visible {
-    outline: 2px solid var(--ifm-color-primary-light);
-    outline-offset: 2px;
+    outline: 0.2em solid var(--ifm-color-primary-light);
 }
 
 /* =============================================================================
@@ -107,15 +104,12 @@
     z-index: 1002;
 
     /* Sizing */
-    width: 65vw;
-    max-width: 320px;
-    min-width: 280px;
+    max-width: 50vw;
     height: 100vh;
 
     /* Appearance */
     background: var(--ifm-background-color);
-    border-left: 1px solid var(--ifm-color-emphasis-200);
-    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    border-left: 0.1em solid var(--ifm-color-emphasis-200);
 
     /* Layout */
     display: flex;
@@ -139,14 +133,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+    border-bottom: 0.1em solid var(--ifm-color-emphasis-200);
     background: var(--ifm-color-emphasis-100);
 }
 
 .navigationTitle {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 800;
     color: var(--ifm-color-content);
 }
 
@@ -167,7 +160,6 @@
 
     /* Appearance */
     color: var(--ifm-color-content-secondary);
-    border-radius: 4px;
     transition: all 0.2s ease;
 }
 
@@ -177,8 +169,7 @@
 }
 
 .closeNavigationButton:focus-visible {
-    outline: 2px solid var(--ifm-color-primary);
-    outline-offset: 2px;
+    outline: 0.2em solid var(--ifm-color-primary);
 }
 
 /* =============================================================================
@@ -211,14 +202,12 @@
     text-decoration: none;
     font-size: 0.9rem;
     line-height: 1.4;
-    border-radius: 6px;
     transition: all 0.2s ease;
 }
 
 .navigationContent .table-of-contents__link:hover {
     background: var(--ifm-color-emphasis-100);
     color: var(--ifm-color-content);
-    transform: translateX(2px);
 }
 
 .navigationContent .table-of-contents__link--active {
@@ -228,8 +217,7 @@
 }
 
 .navigationContent .table-of-contents__link:focus-visible {
-    outline: 2px solid var(--ifm-color-primary);
-    outline-offset: -2px;
+    outline: 0.2em solid var(--ifm-color-primary);
 }
 
 /* =============================================================================

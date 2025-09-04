@@ -87,6 +87,59 @@ const useMobileViewport = () => {
 };
 
 /**
+ * Hook to detect when user has scrolled past the first H2 heading
+ */
+const useScrollPastFirstH2 = () => {
+    const [hasScrolledPastFirstH2, setHasScrolledPastFirstH2] = useState(false);
+
+    useEffect(() => {
+        const checkScrollPosition = () => {
+            // Find the first H2 heading in the document
+            const firstH2 = document.querySelector('h2');
+
+            if (!firstH2) {
+                // If no H2 exists, don't show the button
+                setHasScrolledPastFirstH2(false);
+                return;
+            }
+
+            // Get the position of the first H2 relative to the viewport
+            const rect = firstH2.getBoundingClientRect();
+            const navbarHeight = getComputedStyle(document.documentElement)
+                .getPropertyValue('--ifm-navbar-height') || '60px';
+            const navbarHeightPx = parseInt(navbarHeight, 10) || 60;
+
+            // Consider "scrolled past" when the H2 is above the navbar + some buffer
+            const buffer = 20; // Small buffer for better UX
+            const hasScrolledPast = rect.bottom < (navbarHeightPx + buffer);
+
+            setHasScrolledPastFirstH2(hasScrolledPast);
+        };
+
+        // Check initial position
+        checkScrollPosition();
+
+        // Listen for scroll events with throttling for better performance
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    checkScrollPosition();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    return hasScrolledPastFirstH2;
+};
+
+/**
  * Hook to prevent body scroll when mobile menu is open
  * Preserves original overflow style for proper cleanup
  */
@@ -204,6 +257,7 @@ export default function TOC({ className, ...tocProps }: Props): ReactNode {
 
     // Custom hooks
     const isMobileViewport = useMobileViewport();
+    const hasScrolledPastFirstH2 = useScrollPastFirstH2();
     useScrollLock(isMobileMenuVisible);
 
     // Data processing
@@ -211,8 +265,10 @@ export default function TOC({ className, ...tocProps }: Props): ReactNode {
         heading => heading.level === HEADING_LEVEL_H2
     ) || [];
 
-    // Conditional rendering logic
-    const shouldShowMobileTOC = isMobileViewport && h2HeadingsOnly.length > 0;
+    // Conditional rendering logic - now includes scroll check
+    const shouldShowMobileTOC = isMobileViewport &&
+        h2HeadingsOnly.length > 0 &&
+        hasScrolledPastFirstH2;
 
     // Event handlers
     const handleToggleMobileMenu = useCallback(() => {
