@@ -5,12 +5,22 @@ import type {Props} from '@theme/TOC';
 
 import styles from './styles.module.css';
 
-// Constants for consistent styling and behavior
-const LINK_CLASS_NAME = 'table-of-contents__link toc-highlight';
-const LINK_ACTIVE_CLASS_NAME = 'table-of-contents__link--active';
-const MOBILE_BREAKPOINT = 996; // Match Docusaurus default mobile breakpoint
+// =============================================================================
+// CONSTANTS
+// =============================================================================
 
-const TOCIcon = () => (
+const MOBILE_BREAKPOINT_PX = 996; // Match Docusaurus default breakpoint
+const HEADING_LEVEL_H2 = 2; // Only show H2 headings on mobile for cleaner navigation
+
+// CSS class names for TOC links
+const TOC_LINK_BASE_CLASS = 'table-of-contents__link toc-highlight';
+const TOC_LINK_ACTIVE_CLASS = 'table-of-contents__link--active';
+
+// =============================================================================
+// ICON COMPONENTS
+// =============================================================================
+
+const MenuIcon = () => (
     <svg
         width="20"
         height="20"
@@ -20,6 +30,7 @@ const TOCIcon = () => (
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
     >
         <line x1="8" y1="6" x2="21" y2="6"/>
         <line x1="8" y1="12" x2="21" y2="12"/>
@@ -40,169 +51,205 @@ const CloseIcon = () => (
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
     >
         <line x1="18" y1="6" x2="6" y2="18"/>
         <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
 );
 
+// =============================================================================
+// CUSTOM HOOKS
+// =============================================================================
+
 /**
- * Custom hook to detect mobile viewport
- * Listens to window resize events to handle orientation changes
- * @returns {boolean} true if viewport width is <= mobile breakpoint
+ * Hook to detect if viewport is at mobile breakpoint
+ * Handles window resize events for responsive behavior
  */
-const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false);
+const useMobileViewport = () => {
+    const [isMobileViewport, setIsMobileViewport] = useState(false);
 
     useEffect(() => {
-        const checkIfMobile = () => {
-            setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+        const updateViewportState = () => {
+            setIsMobileViewport(window.innerWidth <= MOBILE_BREAKPOINT_PX);
         };
 
-        // Check on mount
-        checkIfMobile();
+        // Set initial state
+        updateViewportState();
 
-        // Listen for window resize events (handles device rotation, browser resize)
-        window.addEventListener('resize', checkIfMobile);
+        // Listen for viewport changes (resize, orientation change)
+        window.addEventListener('resize', updateViewportState);
 
-        // Cleanup listener on unmount
-        return () => window.removeEventListener('resize', checkIfMobile);
+        return () => window.removeEventListener('resize', updateViewportState);
     }, []);
 
-    return isMobile;
+    return isMobileViewport;
 };
 
 /**
- * Custom hook to prevent body scrolling when mobile menu is open
- * This prevents the background content from scrolling while the TOC overlay is visible
- * Uses overflow:hidden instead of position:fixed to preserve anchor navigation
- * @param {boolean} isLocked - whether to lock scrolling
+ * Hook to prevent body scroll when mobile menu is open
+ * Preserves original overflow style for proper cleanup
  */
-const useBodyScrollLock = (isLocked: boolean) => {
+const useScrollLock = (shouldLockScroll: boolean) => {
     useEffect(() => {
-        if (isLocked) {
-            // Store original overflow value to restore later
-            const originalOverflow = document.body.style.overflow;
-            document.body.style.overflow = 'hidden';
+        if (!shouldLockScroll) return;
 
-            // Cleanup function to restore original overflow
-            return () => {
-                document.body.style.overflow = originalOverflow;
-            };
-        }
-    }, [isLocked]);
+        const originalBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = originalBodyOverflow;
+        };
+    }, [shouldLockScroll]);
 };
 
-interface MobileTOCButtonProps {
-    onClick: () => void;
+// =============================================================================
+// COMPONENT INTERFACES
+// =============================================================================
+
+interface FloatingTOCButtonProps {
+    onToggleMenu: () => void;
+    isMenuOpen: boolean;
 }
 
-const MobileTOCButton: React.FC<MobileTOCButtonProps> = ({onClick}) => (
+interface MobileNavigationMenuProps {
+    isVisible: boolean;
+    onClose: () => void;
+    tocConfiguration: Props;
+    filteredHeadings: any[];
+}
+
+// =============================================================================
+// MOBILE TOC COMPONENTS
+// =============================================================================
+
+const FloatingTOCButton: React.FC<FloatingTOCButtonProps> = ({
+                                                                 onToggleMenu,
+                                                                 isMenuOpen
+                                                             }) => (
     <button
-        className={styles.mobileTocButton}
-        onClick={onClick}
-        aria-label="Contents"
+        className={styles.floatingTocButton}
+        onClick={onToggleMenu}
+        aria-label={isMenuOpen ? "Close table of contents" : "Open table of contents"}
+        aria-expanded={isMenuOpen}
         type="button"
     >
-        <TOCIcon/>
+        <MenuIcon />
     </button>
 );
 
-interface MobileTOCMenuProps {
-    isOpen: boolean;
-    onClose: () => void;
-    tocProps: Props;
-    filteredToc: any[]; // TOC items filtered to only show H2 headings
-}
+const MobileNavigationMenu: React.FC<MobileNavigationMenuProps> = ({
+                                                                       isVisible,
+                                                                       onClose,
+                                                                       tocConfiguration,
+                                                                       filteredHeadings
+                                                                   }) => {
+    if (!isVisible) return null;
 
-const MobileTOCMenu: React.FC<MobileTOCMenuProps> = ({
-                                                         isOpen,
-                                                         onClose,
-                                                         tocProps,
-                                                         filteredToc
-                                                     }) => {
-    // Don't render anything if menu is closed
-    if (!isOpen) return null;
-
-    // Create modified props with filtered TOC for mobile
-    const mobileTocProps = {...tocProps, toc: filteredToc};
+    const mobileMenuProps = {
+        ...tocConfiguration,
+        toc: filteredHeadings
+    };
 
     return (
         <>
-            {/* Semi-transparent overlay that closes menu when clicked */}
-            <div className={styles.mobileTocOverlay} onClick={onClose}/>
+            {/* Background overlay - clicking closes the menu */}
+            <div
+                className={styles.navigationOverlay}
+                onClick={onClose}
+                role="button"
+                tabIndex={0}
+                aria-label="Close navigation menu"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        onClose();
+                    }
+                }}
+            />
 
-            {/* Slide-in menu from right side */}
-            <div className={styles.mobileTocMenu}>
-                {/* Menu header with title and close button */}
-                <div className={styles.mobileTocHeader}>
-                    <h3>Contents</h3>
+            {/* Slide-out navigation panel */}
+            <nav className={styles.mobileNavigationPanel} role="navigation" aria-label="Table of contents">
+                <header className={styles.navigationHeader}>
+                    <h3 className={styles.navigationTitle}>Contents</h3>
                     <button
-                        className={styles.closeMobileToc}
+                        className={styles.closeNavigationButton}
                         onClick={onClose}
-                        aria-label="Close TOC"
+                        aria-label="Close navigation menu"
                         type="button"
                     >
-                        <CloseIcon/>
+                        <CloseIcon />
                     </button>
-                </div>
+                </header>
 
-                {/* Scrollable TOC content area */}
-                <div className={styles.mobileTocContent}>
+                <div className={styles.navigationContent}>
                     <TOCItems
-                        {...mobileTocProps}
-                        linkClassName={LINK_CLASS_NAME}
-                        linkActiveClassName={LINK_ACTIVE_CLASS_NAME}
-                        onLinkClick={onClose} // Auto-close menu when TOC item is clicked
+                        {...mobileMenuProps}
+                        linkClassName={TOC_LINK_BASE_CLASS}
+                        linkActiveClassName={TOC_LINK_ACTIVE_CLASS}
+                        onLinkClick={onClose}
                     />
                 </div>
-            </div>
+            </nav>
         </>
     );
 };
 
-export default function TOC({className, ...props}: Props): ReactNode {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const isMobile = useIsMobile();
+// =============================================================================
+// MAIN TOC COMPONENT
+// =============================================================================
 
-    // Prevent background scrolling when mobile menu is open
-    useBodyScrollLock(isMobileMenuOpen);
+export default function TOC({ className, ...tocProps }: Props): ReactNode {
+    // State management
+    const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
 
-    // Filter TOC to only show H2 headings on mobile for cleaner navigation
-    const filteredTocTree = props.toc?.filter(item => item.level === 2) || [];
+    // Custom hooks
+    const isMobileViewport = useMobileViewport();
+    useScrollLock(isMobileMenuVisible);
 
-    // Only show mobile TOC if we're on mobile AND have H2 headings to show
-    const showMobileTOC = isMobile && filteredTocTree.length > 0;
+    // Data processing
+    const h2HeadingsOnly = tocProps.toc?.filter(
+        heading => heading.level === HEADING_LEVEL_H2
+    ) || [];
 
-    // Event handlers with useCallback to prevent unnecessary re-renders
-    const toggleMobileMenu = useCallback(() => {
-        setIsMobileMenuOpen(prev => !prev);
+    // Conditional rendering logic
+    const shouldShowMobileTOC = isMobileViewport && h2HeadingsOnly.length > 0;
+
+    // Event handlers
+    const handleToggleMobileMenu = useCallback(() => {
+        setIsMobileMenuVisible(prevState => !prevState);
     }, []);
 
-    const closeMobileMenu = useCallback(() => {
-        setIsMobileMenuOpen(false);
+    const handleCloseMobileMenu = useCallback(() => {
+        setIsMobileMenuVisible(false);
     }, []);
 
     return (
         <>
-            {/* Desktop TOC - traditional sticky sidebar */}
-            <div className={clsx(styles.tableOfContents, 'thin-scrollbar', className, styles.desktopToc)}>
+            {/* Desktop TOC - Traditional sticky sidebar */}
+            <div className={clsx(
+                styles.desktopTableOfContents,
+                'thin-scrollbar',
+                className
+            )}>
                 <TOCItems
-                    {...props}
-                    linkClassName={LINK_CLASS_NAME}
-                    linkActiveClassName={LINK_ACTIVE_CLASS_NAME}
+                    {...tocProps}
+                    linkClassName={TOC_LINK_BASE_CLASS}
+                    linkActiveClassName={TOC_LINK_ACTIVE_CLASS}
                 />
             </div>
 
-            {/* Mobile TOC - floating button + slide-out menu */}
-            {showMobileTOC && (
+            {/* Mobile TOC - Floating button with slide-out menu */}
+            {shouldShowMobileTOC && (
                 <>
-                    <MobileTOCButton onClick={toggleMobileMenu}/>
-                    <MobileTOCMenu
-                        isOpen={isMobileMenuOpen}
-                        onClose={closeMobileMenu}
-                        tocProps={props}
-                        filteredToc={filteredTocTree}
+                    <FloatingTOCButton
+                        onToggleMenu={handleToggleMobileMenu}
+                        isMenuOpen={isMobileMenuVisible}
+                    />
+                    <MobileNavigationMenu
+                        isVisible={isMobileMenuVisible}
+                        onClose={handleCloseMobileMenu}
+                        tocConfiguration={tocProps}
+                        filteredHeadings={h2HeadingsOnly}
                     />
                 </>
             )}
