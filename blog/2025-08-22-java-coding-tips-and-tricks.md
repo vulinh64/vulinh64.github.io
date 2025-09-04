@@ -148,7 +148,7 @@ try {
 
 Preserving the original exception in your rethrow statement maintains the complete stack trace, showing you exactly where the problem originated. Without it, you'll spend countless hours debugging issues that could have been immediately obvious with proper exception chaining.
 
-Remember: exceptions are your friends trying to tell you something went wrong. Don't silence them – listen to what they have to say!
+Remember: exceptions are your friends trying to tell you something went wrong. Don't silence them! Listen to what they have to say!
 
 ## Spring Boot Tips: Use Java Records for Configuration Properties
 
@@ -233,8 +233,8 @@ You can actually use Java Records to be your configuration properties since Spri
 
 :::
 
----
-
 Want the full tutorial with all the bells and whistles? Check out this excellent [Baeldung article](https://www.baeldung.com/configuration-properties-in-spring-boot) where they explain everything with the patience of a saint.
+
+---
 
 Leave a comment below, and tell me some of the tips and tricks you've been using to great successes!
