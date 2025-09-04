@@ -258,7 +258,6 @@ export default function TOC({ className, ...tocProps }: Props): ReactNode {
     // Custom hooks
     const isMobileViewport = useMobileViewport();
     const hasScrolledPastFirstH2 = useScrollPastFirstH2();
-    useScrollLock(isMobileMenuVisible);
 
     // Data processing
     const h2HeadingsOnly = tocProps.toc?.filter(
