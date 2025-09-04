@@ -1,0 +1,173 @@
+/* Desktop TOC styles */
+.tableOfContents.desktopToc {
+    max-height: calc(100vh - (var(--ifm-navbar-height) + 2rem));
+    overflow-y: auto;
+    position: sticky;
+    top: calc(var(--ifm-navbar-height) + 1rem);
+}
+
+@media (max-width: 996px) {
+    .tableOfContents.desktopToc {
+        display: none;
+    }
+
+    .docItemContainer {
+        padding: 0 0.3rem;
+    }
+}
+
+/* Mobile TOC Button */
+.mobileTocButton {
+    position: fixed;
+    top: calc(var(--ifm-navbar-height) + 1rem);
+    right: 1rem;
+    width: 3em;
+    height: 3em;
+    background: var(--ifm-color-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mobileTocButton:hover {
+    background: var(--ifm-color-primary-dark);
+    transform: scale(1.05);
+}
+
+.mobileTocButton:active {
+    transform: scale(0.95);
+}
+
+/* Mobile TOC Overlay */
+.mobileTocOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Mobile TOC Menu */
+.mobileTocMenu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 65vw;
+    max-width: 65vw;
+    height: 100vh;
+    background: var(--ifm-background-color);
+    border-left: 0.1em solid var(--ifm-color-emphasis-200);
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Mobile TOC Header */
+.mobileTocHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 0.1em solid var(--ifm-color-emphasis-200);
+}
+
+.mobileTocHeader h3 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.closeMobileToc {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.closeMobileToc:hover {
+    background: var(--ifm-color-emphasis-200);
+    color: var(--ifm-color-content);
+}
+
+/* Mobile TOC Content */
+.mobileTocContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1em;
+}
+
+.mobileTocContent ul {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mobileTocContent li {
+    margin-bottom: 1em;
+}
+
+.mobileTocContent .table-of-contents__link {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    color: var(--ifm-color-content-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+}
+
+.mobileTocContent .table-of-contents__link:hover {
+    color: var(--ifm-color-primary-darkest);
+}
+
+.mobileTocContent .table-of-contents__link--active {
+    color: var(--ifm-color-primary-darkest);
+}
+
+/* Hide mobile TOC elements on desktop */
+@media (min-width: 997px) {
+    .mobileTocButton,
+    .mobileTocOverlay,
+    .mobileTocMenu {
+        display: none !important;
+    }
+}
+
+/* Ensure mobile TOC button is visible on mobile */
+@media (max-width: 996px) {
+    .mobileTocButton {
+        display: flex;
+    }
+}
