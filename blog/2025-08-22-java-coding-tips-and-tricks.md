@@ -288,7 +288,7 @@ Spring Boot is surprisingly smart about this stuff:
 
 ### Step 3: Register with the Main Class (The Grand Finale)
 
-Just slap `@EnableConfigurationProperties(ApplicationProperties.class)` on your main class and call it a day:
+Just slap an `@EnableConfigurationProperties` on your main class like this and call it a day:
 
 ```java
 @SpringBootApplication
