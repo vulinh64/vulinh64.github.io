@@ -55,6 +55,7 @@ const config = {
                 docs: false,
                 blog: {
                     blogDescription: 'List of all my tech blog posts',
+                    showLastUpdateTime: true,
                     showReadingTime: true,
                     feedOptions: {
                         type: ['rss', 'atom'],
@@ -69,7 +70,7 @@ const config = {
                     onUntruncatedBlogPosts: 'warn',
                     blogSidebarTitle: 'Recent Posts',
                     blogSidebarCount: 10,
-                    postsPerPage: 5,
+                    postsPerPage: 6,
                 },
                 theme: {
                     customCss: './src/css/custom.css',

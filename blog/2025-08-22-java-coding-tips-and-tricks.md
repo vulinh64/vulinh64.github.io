@@ -60,9 +60,9 @@ Instead of this ticking time bomb:
 
 ```java
 public List<User> getUsers() {
-    // Only return users if user has correct authorization
-    // Otherwise, let's return null and watch the world burn
-    return isAuthorized ? fetchUsers() : null;
+  // Only return users if user has correct authorization
+  // Otherwise, let's return null and watch the world burn
+  return isAuthorized ? fetchUsers() : null;
 }
 ```
 
@@ -70,7 +70,7 @@ Be the hero your codebase deserves:
 
 ```java
 public List<User> getUsers() {
-    return isAuthorized ? fetchUsers() : Collections.emptyList();
+  return isAuthorized ? fetchUsers() : Collections.emptyList();
 }
 ```
 
@@ -94,9 +94,9 @@ One of the cardinal sins in Java development is the dreaded "exception swallowin
 ```java
 // DON'T DO THIS - Exception swallowing
 try {
-    riskyOperation();
+  riskyOperation();
 } catch (Exception e) {
-    // Silence is NOT golden here
+  // Silence is NOT golden here
 }
 ```
 
@@ -109,18 +109,18 @@ Instead, always handle exceptions properly by either logging them appropriately 
 ```java
 // For exceptional cases - use WARN or ERROR level
 try {
-    connectToDatabase();
+  connectToDatabase();
 } catch (SQLException e) {
-    logger.warn("Database connection failed, retrying with backup", e);
-    // Handle the fallback logic
+  logger.warn("Database connection failed, retrying with backup", e);
+  // Handle the fallback logic
 }
 
 // For expected cases - INFO level is sufficient
 try {
-    parseOptionalConfig();
+  parseOptionalConfig();
 } catch (ConfigNotFoundException e) {
-    logger.info("Optional config file not found, using defaults", e);
-    // Continue with default configuration
+  logger.info("Optional config file not found, using defaults", e);
+  // Continue with default configuration
 }
 ```
 
@@ -131,16 +131,16 @@ If you need to rethrow the exception, **always include the original exception** 
 ```java
 // WRONG - Stack trace gets yeeted into the void
 try {
-    processUserData(userData);
+  processUserData(userData);
 } catch (ValidationException e) {
-    throw new ServiceException("User processing failed");
+  throw new ServiceException("User processing failed");
 }
 
 // RIGHT - Original exception preserved
 try {
-    processUserData(userData);
+  processUserData(userData);
 } catch (ValidationException e) {
-    throw new ServiceException("User processing failed", e);
+  throw new ServiceException("User processing failed", e);
 }
 ```
 
@@ -149,6 +149,80 @@ try {
 Preserving the original exception in your rethrow statement maintains the complete stack trace, showing you exactly where the problem originated. Without it, you'll spend countless hours debugging issues that could have been immediately obvious with proper exception chaining.
 
 Remember: exceptions are your friends trying to tell you something went wrong. Don't silence them! Listen to what they have to say!
+
+## Beware of Method Calls That Introduce Non-Idempotent Values
+
+### The Good, The Bad, and The Randomly Different
+
+**The Good:** Normal getters are your best friends. They're reliable, predictable, and won't surprise you at 3 AM when you're debugging production issues. Call `user.getEmail()` as many times as you want. Not like it's going to suddenly decide to return a different email address just to mess with you.
+
+**The Bad (and Sneaky):** Methods like `LocalDateTime.now()`, `Random.nextInt()`, `System.currentTimeMillis()`, and their mischievous cousins. These little rascals return something different every time you invoke them. It's like asking "What time is it?" and getting a different answer each nanosecond: technically, is correct, but can turn your code into a house of cards.
+
+### The Million-Dollar Question
+
+So here's the thing: **Do you explicitly want different values each time?**
+
+If you're building a timestamp logger or generating random passwords, then yes, embrace the chaos! 
+
+But if you're doing something like this:
+
+```java
+// Don't do this!!!
+// You're asking for trouble!!!
+if (someCondition(LocalDateTime.now()) && anotherCondition(LocalDateTime.now())) {
+  processEvent(LocalDateTime.now());
+}
+```
+
+Congratulations! You've just created a temporal paradox where three different timestamps might be involved in what should be a single moment in time.
+
+### The Solution: Introduce a Variable (Your IDE Is Smarter Than You Think)
+
+Instead, let your IDE be your wingman. In IntelliJ IDEA, the "Introduce Local Variable" refactoring (usually `Ctrl + Alt + V` or `Cmd + Alt + V`) is basically your free ticket:
+
+```java
+// Much better now that everyone's on the same page
+LocalDateTime now = LocalDateTime.now();
+
+if (someCondition(now) && anotherCondition(now)) {
+  processEvent(now);
+}
+```
+
+### The ~~Horror~~ Production Story: JWT TTL Edition
+
+Here's where things get really spicy. Imagine you're working with JWT tokens and their time-to-live (TTL) values. Every nanosecond matters in this game, and if you're not careful, you'll create a bug so subtle and elusive that it'll keep you awake at night, questioning your life choices and wondering why you chose this career in the first place:
+
+```java
+// This is a recipe for disaster and sleepless nights
+JwtBuilder builder = Jwts.builder()
+    .setIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+    .setExpiration(Date.from(LocalDateTime.now().plusHours(1).atZone(ZoneId.systemDefault()).toInstant()));
+```
+
+Those two `LocalDateTime.now()` calls might happen microseconds apart, and suddenly your JWT's TTL isn't exactly one hour. It might be 59 minutes, 59 seconds, and 999,999 microseconds. Close, but still wrong, and in the world of security tokens, "close" is often synonymous with "broken."
+
+The fix? Introduce that variable and save your sanity:
+
+```java
+LocalDateTime now = LocalDateTime.now();
+
+JwtBuilder builder = Jwts.builder()
+    .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
+    .setExpiration(Date.from(now.plusHours(1).atZone(ZoneId.systemDefault()).toInstant()));
+```
+
+### Pro Tip: Even the Good Guys Benefit
+
+Here's a bonus nugget: even those well-behaved, idempotent methods can benefit from the "introduce variable" treatment. Sure, calling `user.getName()` five times in a row won't break anything, but extracting it to a variable makes your code cleaner and more maintainable. Don't expect miracles in performance, because modern JVMs are goddamn smart and will optimize the hell out of your code anyway, but your fellow developers (including future you) will appreciate the clarity.
+
+### Final Takeaway ~~(Yes, I am using A.I to generate this)~~
+
+Remember: 
+
+* in Java, consistency isn't just a virtue, for it's a **survival skill**. Your code should be predictable, not a source of existential dread. So the next time you see a method that might return different values, ask yourself: "*Do I want chaos, or do I want to sleep peacefully tonight?*"
+
+* Check the source codes to make sure if the repeatedly calling a method is safe or not. Choose wisely.
 
 ## Spring Boot Tips: Use Java Records for Configuration Properties
 
