@@ -38,17 +38,15 @@ const QuestionAnswerBox: React.FC<QuestionAnswerBoxProps> = ({
     ) as ReactElement<typeof Answer> | undefined;
 
     return (
-        <p>
-            <details className={clsx(styles.customDetails, "margin-top--lg", "margin-bottom--lg")}>
-                <summary className={clsx(styles.questionBox)}>
-                    <span className={styles.questionIcon}></span>
-                    <span className={styles.question}>{question}</span>
-                </summary>
-                <div className={styles.answerContent}>
-                    <span className={styles.answer}>{answer}</span>
-                </div>
-            </details>
-        </p>
+        <details className={clsx(styles.customDetails, "margin-top--lg", "margin-bottom--lg")}>
+            <summary className={clsx(styles.questionBox)}>
+                <span className={styles.questionIcon}></span>
+                <span className={styles.question}>{question}</span>
+            </summary>
+            <div className={styles.answerContent}>
+                <span className={styles.answer}>{answer}</span>
+            </div>
+        </details>
     );
 };
 
