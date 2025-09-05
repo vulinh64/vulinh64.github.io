@@ -38,18 +38,15 @@
     /* Positioning */
     position: fixed;
     top: calc(var(--ifm-navbar-height) + 1rem);
-    right: 1rem;
     z-index: 1000;
 
     /* Sizing */
-    width: 3rem;
-    height: 3rem;
+    width: 2rem;
+    height: 2rem;
 
     /* Appearance */
-    background: var(--ifm-color-primary);
     color: white;
     border: none;
-    border-radius: 50%;
 
     /* Layout */
     display: flex;
@@ -62,16 +59,11 @@
 }
 
 .floatingTocButton:hover {
-    background: var(--ifm-color-primary-dark);
     transform: scale(1.05);
 }
 
 .floatingTocButton:active {
     transform: scale(0.95);
-}
-
-.floatingTocButton:focus-visible {
-    outline: 0.2em solid var(--ifm-color-primary-light);
 }
 
 /* =============================================================================
