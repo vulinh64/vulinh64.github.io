@@ -11,6 +11,7 @@ import styles from './styles.module.css';
 
 const MOBILE_BREAKPOINT_PX = 996; // Match Docusaurus default breakpoint
 const HEADING_LEVEL_H2 = 2; // Only show H2 headings on mobile for cleaner navigation
+const EARLY_TRIGGER_OFFSET = 150; // Spaces above first H2
 
 // CSS class names for TOC links
 const TOC_LINK_BASE_CLASS = 'table-of-contents__link toc-highlight';
@@ -111,13 +112,8 @@ const useScrollPastFirstH2 = () => {
             const navbarHeightPx = parseInt(navbarHeight, 10) || 60;
 
             // Calculate early trigger point (1-2 lines before the H2)
-            const earlyTriggerOffset = 150;
-            const triggerPoint = navbarHeightPx + earlyTriggerOffset;
-
             // Show button when H2 is approaching the trigger point from below
-            const shouldShowButton = rect.top <= triggerPoint;
-
-            setHasScrolledPastFirstH2(shouldShowButton);
+            setHasScrolledPastFirstH2(rect.top <= navbarHeightPx + EARLY_TRIGGER_OFFSET);
         };
 
         // Check initial position
@@ -135,7 +131,7 @@ const useScrollPastFirstH2 = () => {
             }
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('scroll', handleScroll, {passive: true});
 
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -174,7 +170,7 @@ const FloatingTOCButton: React.FC<FloatingTOCButtonProps> = ({
         aria-expanded={isMenuOpen}
         type="button"
     >
-        <MenuIcon />
+        <MenuIcon/>
     </button>
 );
 
@@ -217,7 +213,7 @@ const MobileNavigationMenu: React.FC<MobileNavigationMenuProps> = ({
                         aria-label="Close navigation menu"
                         type="button"
                     >
-                        <CloseIcon />
+                        <CloseIcon/>
                     </button>
                 </header>
 
@@ -238,7 +234,7 @@ const MobileNavigationMenu: React.FC<MobileNavigationMenuProps> = ({
 // MAIN TOC COMPONENT
 // =============================================================================
 
-export default function TOC({ className, ...tocProps }: Props): ReactNode {
+export default function TOC({className, ...tocProps}: Props): ReactNode {
     // State management
     const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
 
