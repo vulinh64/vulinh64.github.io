@@ -46,7 +46,7 @@
     --token-keyword-color: #499CD5;
     --token-constant-color: #FFC66D;
     --token-punctuation-color: #D4D4D4;
-    --code-font-family: 'JetBrains Mono', Consolas, 'SF Mono', 'Liberation Mono', 'Courier New';
+    --code-font-family: 'JetBrains Mono', Consolas, 'SF Mono', 'Liberation Mono', 'Courier New', 'serif';
     --ifm-font-family-base: "Noto Sans", "Open Sans", "Noto Color Emoji", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     --admonition-margin-vertical: 2em;
     --border-very-thin: 0.001em;
