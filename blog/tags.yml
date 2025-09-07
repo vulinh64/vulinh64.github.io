@@ -83,12 +83,12 @@ singleton:
   description: "A design pattern ensuring a class has only one instance."
   permalink: /singleton
 
-spring-boot:
+'spring boot':
   label: "spring boot"
   description: "A framework for building production-ready Spring applications quickly."
   permalink: /spring-boot
 
-spring-security:
+'spring security':
   label: "spring security"
   description: "A Java framework providing authentication and access control for applications."
   permalink: /spring-security

@@ -2,7 +2,7 @@
 slug: smaller-spring-boot-docker-image
 title: How to Create Smaller Docker Image with JLink and JDEPS
 authors: [ vulinh64 ]
-tags: [ java, docker, spring-boot ]
+tags: [ java, docker, spring boot ]
 description: Your Docker images are probably fatter than they need to be. Let's fix that!
 thumbnail: 2025-08-13-smaller-spring-boot-docker-image.png
 image: ./thumbnails/2025-08-13-smaller-spring-boot-docker-image.png

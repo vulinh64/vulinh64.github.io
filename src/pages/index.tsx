@@ -43,13 +43,18 @@ export default function Home(): JSX.Element {
     const featureArticles: FeatureArticle[] = [
         {
             title: "What Features Can We Use in Java 25?",
-            excerpt: "Find out what new features we can be using in Java 25 (assuming the enterprises will jump ship)...",
+            excerpt: "Find out what new features we can be using in Java 25...",
             slug: "java-25-new-features"
         },
         {
             title: "Java Coding's Tips and Tricks",
             excerpt: "A few tips to make coding in Java more enjoyable and less frustrating...",
             slug: "java-coding-tips-and-tricks"
+        },
+        {
+            title: "Spring Boot's Tips and Tricks",
+            excerpt: "Turbo charge your Spring Boot experience...",
+            slug: 'spring-boot-tips-and-tricks'
         }
     ];
 
