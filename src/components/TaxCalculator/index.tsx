@@ -26,8 +26,8 @@ function inputTopBottom() {
 
 export default function TaxCalculator(): JSX.Element {
     const [formData, setFormData] = useState<FormData>({
-        basicSalary: "",
-        grossSalary: "",
+        basicSalary: 0,
+        grossSalary: 0,
         dependants: 0,
         onProbation: false,
         probationPercentage: 85,
