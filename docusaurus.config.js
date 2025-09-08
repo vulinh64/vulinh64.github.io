@@ -158,6 +158,11 @@ const config = {
                                 label: 'Tài liệu tham khảo'
                             }
                         ]
+                    },
+                    {
+                        label: 'Spring Cron Generator',
+                        position: 'left',
+                        to: '/spring-cron-generator'
                     }
                 ],
             },
