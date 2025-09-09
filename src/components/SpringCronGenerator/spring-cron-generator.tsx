@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import styles from './SpringCronGenerator.module.css';
 import clsx from "clsx";
-import { CronUtils, CronPartOptions, CronError } from './CronUtils';
+import {CronUtils, CronPartOptions, CronError} from './CronUtils';
 
 interface CronPartProps {
     name: string;
@@ -13,7 +13,7 @@ const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', '
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const nthOccurrences = ['1', '2', '3', '4', '5'];
 
-const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange }) => {
+const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) => {
     const isSecond = name === 'second';
     const isMinute = name === 'minute';
     const isHour = name === 'hour';
@@ -30,13 +30,15 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
     const [specificValues, setSpecificValues] = useState(isSecondOrMinuteOrHourOrDay ? '1,2,3' : '');
     const [monthInput, setMonthInput] = useState('');
     const [weekdayInput, setWeekdayInput] = useState('');
-    const [weekday, setWeekday] = useState('MON'); // Default for nth
-    const [nthOccurrence, setNthOccurrence] = useState('1'); // Default for nth
+    const [weekday, setWeekday] = useState('MON');
+    const [nthOccurrence, setNthOccurrence] = useState('1');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [showWeekdaySuggestions, setShowWeekdaySuggestions] = useState(false);
     const [error, setError] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
     const weekdayInputRef = useRef<HTMLInputElement>(null);
+    const suggestionsRef = useRef<HTMLDivElement>(null); // New ref for suggestions container
+    const weekdaySuggestionsRef = useRef<HTMLDivElement>(null); // New ref for weekday suggestions
 
     const handleMonthChange = (month: string) => {
         setSelectedMonths((prev) =>
@@ -125,8 +127,8 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                 setNthOccurrence('1');
             } else if (newOption === 'between') {
                 setIntervalValue('');
-                setFromValue('SUN'); // Default to SUN
-                setToValue('MON'); // Default to MON
+                setFromValue('SUN');
+                setToValue('MON');
                 setSelectedWeekdays([]);
                 setWeekdayInput('');
                 setShowWeekdaySuggestions(false);
@@ -136,7 +138,7 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                 setIntervalValue('');
                 setFromValue('');
                 setToValue('');
-                setSelectedWeekdays(['MON']); // Default to MON
+                setSelectedWeekdays(['MON']);
                 setWeekdayInput('');
                 setShowWeekdaySuggestions(false);
                 setWeekday('MON');
@@ -148,8 +150,8 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                 setSelectedWeekdays([]);
                 setWeekdayInput('');
                 setShowWeekdaySuggestions(false);
-                setWeekday('MON'); // Default to MON
-                setNthOccurrence('1'); // Default to 1
+                setWeekday('MON');
+                setNthOccurrence('1');
             } else {
                 setIntervalValue('');
                 setFromValue('');
@@ -166,11 +168,18 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
     // Handle clicks outside to close suggestions
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                (inputRef.current && !inputRef.current.contains(event.target as Node)) ||
-                (weekdayInputRef.current && !weekdayInputRef.current.contains(event.target as Node))
-            ) {
+            const target = event.target as Node;
+            const isOutsideMonthInput =
+                inputRef.current && !inputRef.current.contains(target) &&
+                suggestionsRef.current && !suggestionsRef.current.contains(target);
+            const isOutsideWeekdayInput =
+                weekdayInputRef.current && !weekdayInputRef.current.contains(target) &&
+                weekdaySuggestionsRef.current && !weekdaySuggestionsRef.current.contains(target);
+
+            if (isOutsideMonthInput) {
                 setShowSuggestions(false);
+            }
+            if (isOutsideWeekdayInput) {
                 setShowWeekdaySuggestions(false);
             }
         };
@@ -260,21 +269,22 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
     const minVal = (name === 'day') ? 1 : 0;
     const maxVal = (name === 'day') ? 31 : (isHour ? 23 : 59);
 
-    // Filter available months and weekdays for autocomplete
     const availableMonths = months.filter(month => !selectedMonths.includes(month));
     const availableWeekdays = weekdays.filter(weekday => !selectedWeekdays.includes(weekday));
 
-    // Sort selected months and weekdays by their respective orders
-    const monthOrder = months.reduce((acc, month, index) => ({ ...acc, [month]: index + 1 }), {} as Record<string, number>);
+    const monthOrder = months.reduce((acc, month, index) => ({
+        ...acc,
+        [month]: index + 1
+    }), {} as Record<string, number>);
     const sortedSelectedMonths = [...selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]);
-    const weekdayOrder = weekdays.reduce((acc, day, index) => ({ ...acc, [day]: index }), {} as Record<string, number>);
+    const weekdayOrder = weekdays.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
     const sortedSelectedWeekdays = [...selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]);
 
     return (
         <fieldset className={styles.cronPart}>
             <legend>{name.charAt(0).toUpperCase() + name.slice(1)} Expression</legend>
             {error && <div className={styles.errorMessage}
-                           style={{ color: 'var(--ifm-color-danger)', marginBottom: '1em' }}>{error}</div>}
+                           style={{color: 'var(--ifm-color-danger)', marginBottom: '1em'}}>{error}</div>}
 
             <div className={styles.optionContainer}>
                 <label htmlFor={`${name}-option`}>Option:</label>
@@ -322,7 +332,8 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                                     onChange={(e) => setFromValue(e.target.value)}
                                 >
                                     {(isMonth ? months : weekdays).map((item) => (
-                                        <option key={item} value={isMonth ? months.indexOf(item) + 1 : item}>{item}</option>
+                                        <option key={item}
+                                                value={isMonth ? months.indexOf(item) + 1 : item}>{item}</option>
                                     ))}
                                 </select>
                             ) : (
@@ -348,7 +359,8 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                                     onChange={(e) => setToValue(e.target.value)}
                                 >
                                     {(isMonth ? months : weekdays).map((item) => (
-                                        <option key={item} value={isMonth ? months.indexOf(item) + 1 : item}>{item}</option>
+                                        <option key={item}
+                                                value={isMonth ? months.indexOf(item) + 1 : item}>{item}</option>
                                     ))}
                                 </select>
                             ) : (
@@ -408,7 +420,7 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                                     />
                                 </div>
                                 {showSuggestions && (
-                                    <div className={styles.suggestions}>
+                                    <div ref={suggestionsRef} className={styles.suggestions}>
                                         {availableMonths
                                             .filter(month => month.startsWith(monthInput.toUpperCase()))
                                             .map(month => (
@@ -460,7 +472,7 @@ const CronPart: React.FC<CronPartProps> = ({ name, plural, onExpressionChange })
                                     />
                                 </div>
                                 {showWeekdaySuggestions && (
-                                    <div className={styles.suggestions}>
+                                    <div ref={weekdaySuggestionsRef} className={styles.suggestions}>
                                         {availableWeekdays
                                             .filter(day => day.startsWith(weekdayInput.toUpperCase()))
                                             .map(day => (
@@ -580,7 +592,7 @@ const CronGeneratorPage: React.FC = () => {
                     <pre className={styles.resultCode}>
                         <code>{cronExpression}</code>
                         <button
-                            className={clsx(styles.copyButton, { [styles.copied]: copied })}
+                            className={clsx(styles.copyButton, {[styles.copied]: copied})}
                             onClick={handleCopy}
                             aria-label={copied ? 'Copied' : 'Copy'}
                         />
@@ -588,16 +600,16 @@ const CronGeneratorPage: React.FC = () => {
                 </div>
             </fieldset>
             <CronPart name="second" plural="seconds"
-                      onExpressionChange={(expr) => handleExpressionChange('second', expr)} />
+                      onExpressionChange={(expr) => handleExpressionChange('second', expr)}/>
             <CronPart name="minute" plural="minutes"
-                      onExpressionChange={(expr) => handleExpressionChange('minute', expr)} />
-            <CronPart name="hour" plural="hours" onExpressionChange={(expr) => handleExpressionChange('hour', expr)} />
+                      onExpressionChange={(expr) => handleExpressionChange('minute', expr)}/>
+            <CronPart name="hour" plural="hours" onExpressionChange={(expr) => handleExpressionChange('hour', expr)}/>
             <CronPart name="day" plural="days"
-                      onExpressionChange={(expr) => handleExpressionChange('dayOfMonth', expr)} />
+                      onExpressionChange={(expr) => handleExpressionChange('dayOfMonth', expr)}/>
             <CronPart name="month" plural="months"
-                      onExpressionChange={(expr) => handleExpressionChange('month', expr)} />
+                      onExpressionChange={(expr) => handleExpressionChange('month', expr)}/>
             <CronPart name="day of week" plural="days of week"
-                      onExpressionChange={(expr) => handleExpressionChange('dayOfWeek', expr)} />
+                      onExpressionChange={(expr) => handleExpressionChange('dayOfWeek', expr)}/>
         </div>
     );
 };

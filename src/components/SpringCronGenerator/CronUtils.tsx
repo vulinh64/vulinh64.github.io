@@ -349,7 +349,6 @@ export class CronUtils {
      * Generates the cron expression for the month part
      */
     static generateMonthExpression(options: CronPartOptions): string {
-        const validMonths = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
         switch (options.type) {
             case 'every':
                 return '*';
