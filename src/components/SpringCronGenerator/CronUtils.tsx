@@ -56,6 +56,7 @@ export class CronUtils {
         }
 
         // Sort numerically and remove duplicates
+        // @ts-ignore
         const uniqueSorted = [...new Set(numbers)].sort((a, b) => a - b);
 
         return uniqueSorted.join(',');
@@ -86,6 +87,7 @@ export class CronUtils {
 
         // Remove duplicates and sort by month index
         const monthOrder = validMonths.reduce((acc, month, index) => ({ ...acc, [month]: index + 1 }), {} as Record<string, number>);
+        // @ts-ignore
         const uniqueSorted = [...new Set(validValues)].sort((a, b) => monthOrder[a] - monthOrder[b]);
 
         return uniqueSorted.join(',');
@@ -116,6 +118,7 @@ export class CronUtils {
 
         // Remove duplicates and sort by day index
         const dayOrder = validDays.reduce((acc, day, index) => ({ ...acc, [day]: index }), {} as Record<string, number>);
+        // @ts-ignore
         const uniqueSorted = [...new Set(validValues)].sort((a, b) => dayOrder[a] - dayOrder[b]);
 
         return uniqueSorted.join(',');

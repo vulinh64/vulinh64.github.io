@@ -1,40 +1,54 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {SetStateAction, useEffect, useRef, useState} from 'react';
 import styles from './SpringCronGenerator.module.css';
 import clsx from "clsx";
-import {CronUtils, CronPartOptions, CronError} from './CronUtils';
+import {CronError, CronPartOptions, CronUtils} from './CronUtils';
+import {
+    CronPartProps,
+    EVERY_EXPRESSION,
+    MONTHS,
+    NAME_DAY_OF_MONTH,
+    NAME_DAY_OF_WEEK,
+    NAME_HOUR,
+    NAME_MINUTE,
+    NAME_MONTH,
+    NAME_SECOND,
+    NTH_OCCURRENCES,
+    TEXT_EMPTY,
+    TEXT_ONE,
+    TYPE_BETWEEN,
+    TYPE_INTERVAL,
+    TYPE_NTH,
+    TYPE_RANGES,
+    TYPE_SPECIFIC,
+    TYPE_EVERY,
+    WEEK_DAYS
+} from "./CronSupport";
 
-interface CronPartProps {
-    name: string;
-    plural: string;
-    onExpressionChange: (expression: string) => void;
-}
-
-const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-const nthOccurrences = ['1', '2', '3', '4', '5'];
+const WEEKDAY_MON = 'MON';
+const WEEKDAY_SUN = 'SUN';
 
 const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) => {
-    const isSecond = name === 'second';
-    const isMinute = name === 'minute';
-    const isHour = name === 'hour';
-    const isDay = name === 'day';
-    const isMonth = name === 'month';
-    const isWeekday = name === 'day of week';
+    const isSecond = name === NAME_SECOND;
+    const isMinute = name === NAME_MINUTE;
+    const isHour = name === NAME_HOUR;
+    const isDay = name === NAME_DAY_OF_MONTH;
+    const isMonth = name === NAME_MONTH;
+    const isWeekday = name === NAME_DAY_OF_WEEK;
     const isSecondOrMinuteOrHourOrDay = isSecond || isMinute || isHour || isDay;
-    const [option, setOption] = useState('every');
+    const [option, setOption] = useState(TYPE_EVERY);
     const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
     const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
-    const [intervalValue, setIntervalValue] = useState(isSecondOrMinuteOrHourOrDay ? '1' : '');
-    const [fromValue, setFromValue] = useState(isSecondOrMinuteOrHourOrDay ? '1' : (isWeekday ? 'SUN' : ''));
-    const [toValue, setToValue] = useState(isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? 'MON' : ''));
-    const [specificValues, setSpecificValues] = useState(isSecondOrMinuteOrHourOrDay ? '1,2,3' : '');
-    const [monthInput, setMonthInput] = useState('');
-    const [weekdayInput, setWeekdayInput] = useState('');
-    const [weekday, setWeekday] = useState('MON');
-    const [nthOccurrence, setNthOccurrence] = useState('1');
+    const [intervalValue, setIntervalValue] = useState(isSecondOrMinuteOrHourOrDay ? TEXT_ONE : TEXT_EMPTY);
+    const [fromValue, setFromValue] = useState(isSecondOrMinuteOrHourOrDay ? TEXT_ONE : (isWeekday ? WEEKDAY_SUN : TEXT_EMPTY));
+    const [toValue, setToValue] = useState(isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? WEEKDAY_MON : TEXT_EMPTY));
+    const [specificValues, setSpecificValues] = useState(isSecondOrMinuteOrHourOrDay ? '1,2,3' : TEXT_EMPTY);
+    const [monthInput, setMonthInput] = useState(TEXT_EMPTY);
+    const [weekdayInput, setWeekdayInput] = useState(TEXT_EMPTY);
+    const [weekday, setWeekday] = useState(WEEKDAY_MON);
+    const [nthOccurrence, setNthOccurrence] = useState(TEXT_ONE);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [showWeekdaySuggestions, setShowWeekdaySuggestions] = useState(false);
-    const [error, setError] = useState<string>('');
+    const [error, setError] = useState<string>(TEXT_EMPTY);
     const inputRef = useRef<HTMLInputElement>(null);
     const weekdayInputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -44,7 +58,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
         setSelectedMonths((prev) =>
             prev.includes(month) ? prev.filter((m) => m !== month) : [...prev, month]
         );
-        setMonthInput('');
+        setMonthInput(TEXT_EMPTY);
         setShowSuggestions(false);
     };
 
@@ -52,115 +66,115 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
         setSelectedWeekdays((prev) =>
             prev.includes(weekday) ? prev.filter((w) => w !== weekday) : [...prev, weekday]
         );
-        setWeekdayInput('');
+        setWeekdayInput(TEXT_EMPTY);
         setShowWeekdaySuggestions(false);
     };
 
     const handleOptionChange = (newOption: string) => {
         setOption(newOption);
         if (isSecondOrMinuteOrHourOrDay) {
-            if (newOption === 'interval') {
-                setIntervalValue('1');
-                setFromValue('');
-                setToValue('');
-                setSpecificValues('');
-            } else if (newOption === 'between') {
-                setIntervalValue('');
-                setFromValue('1');
+            if (newOption === TYPE_INTERVAL) {
+                setIntervalValue(TEXT_ONE);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
+                setSpecificValues(TEXT_EMPTY);
+            } else if (newOption === TYPE_BETWEEN) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_ONE);
                 setToValue('2');
-                setSpecificValues('');
-            } else if (newOption === 'specific') {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
+                setSpecificValues(TEXT_EMPTY);
+            } else if (newOption === TYPE_SPECIFIC) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSpecificValues('1,2,3');
-            } else if (newOption === 'ranges') {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
+            } else if (newOption === TYPE_RANGES) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSpecificValues('1-5,10-15');
             } else {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
-                setSpecificValues('');
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
+                setSpecificValues(TEXT_EMPTY);
             }
         } else if (isMonth) {
-            if (newOption === 'interval') {
-                setIntervalValue('1');
-                setFromValue('');
-                setToValue('');
+            if (newOption === TYPE_INTERVAL) {
+                setIntervalValue(TEXT_ONE);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSelectedMonths([]);
-                setMonthInput('');
+                setMonthInput(TEXT_EMPTY);
                 setShowSuggestions(false);
-            } else if (newOption === 'between') {
-                setIntervalValue('');
-                setFromValue('1');
+            } else if (newOption === TYPE_BETWEEN) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_ONE);
                 setToValue('2');
                 setSelectedMonths([]);
-                setMonthInput('');
+                setMonthInput(TEXT_EMPTY);
                 setShowSuggestions(false);
-            } else if (newOption === 'specific') {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
+            } else if (newOption === TYPE_SPECIFIC) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSelectedMonths(['JAN']);
-                setMonthInput('');
+                setMonthInput(TEXT_EMPTY);
                 setShowSuggestions(false);
             } else {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSelectedMonths([]);
-                setMonthInput('');
+                setMonthInput(TEXT_EMPTY);
                 setShowSuggestions(false);
             }
         } else if (isWeekday) {
-            if (newOption === 'interval') {
-                setIntervalValue('1');
-                setFromValue('');
-                setToValue('');
+            if (newOption === TYPE_INTERVAL) {
+                setIntervalValue(TEXT_ONE);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([]);
-                setWeekdayInput('');
+                setWeekdayInput(TEXT_EMPTY);
                 setShowWeekdaySuggestions(false);
-                setWeekday('MON');
-                setNthOccurrence('1');
-            } else if (newOption === 'between') {
-                setIntervalValue('');
-                setFromValue('SUN');
-                setToValue('MON');
+                setWeekday(WEEKDAY_MON);
+                setNthOccurrence(TEXT_ONE);
+            } else if (newOption === TYPE_BETWEEN) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(WEEKDAY_SUN);
+                setToValue(WEEKDAY_MON);
                 setSelectedWeekdays([]);
-                setWeekdayInput('');
+                setWeekdayInput(TEXT_EMPTY);
                 setShowWeekdaySuggestions(false);
-                setWeekday('MON');
-                setNthOccurrence('1');
-            } else if (newOption === 'specific') {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
-                setSelectedWeekdays(['MON']);
-                setWeekdayInput('');
+                setWeekday(WEEKDAY_MON);
+                setNthOccurrence(TEXT_ONE);
+            } else if (newOption === TYPE_SPECIFIC) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
+                setSelectedWeekdays([WEEKDAY_MON]);
+                setWeekdayInput(TEXT_EMPTY);
                 setShowWeekdaySuggestions(false);
-                setWeekday('MON');
-                setNthOccurrence('1');
-            } else if (newOption === 'nth') {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
+                setWeekday(WEEKDAY_MON);
+                setNthOccurrence(TEXT_ONE);
+            } else if (newOption === TYPE_NTH) {
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([]);
-                setWeekdayInput('');
+                setWeekdayInput(TEXT_EMPTY);
                 setShowWeekdaySuggestions(false);
-                setWeekday('MON');
-                setNthOccurrence('1');
+                setWeekday(WEEKDAY_MON);
+                setNthOccurrence(TEXT_ONE);
             } else {
-                setIntervalValue('');
-                setFromValue('');
-                setToValue('');
+                setIntervalValue(TEXT_EMPTY);
+                setFromValue(TEXT_EMPTY);
+                setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([]);
-                setWeekdayInput('');
+                setWeekdayInput(TEXT_EMPTY);
                 setShowWeekdaySuggestions(false);
-                setWeekday('MON');
-                setNthOccurrence('1');
+                setWeekday(WEEKDAY_MON);
+                setNthOccurrence(TEXT_ONE);
             }
         }
     };
@@ -189,10 +203,10 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
 
     useEffect(() => {
         try {
-            setError('');
-            let expression = '*';
+            setError(TEXT_EMPTY);
+            let expression = EVERY_EXPRESSION;
 
-            if (name === 'second') {
+            if (name === NAME_SECOND) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
@@ -201,7 +215,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     specificValues: specificValues || undefined
                 };
                 expression = CronUtils.generateSecondExpression(options);
-            } else if (name === 'minute') {
+            } else if (name === NAME_MINUTE) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
@@ -210,7 +224,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     specificValues: specificValues || undefined
                 };
                 expression = CronUtils.generateMinuteExpression(options);
-            } else if (name === 'hour') {
+            } else if (name === NAME_HOUR) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
@@ -219,7 +233,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     specificValues: specificValues || undefined
                 };
                 expression = CronUtils.generateHourExpression(options);
-            } else if (name === 'day') {
+            } else if (name === NAME_DAY_OF_MONTH) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
@@ -228,7 +242,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     specificValues: specificValues || undefined
                 };
                 expression = CronUtils.generateDayOfMonthExpression(options);
-            } else if (name === 'month') {
+            } else if (name === NAME_MONTH) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
@@ -237,11 +251,11 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     specificValues: selectedMonths.length > 0 ? selectedMonths.join(',') : undefined
                 };
                 expression = CronUtils.generateMonthExpression(options);
-                if (options.type === 'specific' && selectedMonths.length === 0) {
+                if (options.type === TYPE_SPECIFIC && selectedMonths.length === 0) {
                     setError('At least one month must be selected');
-                    expression = '*';
+                    expression = EVERY_EXPRESSION;
                 }
-            } else if (name === 'day of week') {
+            } else if (name === NAME_DAY_OF_WEEK) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
@@ -252,32 +266,32 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     nthOccurrence: nthOccurrence || undefined
                 };
                 expression = CronUtils.generateDayOfWeekExpression(options);
-                if (options.type === 'specific' && selectedWeekdays.length === 0) {
+                if (options.type === TYPE_SPECIFIC && selectedWeekdays.length === 0) {
                     setError('At least one day of week must be selected');
-                    expression = '*';
+                    expression = EVERY_EXPRESSION;
                 }
             }
             onExpressionChange(expression);
         } catch (err) {
             if (err instanceof CronError) {
                 setError(err.message);
-                onExpressionChange('*');
+                onExpressionChange(EVERY_EXPRESSION);
             }
         }
     }, [name, option, intervalValue, fromValue, toValue, specificValues, selectedMonths, selectedWeekdays, weekday, nthOccurrence, onExpressionChange]);
 
-    const minVal = (name === 'day') ? 1 : 0;
-    const maxVal = (name === 'day') ? 31 : (isHour ? 23 : 59);
+    const minVal = (name === NAME_DAY_OF_MONTH) ? 1 : 0;
+    const maxVal = (name === NAME_DAY_OF_MONTH) ? 31 : (isHour ? 23 : 59);
 
-    const availableMonths = months.filter(month => !selectedMonths.includes(month));
-    const availableWeekdays = weekdays.filter(weekday => !selectedWeekdays.includes(weekday));
+    const availableMonths = MONTHS.filter(month => !selectedMonths.includes(month));
+    const availableWeekdays = WEEK_DAYS.filter(weekday => !selectedWeekdays.includes(weekday));
 
-    const monthOrder = months.reduce((acc, month, index) => ({
+    const monthOrder = MONTHS.reduce((acc, month, index) => ({
         ...acc,
         [month]: index + 1
     }), {} as Record<string, number>);
     const sortedSelectedMonths = [...selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]);
-    const weekdayOrder = weekdays.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
+    const weekdayOrder = WEEK_DAYS.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
     const sortedSelectedWeekdays = [...selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]);
 
     return (
@@ -291,19 +305,19 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 <select
                     id={`${name}-option`}
                     value={option}
-                    onChange={(e) => handleOptionChange(e.target.value)}
+                    onChange={(expr: { target: { value: string; }; }) => handleOptionChange(expr.target.value)}
                     className={clsx(styles.optionSelect, "margin-top--md", "margin-bottom--md")}
                 >
                     <option value="every">Every {name}</option>
                     <option value="interval">Every N {name}</option>
                     <option value="between">From ... to ... {name}</option>
                     <option value="specific">Specific {plural}</option>
-                    {name === 'day' && <option value="ranges">Multiple ranges</option>}
+                    {name === NAME_DAY_OF_MONTH && <option value="ranges">Multiple ranges</option>}
                     {isWeekday && <option value="nth">Nth occurrence</option>}
                 </select>
             </div>
 
-            {option === 'interval' && (
+            {option === TYPE_INTERVAL && (
                 <fieldset className={styles.subFieldset}>
                     <legend>Interval</legend>
                     <div className={styles.inputContainer}>
@@ -312,7 +326,9 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                             min="1"
                             max={isMonth ? 12 : (isWeekday ? 7 : maxVal)}
                             value={intervalValue}
-                            onChange={(e) => setIntervalValue(e.target.value)}
+                            onChange={(expr: {
+                                target: { value: SetStateAction<string>; };
+                            }) => setIntervalValue(expr.target.value)}
                             placeholder={`Enter ${name} interval`}
                             className={styles.numberInput}
                         />
@@ -320,7 +336,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 </fieldset>
             )}
 
-            {option === 'between' && (
+            {option === TYPE_BETWEEN && (
                 <div className={styles.betweenContainer}>
                     <fieldset className={styles.subFieldset}>
                         <legend>From</legend>
@@ -329,11 +345,13 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                 <select
                                     className={styles.dropdown}
                                     value={fromValue}
-                                    onChange={(e) => setFromValue(e.target.value)}
+                                    onChange={(expr: {
+                                        target: { value: SetStateAction<string>; };
+                                    }) => setFromValue(expr.target.value)}
                                 >
-                                    {(isMonth ? months : weekdays).map((item) => (
+                                    {(isMonth ? MONTHS : WEEK_DAYS).map((item) => (
                                         <option key={item}
-                                                value={isMonth ? months.indexOf(item) + 1 : item}>{item}</option>
+                                                value={isMonth ? MONTHS.indexOf(item) + 1 : item}>{item}</option>
                                     ))}
                                 </select>
                             ) : (
@@ -342,7 +360,9 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                     min={minVal}
                                     max={maxVal}
                                     value={fromValue}
-                                    onChange={(e) => setFromValue(e.target.value)}
+                                    onChange={(expr: {
+                                        target: { value: SetStateAction<string>; };
+                                    }) => setFromValue(expr.target.value)}
                                     placeholder={`From ${name}`}
                                     className={styles.numberInput}
                                 />
@@ -356,11 +376,13 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                 <select
                                     className={styles.dropdown}
                                     value={toValue}
-                                    onChange={(e) => setToValue(e.target.value)}
+                                    onChange={(expr: {
+                                        target: { value: SetStateAction<string>; };
+                                    }) => setToValue(expr.target.value)}
                                 >
-                                    {(isMonth ? months : weekdays).map((item) => (
+                                    {(isMonth ? MONTHS : WEEK_DAYS).map((item) => (
                                         <option key={item}
-                                                value={isMonth ? months.indexOf(item) + 1 : item}>{item}</option>
+                                                value={isMonth ? MONTHS.indexOf(item) + 1 : item}>{item}</option>
                                     ))}
                                 </select>
                             ) : (
@@ -369,7 +391,9 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                     min={minVal}
                                     max={maxVal}
                                     value={toValue}
-                                    onChange={(e) => setToValue(e.target.value)}
+                                    onChange={(expr: {
+                                        target: { value: SetStateAction<string>; };
+                                    }) => setToValue(expr.target.value)}
                                     placeholder={`To ${name}`}
                                     className={styles.numberInput}
                                 />
@@ -379,7 +403,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 </div>
             )}
 
-            {option === 'specific' && (
+            {option === TYPE_SPECIFIC && (
                 <fieldset className={styles.subFieldset}>
                     <legend>{plural.charAt(0).toUpperCase() + plural.slice(1)}</legend>
                     <div className={styles.inputContainer}>
@@ -401,12 +425,12 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                         ref={inputRef}
                                         type="text"
                                         value={monthInput}
-                                        onChange={(e) => {
-                                            setMonthInput(e.target.value.toUpperCase());
-                                            setShowSuggestions(e.target.value.length > 0);
+                                        onChange={(expr: { target: { value: string; }; }) => {
+                                            setMonthInput(expr.target.value.toUpperCase());
+                                            setShowSuggestions(expr.target.value.length > 0);
                                         }}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && availableMonths.length > 0) {
+                                        onKeyDown={(expr: { key: string; }) => {
+                                            if (expr.key === 'Enter' && availableMonths.length > 0) {
                                                 const firstMatch = availableMonths.find(month =>
                                                     month.startsWith(monthInput.toUpperCase())
                                                 );
@@ -459,12 +483,12 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                         ref={weekdayInputRef}
                                         type="text"
                                         value={weekdayInput}
-                                        onChange={(e) => {
-                                            setWeekdayInput(e.target.value.toUpperCase());
-                                            setShowWeekdaySuggestions(e.target.value.length > 0);
+                                        onChange={(expr: { target: { value: string; }; }) => {
+                                            setWeekdayInput(expr.target.value.toUpperCase());
+                                            setShowWeekdaySuggestions(expr.target.value.length > 0);
                                         }}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && availableWeekdays.length > 0) {
+                                        onKeyDown={(expr: { key: string; }) => {
+                                            if (expr.key === 'Enter' && availableWeekdays.length > 0) {
                                                 const firstMatch = availableWeekdays.find(day =>
                                                     day.startsWith(weekdayInput.toUpperCase())
                                                 );
@@ -503,7 +527,9 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                             <input
                                 type="text"
                                 value={specificValues}
-                                onChange={(e) => setSpecificValues(e.target.value)}
+                                onChange={(expr: {
+                                    target: { value: SetStateAction<string>; };
+                                }) => setSpecificValues(expr.target.value)}
                                 placeholder={`e.g., ${isHour ? '0,1,2' : (isDay ? '1,2,3' : '0,15,30')}`}
                                 pattern="^(\d+)(,\d+)*$"
                                 title="Comma-separated numbers only"
@@ -514,14 +540,16 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 </fieldset>
             )}
 
-            {option === 'ranges' && name === 'day' && (
+            {option === TYPE_RANGES && name === NAME_DAY_OF_MONTH && (
                 <div className={styles.inputContainer}>
                     <fieldset className={styles.inputGroup}>
                         <legend>Day ranges (separated by comma)</legend>
                         <input
                             type="text"
                             value={specificValues}
-                            onChange={(e) => setSpecificValues(e.target.value)}
+                            onChange={(expr: {
+                                target: { value: SetStateAction<string>; };
+                            }) => setSpecificValues(expr.target.value)}
                             placeholder="e.g., 1-10,12-14,22-25"
                             pattern="^(\d+-\d+)(,\d+-\d+)*$"
                             title="Comma-separated ranges (e.g., 1-10,12-14)"
@@ -531,7 +559,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 </div>
             )}
 
-            {option === 'nth' && isWeekday && (
+            {option === TYPE_NTH && isWeekday && (
                 <fieldset className={styles.subFieldset}>
                     <legend>Nth occurrence</legend>
                     <div className={styles.dropdownContainer}>
@@ -541,9 +569,11 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                 id="weekday-select"
                                 className={styles.dropdown}
                                 value={weekday}
-                                onChange={(e) => setWeekday(e.target.value)}
+                                onChange={(expr: {
+                                    target: { value: SetStateAction<string>; };
+                                }) => setWeekday(expr.target.value)}
                             >
-                                {weekdays.map((weekday) => (
+                                {WEEK_DAYS.map((weekday) => (
                                     <option key={weekday} value={weekday}>{weekday}</option>
                                 ))}
                             </select>
@@ -554,9 +584,11 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                 id="nth-select"
                                 className={styles.dropdown}
                                 value={nthOccurrence}
-                                onChange={(e) => setNthOccurrence(e.target.value)}
+                                onChange={(expr: {
+                                    target: { value: SetStateAction<string>; };
+                                }) => setNthOccurrence(expr.target.value)}
                             >
-                                {nthOccurrences.map((n) => (
+                                {NTH_OCCURRENCES.map((n) => (
                                     <option key={n} value={n}>{n}</option>
                                 ))}
                             </select>
@@ -571,12 +603,12 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
 const CronGeneratorPage: React.FC = () => {
     const [copied, setCopied] = useState(false);
     const [cronExpressions, setCronExpressions] = useState({
-        second: '*',
-        minute: '*',
-        hour: '*',
-        dayOfMonth: '*',
-        month: '*',
-        dayOfWeek: '*'
+        second: EVERY_EXPRESSION,
+        minute: EVERY_EXPRESSION,
+        hour: EVERY_EXPRESSION,
+        dayOfMonth: EVERY_EXPRESSION,
+        month: EVERY_EXPRESSION,
+        dayOfWeek: EVERY_EXPRESSION
     });
 
     const cronExpression = `${cronExpressions.second} ${cronExpressions.minute} ${cronExpressions.hour} ${cronExpressions.dayOfMonth} ${cronExpressions.month} ${cronExpressions.dayOfWeek}`;
@@ -597,7 +629,8 @@ const CronGeneratorPage: React.FC = () => {
 
     return (
         <div className={clsx(styles.pageContainer, "margin-top--xl", "margin-bottom--md")}>
-            <h1 className={styles.textCenter}>Spring Cron Expression Generator</h1>
+            <h1 className={clsx(styles.textCenter, "margin-top--sm", "margin-bottom--md")}>Spring Cron Expression
+                Generator</h1>
             <fieldset className={styles.resultContainer}>
                 <legend>Result</legend>
                 <div className={styles.codeBlockContainer}>
@@ -611,17 +644,18 @@ const CronGeneratorPage: React.FC = () => {
                     </pre>
                 </div>
             </fieldset>
-            <CronPart name="second" plural="seconds"
-                      onExpressionChange={(expr) => handleExpressionChange('second', expr)}/>
-            <CronPart name="minute" plural="minutes"
-                      onExpressionChange={(expr) => handleExpressionChange('minute', expr)}/>
-            <CronPart name="hour" plural="hours" onExpressionChange={(expr) => handleExpressionChange('hour', expr)}/>
-            <CronPart name="day" plural="days"
-                      onExpressionChange={(expr) => handleExpressionChange('dayOfMonth', expr)}/>
-            <CronPart name="month" plural="months"
-                      onExpressionChange={(expr) => handleExpressionChange('month', expr)}/>
-            <CronPart name="day of week" plural="days of week"
-                      onExpressionChange={(expr) => handleExpressionChange('dayOfWeek', expr)}/>
+            <CronPart name={NAME_SECOND} plural="seconds"
+                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_SECOND, expr)}/>
+            <CronPart name={NAME_MINUTE} plural="minutes"
+                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_MINUTE, expr)}/>
+            <CronPart name={NAME_HOUR} plural="hours"
+                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_HOUR, expr)}/>
+            <CronPart name={NAME_DAY_OF_MONTH} plural="days"
+                      onExpressionChange={(expr: string) => handleExpressionChange('dayOfMonth', expr)}/>
+            <CronPart name={NAME_MONTH} plural="months"
+                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_MONTH, expr)}/>
+            <CronPart name={NAME_DAY_OF_WEEK} plural="days of week"
+                      onExpressionChange={(expr: string) => handleExpressionChange('dayOfWeek', expr)}/>
         </div>
     );
 };
