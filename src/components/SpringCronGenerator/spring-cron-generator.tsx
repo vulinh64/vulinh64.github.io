@@ -37,8 +37,8 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
     const [error, setError] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
     const weekdayInputRef = useRef<HTMLInputElement>(null);
-    const suggestionsRef = useRef<HTMLDivElement>(null); // New ref for suggestions container
-    const weekdaySuggestionsRef = useRef<HTMLDivElement>(null); // New ref for weekday suggestions
+    const suggestionsRef = useRef<HTMLDivElement>(null);
+    const weekdaySuggestionsRef = useRef<HTMLDivElement>(null);
 
     const handleMonthChange = (month: string) => {
         setSelectedMonths((prev) =>
@@ -421,17 +421,23 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                 </div>
                                 {showSuggestions && (
                                     <div ref={suggestionsRef} className={styles.suggestions}>
-                                        {availableMonths
-                                            .filter(month => month.startsWith(monthInput.toUpperCase()))
-                                            .map(month => (
-                                                <div
-                                                    key={month}
-                                                    className={styles.suggestionItem}
-                                                    onClick={() => handleMonthChange(month)}
-                                                >
-                                                    {month}
-                                                </div>
-                                            ))}
+                                        {availableMonths.length > 0 ? (
+                                            availableMonths
+                                                .filter(month => month.startsWith(monthInput.toUpperCase()))
+                                                .map(month => (
+                                                    <div
+                                                        key={month}
+                                                        className={styles.suggestionItem}
+                                                        onClick={() => handleMonthChange(month)}
+                                                    >
+                                                        {month}
+                                                    </div>
+                                                ))
+                                        ) : (
+                                            <div className={styles.noSuggestions}>
+                                                No items available...
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -473,17 +479,23 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                                 </div>
                                 {showWeekdaySuggestions && (
                                     <div ref={weekdaySuggestionsRef} className={styles.suggestions}>
-                                        {availableWeekdays
-                                            .filter(day => day.startsWith(weekdayInput.toUpperCase()))
-                                            .map(day => (
-                                                <div
-                                                    key={day}
-                                                    className={styles.suggestionItem}
-                                                    onClick={() => handleWeekdayChange(day)}
-                                                >
-                                                    {day}
-                                                </div>
-                                            ))}
+                                        {availableWeekdays.length > 0 ? (
+                                            availableWeekdays
+                                                .filter(day => day.startsWith(weekdayInput.toUpperCase()))
+                                                .map(day => (
+                                                    <div
+                                                        key={day}
+                                                        className={styles.suggestionItem}
+                                                        onClick={() => handleWeekdayChange(day)}
+                                                    >
+                                                        {day}
+                                                    </div>
+                                                ))
+                                        ) : (
+                                            <div className={styles.noSuggestions}>
+                                                No items available...
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

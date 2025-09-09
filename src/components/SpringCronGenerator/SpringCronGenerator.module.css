@@ -1,29 +1,27 @@
-/* Using Docusaurus/Infima variables for consistency */
 .pageContainer {
-    margin: 0 auto; /* Center the container */
-    width: 50%; /* Ensure it takes full width within max-width */
-    padding: 1em; /* Consistent padding */
-    display: flex; /* Use flexbox to control child alignment */
-    flex-direction: column; /* Stack children vertically */
-    align-items: center; /* Center children horizontally */
+    margin: 0 auto;
+    width: 70%;
+    padding: 0.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
     .pageContainer {
         width: 100%;
         max-width: 100%;
+        padding: 1em;
     }
 }
 
-/* Center the title explicitly */
 .textCenter {
-    text-align: center; /* Ensure text is centered */
-    width: 100%; /* Full width to align with container */
-    margin: 0; /* Remove default margins */
-    padding: var(--ifm-spacing-vertical, 1em) 0; /* Consistent vertical padding */
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding: var(--ifm-spacing-vertical, 1em) 0;
 }
 
-/* Styling fieldsets to match Infima's card-like appearance with consistent width */
 .cronPart {
     display: flex;
     flex-direction: column;
@@ -31,16 +29,49 @@
     box-sizing: border-box;
     border-radius: 1em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    width: 100%; /* Consistent width for all cron parts */
-    margin: 0 auto var(--ifm-spacing-vertical, 1em) auto; /* Centered with bottom margin */
+    width: 100%;
+    margin: 0 auto var(--ifm-spacing-vertical, 1em) auto;
+    height: 100%;
 }
 
-/* Legend styling with left alignment */
+@media (min-width: 996px) {
+    .pageContainer {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "title title"
+            "result result"
+            "cronParts cronParts";
+        gap: var(--ifm-spacing-horizontal, 1em) var(--ifm-spacing-vertical, 1em);
+        align-items: stretch;
+    }
+
+    .textCenter {
+        grid-area: title;
+    }
+
+    .resultContainer {
+        grid-area: result;
+    }
+
+    .cronPart {
+        width: 100%;
+        height: 100%;
+    }
+
+    .pageContainer > .cronPart:nth-child(3) { grid-area: cronParts; grid-column: 1; grid-row: 3; }
+    .pageContainer > .cronPart:nth-child(4) { grid-area: cronParts; grid-column: 2; grid-row: 3; }
+    .pageContainer > .cronPart:nth-child(5) { grid-area: cronParts; grid-column: 1; grid-row: 4; }
+    .pageContainer > .cronPart:nth-child(6) { grid-area: cronParts; grid-column: 2; grid-row: 4; }
+    .pageContainer > .cronPart:nth-child(7) { grid-area: cronParts; grid-column: 1; grid-row: 5; }
+    .pageContainer > .cronPart:nth-child(8) { grid-area: cronParts; grid-column: 2; grid-row: 5; }
+}
+
 .cronPart legend {
     text-align: left;
 }
 
-/* Flex container for option select */
 .optionContainer {
     display: flex;
     align-items: center;
@@ -50,7 +81,6 @@
     width: 100%;
 }
 
-/* Select styling with Infima form styles */
 .optionSelect {
     flex: 1;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
@@ -59,7 +89,6 @@
     font-size: 100%;
 }
 
-/* Sub-fieldset for nested inputs */
 .subFieldset {
     display: flex;
     flex-direction: column;
@@ -68,49 +97,43 @@
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: 0.5em;
     border-radius: 0.5em;
-    width: 100%; /* Ensure sub-fieldsets take full width of parent */
+    width: 100%;
     font-size: 100%;
 }
 
-/* Legend for sub-fieldsets with left alignment */
 .subFieldset legend {
     text-align: left;
 }
 
-/* Flex container for 'between' fieldsets */
 .betweenContainer {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align items to the top */
-    gap: var(--ifm-spacing-horizontal, 1em); /* Add gap between From and To */
-    width: 100%; /* Ensure full width */
-    flex-wrap: nowrap; /* Keep items in single line on desktop */
+    align-items: flex-start;
+    gap: var(--ifm-spacing-horizontal, 1em);
+    width: 100%;
+    flex-wrap: nowrap;
 }
 
-/* Mobile adjustments for between container */
 @media (max-width: 768px) {
     .betweenContainer {
         flex-direction: column;
         flex-wrap: wrap;
-        gap: var(--ifm-spacing-vertical, 0.5em); /* Vertical gap on mobile */
+        gap: var(--ifm-spacing-vertical, 0.5em);
     }
 }
 
-/* Update sub-fieldsets within between container for better sizing */
 .betweenContainer .subFieldset {
-    flex: 1; /* Each fieldset takes equal space */
-    min-width: 0; /* Allow shrinking */
+    flex: 1;
+    min-width: 0;
 }
 
-/* Mobile: full width for sub-fieldsets in between container */
 @media (max-width: 768px) {
     .betweenContainer .subFieldset {
-        flex: none; /* Reset flex on mobile */
-        width: 100%; /* Full width on mobile */
+        flex: none;
+        width: 100%;
     }
 }
 
-/* Container for inputs and dropdowns */
 .inputContainer {
     display: flex;
     align-items: center;
@@ -119,27 +142,24 @@
     border-radius: 0.5em;
 }
 
-/* Number input styling */
 .numberInput {
     border-radius: 0.5em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: 0.5em;
     font-size: 100%;
     text-align: center;
-    width: 100%; /* Full width within container */
+    width: 100%;
 }
 
-/* Input group for ranges */
 .inputGroup {
     border-radius: 0.5em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: 0.5em;
     font-size: 100%;
     text-align: center;
-    width: 100%; /* Full width within container */
+    width: 100%;
 }
 
-/* Text input for comma-separated values */
 .textInput {
     flex: 1;
     border-radius: 0.5em;
@@ -147,70 +167,41 @@
     padding: 0.5em;
     font-size: 100%;
     text-align: center;
-    width: 100%; /* Full width within container */
+    width: 100%;
 }
 
-/* Dropdown styling for 'between' option */
 .dropdown {
     border-radius: 0.5em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: 0.5em;
-    width: 100%; /* Full width for dropdowns */
-}
-
-/* Checkbox container for months/weekdays */
-.checkboxContainer {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
     width: 100%;
 }
 
-/* Mobile adjustments for checkbox container */
-@media (max-width: 768px) {
-    .checkboxContainer {
-        justify-content: flex-start;
-    }
-}
-
-/* Checkbox label styling */
-.checkboxLabel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-}
-
-/* Dropdown container for nth occurrence */
 .dropdownContainer {
     display: flex;
     justify-content: center;
     gap: var(--ifm-spacing-horizontal, 1em);
     width: 100%;
-    flex-wrap: nowrap; /* Single line on desktop */
+    flex-wrap: nowrap;
 }
 
-/* Dropdown unit styling for nth occurrence (label + dropdown pair) */
 .dropdownUnit {
     display: flex;
     flex-direction: column;
-    flex: 1; /* Equal width for each dropdown unit */
+    flex: 1;
     align-items: stretch;
     font-size: 100%;
 }
 
-/* Ensure dropdowns within units are full width */
 .dropdownUnit .dropdown {
     width: 100%;
 }
 
-/* Label styling for dropdown units */
 .dropdownUnit label {
     margin-bottom: 0.5em;
     text-align: left;
 }
 
-/* Mobile adjustments for dropdown container */
 @media (max-width: 768px) {
     .dropdownContainer {
         flex-direction: column;
@@ -218,13 +209,12 @@
     }
 }
 
-/* Result container styling */
 .resultContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin: 0 auto var(--ifm-spacing-vertical, 1em) auto; /* Center with bottom margin */
+    margin: 0 auto var(--ifm-spacing-vertical, 1em) auto;
     box-sizing: border-box;
     border-radius: 1em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
@@ -234,7 +224,6 @@
     text-align: left;
 }
 
-/* Container for code block and copy button */
 .codeBlockContainer {
     display: flex;
     flex-direction: column;
@@ -243,7 +232,6 @@
     width: 100%;
 }
 
-/* Result code block styling */
 .resultCode {
     overflow-y: auto;
     white-space: pre-wrap;
@@ -257,13 +245,12 @@
     flex: 1;
 }
 
-/* Code content styling */
 .resultCode code {
-    font-size: 1.5em; /* Slightly reduced for mobile compatibility */
+    font-family: var(--code-font-family);
+    font-size: 1.5em;
     text-align: center;
 }
 
-/* Mobile adjustments for code */
 @media (max-width: 768px) {
     .resultCode code {
         font-size: 1.5em;
@@ -271,7 +258,6 @@
     }
 }
 
-/* Copy button styling */
 .copyButton {
     display: none;
     position: absolute;
@@ -290,18 +276,15 @@
     height: 4em;
 }
 
-/* Copied state for copy button */
 .copyButton.copied {
     background-color: var(--ifm-color-primary);
     background-image: url('/svg/copied.svg');
 }
 
-/* Active state for copy button */
 .copyButton:active {
     background-color: var(--ifm-color-primary);
 }
 
-/* Show copy button on hover or always on mobile */
 .resultCode:hover .copyButton {
     display: block;
 }
@@ -312,7 +295,6 @@
     }
 }
 
-/* Chips container styling */
 .chipsContainer {
     display: flex;
     flex-direction: column;
@@ -320,7 +302,6 @@
     position: relative;
 }
 
-/* Chips styling */
 .chips {
     display: flex;
     flex-wrap: wrap;
@@ -330,7 +311,6 @@
     min-height: 2.5em;
 }
 
-/* Individual chip styling */
 .chip {
     display: inline-flex;
     align-items: center;
@@ -338,6 +318,7 @@
     padding: 0.3em 0.6em;
     margin: 0.2em;
     font-size: 0.9em;
+    font-family: var(--code-font-family);
     background-color: transparent;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
 }
@@ -347,7 +328,6 @@
     cursor: pointer;
 }
 
-/* Chip remove button styling */
 .chipRemove {
     cursor: pointer;
     margin-left: 0.5em;
@@ -359,7 +339,6 @@
     color: var(--ifm-color-danger);
 }
 
-/* Chip input styling */
 .chipInput {
     border: none;
     outline: none;
@@ -369,7 +348,6 @@
     border-radius: 0.5em;
 }
 
-/* Suggestions dropdown styling */
 .suggestions {
     position: absolute;
     top: 100%;
@@ -382,7 +360,6 @@
     z-index: 10;
 }
 
-/* Individual suggestion item styling */
 .suggestionItem {
     padding: 0.5em;
     cursor: pointer;
@@ -392,7 +369,13 @@
     background-color: var(--ifm-menu-color-background-active);
 }
 
-/* Ensure inputs and selects inherit Infima focus styles */
+.noSuggestions {
+    padding: 0.5em;
+    color: var(--ifm-color-content-secondary);
+    cursor: default;
+    font-size: 0.9em;
+}
+
 .numberInput:focus,
 .textInput:focus,
 .optionSelect:focus,
