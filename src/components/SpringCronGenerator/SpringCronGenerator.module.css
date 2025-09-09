@@ -1,7 +1,12 @@
+:root {
+    --common-border-radius: 0.5em;
+    --common-gentle-padding: 0.5em;
+}
+
 .pageContainer {
     margin: 0 auto;
     width: 70%;
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -18,8 +23,7 @@
 .textCenter {
     text-align: center;
     width: 100%;
-    margin: 0;
-    padding: var(--ifm-spacing-vertical, 1em) 0;
+    margin: 0 auto;
 }
 
 .cronPart {
@@ -27,11 +31,15 @@
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
-    border-radius: 1em;
+    border-radius:var(--common-border-radius);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     width: 100%;
     margin: 0 auto var(--ifm-spacing-vertical, 1em) auto;
     height: 100%;
+}
+
+.cronPart:hover {
+    border: var(--border-very-thin) solid var(--ifm-color-primary);
 }
 
 @media (min-width: 996px) {
@@ -60,12 +68,41 @@
         height: 100%;
     }
 
-    .pageContainer > .cronPart:nth-child(3) { grid-area: cronParts; grid-column: 1; grid-row: 3; }
-    .pageContainer > .cronPart:nth-child(4) { grid-area: cronParts; grid-column: 2; grid-row: 3; }
-    .pageContainer > .cronPart:nth-child(5) { grid-area: cronParts; grid-column: 1; grid-row: 4; }
-    .pageContainer > .cronPart:nth-child(6) { grid-area: cronParts; grid-column: 2; grid-row: 4; }
-    .pageContainer > .cronPart:nth-child(7) { grid-area: cronParts; grid-column: 1; grid-row: 5; }
-    .pageContainer > .cronPart:nth-child(8) { grid-area: cronParts; grid-column: 2; grid-row: 5; }
+    .pageContainer > .cronPart:nth-child(3) {
+        grid-area: cronParts;
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .pageContainer > .cronPart:nth-child(4) {
+        grid-area: cronParts;
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .pageContainer > .cronPart:nth-child(5) {
+        grid-area: cronParts;
+        grid-column: 1;
+        grid-row: 4;
+    }
+
+    .pageContainer > .cronPart:nth-child(6) {
+        grid-area: cronParts;
+        grid-column: 2;
+        grid-row: 4;
+    }
+
+    .pageContainer > .cronPart:nth-child(7) {
+        grid-area: cronParts;
+        grid-column: 1;
+        grid-row: 5;
+    }
+
+    .pageContainer > .cronPart:nth-child(8) {
+        grid-area: cronParts;
+        grid-column: 2;
+        grid-row: 5;
+    }
 }
 
 .cronPart legend {
@@ -84,8 +121,8 @@
 .optionSelect {
     flex: 1;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0.5em;
-    border-radius: 0.5em;
+    padding: var(--common-gentle-padding);
+    border-radius: var(--common-border-radius);
     font-size: 100%;
 }
 
@@ -95,8 +132,8 @@
     align-items: center;
     box-sizing: border-box;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0.5em;
-    border-radius: 0.5em;
+    padding: var(--common-gentle-padding);
+    border-radius: var(--common-border-radius);
     width: 100%;
     font-size: 100%;
 }
@@ -139,22 +176,22 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    border-radius: 0.5em;
+    border-radius: var(--common-border-radius);
 }
 
 .numberInput {
     border-radius: 0.5em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     font-size: 100%;
     text-align: center;
     width: 100%;
 }
 
 .inputGroup {
-    border-radius: 0.5em;
+    border-radius: var(--common-border-radius);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     font-size: 100%;
     text-align: center;
     width: 100%;
@@ -162,18 +199,18 @@
 
 .textInput {
     flex: 1;
-    border-radius: 0.5em;
+    border-radius: var(--common-border-radius);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     font-size: 100%;
     text-align: center;
     width: 100%;
 }
 
 .dropdown {
-    border-radius: 0.5em;
+    border-radius: var(--common-border-radius);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     width: 100%;
 }
 
@@ -218,6 +255,10 @@
     box-sizing: border-box;
     border-radius: 1em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
+}
+
+.resultContainer:hover {
+    border: var(--border-very-thin) solid var(--ifm-color-primary);
 }
 
 .resultContainer legend {
@@ -266,7 +307,7 @@
     border: var(--border-very-thin) solid var(--ifm-color-primary);
     cursor: pointer;
     z-index: 1;
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     border-radius: 1em;
     background-image: url('/svg/copy.svg');
     background-position: center;
@@ -307,7 +348,7 @@
     flex-wrap: wrap;
     align-items: center;
     border-radius: 0.5em;
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     min-height: 2.5em;
 }
 
@@ -315,9 +356,9 @@
     display: inline-flex;
     align-items: center;
     border-radius: 1em;
-    padding: 0.3em 0.6em;
-    margin: 0.2em;
-    font-size: 0.9em;
+    padding: var(--common-gentle-padding) var(--common-gentle-padding);
+    margin: 0.1em;
+    font-size: 0.8em;
     font-family: var(--code-font-family);
     background-color: transparent;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
@@ -343,9 +384,9 @@
     border: none;
     outline: none;
     flex-grow: 1;
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     font-size: 100%;
-    border-radius: 0.5em;
+    border-radius: var(--common-border-radius);
 }
 
 .suggestions {
@@ -354,14 +395,14 @@
     left: 0;
     background: var(--ifm-background-color);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    border-radius: 0.5em;
+    border-radius: var(--common-border-radius);
     overflow-y: auto;
     width: 100%;
     z-index: 10;
 }
 
 .suggestionItem {
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     cursor: pointer;
 }
 
@@ -370,7 +411,7 @@
 }
 
 .noSuggestions {
-    padding: 0.5em;
+    padding: var(--common-gentle-padding);
     color: var(--ifm-color-content-secondary);
     cursor: default;
     font-size: 0.9em;
