@@ -31,7 +31,7 @@
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
-    border-radius:var(--common-border-radius);
+    border-radius: var(--common-border-radius);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     width: 100%;
     margin: 0 auto var(--ifm-spacing-vertical, 1em) auto;
@@ -135,7 +135,6 @@
     padding: var(--common-gentle-padding);
     border-radius: var(--common-border-radius);
     width: 100%;
-    font-size: 100%;
 }
 
 .subFieldset legend {
@@ -183,8 +182,8 @@
     border-radius: 0.5em;
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: var(--common-gentle-padding);
-    font-size: 100%;
     text-align: center;
+    font-family: var(--code-font-family);
     width: 100%;
 }
 
@@ -202,8 +201,8 @@
     border-radius: var(--common-border-radius);
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: var(--common-gentle-padding);
-    font-size: 100%;
     text-align: center;
+    font-family: var(--code-font-family);
     width: 100%;
 }
 
@@ -212,6 +211,10 @@
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: var(--common-gentle-padding);
     width: 100%;
+}
+
+.nthDropdown {
+    font-family: var(--code-font-family);
 }
 
 .dropdownContainer {
@@ -385,8 +388,8 @@
     outline: none;
     flex-grow: 1;
     padding: var(--common-gentle-padding);
-    font-size: 100%;
     border-radius: var(--common-border-radius);
+    font-family: var(--code-font-family);
 }
 
 .suggestions {

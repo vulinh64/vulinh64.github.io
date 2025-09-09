@@ -567,7 +567,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                             <label htmlFor="weekday-select">Day of Week:</label>
                             <select
                                 id="weekday-select"
-                                className={styles.dropdown}
+                                className={clsx(styles.dropdown, styles.nthDropdown)}
                                 value={weekday}
                                 onChange={(expr: {
                                     target: { value: SetStateAction<string>; };
@@ -582,7 +582,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                             <label htmlFor="nth-select">nth occurrence:</label>
                             <select
                                 id="nth-select"
-                                className={styles.dropdown}
+                                className={clsx(styles.dropdown, styles.nthDropdown)}
                                 value={nthOccurrence}
                                 onChange={(expr: {
                                     target: { value: SetStateAction<string>; };
