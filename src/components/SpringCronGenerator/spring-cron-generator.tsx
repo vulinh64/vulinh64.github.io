@@ -1,4 +1,4 @@
-import React, {SetStateAction, useEffect, useRef, useState} from 'react';
+import React, {SetStateAction, useEffect, useMemo, useRef, useState} from 'react';
 import styles from './SpringCronGenerator.module.css';
 import clsx from "clsx";
 import {CronError, CronPartOptions, CronUtils} from './CronUtils';
@@ -27,6 +27,17 @@ import {
 const WEEKDAY_MON = 'MON';
 const WEEKDAY_SUN = 'SUN';
 
+// Static order mappings
+const monthOrder = MONTHS.reduce((acc, month, index) => ({
+    ...acc,
+    [month]: index + 1
+}), {} as Record<string, number>);
+
+const weekdayOrder = WEEK_DAYS.reduce((acc, day, index) => ({
+    ...acc,
+    [day]: index
+}), {} as Record<string, number>);
+
 const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) => {
     const isSecond = name === NAME_SECOND;
     const isMinute = name === NAME_MINUTE;
@@ -42,32 +53,31 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
     const [fromValue, setFromValue] = useState(isSecondOrMinuteOrHourOrDay ? TEXT_ONE : (isWeekday ? WEEKDAY_SUN : TEXT_EMPTY));
     const [toValue, setToValue] = useState(isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? WEEKDAY_MON : TEXT_EMPTY));
     const [specificValues, setSpecificValues] = useState(isSecondOrMinuteOrHourOrDay ? '1,2,3' : TEXT_EMPTY);
-    const [monthInput, setMonthInput] = useState(TEXT_EMPTY);
-    const [weekdayInput, setWeekdayInput] = useState(TEXT_EMPTY);
     const [weekday, setWeekday] = useState(WEEKDAY_MON);
     const [nthOccurrence, setNthOccurrence] = useState(TEXT_ONE);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [showWeekdaySuggestions, setShowWeekdaySuggestions] = useState(false);
     const [error, setError] = useState<string>(TEXT_EMPTY);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const weekdayInputRef = useRef<HTMLInputElement>(null);
-    const suggestionsRef = useRef<HTMLDivElement>(null);
-    const weekdaySuggestionsRef = useRef<HTMLDivElement>(null);
+    const prevExpressionRef = useRef<string>(EVERY_EXPRESSION);
+
+    // Memoize sorted arrays to prevent recreation on every render
+    const sortedSelectedMonths = useMemo(
+        () => [...selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]),
+        [selectedMonths]
+    );
+    const sortedSelectedWeekdays = useMemo(
+        () => [...selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]),
+        [selectedWeekdays]
+    );
 
     const handleMonthChange = (month: string) => {
         setSelectedMonths((prev) =>
             prev.includes(month) ? prev.filter((m) => m !== month) : [...prev, month]
         );
-        setMonthInput(TEXT_EMPTY);
-        setShowSuggestions(false);
     };
 
     const handleWeekdayChange = (weekday: string) => {
         setSelectedWeekdays((prev) =>
             prev.includes(weekday) ? prev.filter((w) => w !== weekday) : [...prev, weekday]
         );
-        setWeekdayInput(TEXT_EMPTY);
-        setShowWeekdaySuggestions(false);
     };
 
     const handleOptionChange = (newOption: string) => {
@@ -105,29 +115,21 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedMonths([]);
-                setMonthInput(TEXT_EMPTY);
-                setShowSuggestions(false);
             } else if (newOption === TYPE_BETWEEN) {
                 setIntervalValue(TEXT_EMPTY);
                 setFromValue(TEXT_ONE);
                 setToValue('2');
                 setSelectedMonths([]);
-                setMonthInput(TEXT_EMPTY);
-                setShowSuggestions(false);
             } else if (newOption === TYPE_SPECIFIC) {
                 setIntervalValue(TEXT_EMPTY);
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedMonths(['JAN']);
-                setMonthInput(TEXT_EMPTY);
-                setShowSuggestions(false);
             } else {
                 setIntervalValue(TEXT_EMPTY);
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedMonths([]);
-                setMonthInput(TEXT_EMPTY);
-                setShowSuggestions(false);
             }
         } else if (isWeekday) {
             if (newOption === TYPE_INTERVAL) {
@@ -135,8 +137,6 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([]);
-                setWeekdayInput(TEXT_EMPTY);
-                setShowWeekdaySuggestions(false);
                 setWeekday(WEEKDAY_MON);
                 setNthOccurrence(TEXT_ONE);
             } else if (newOption === TYPE_BETWEEN) {
@@ -144,8 +144,6 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setFromValue(WEEKDAY_SUN);
                 setToValue(WEEKDAY_MON);
                 setSelectedWeekdays([]);
-                setWeekdayInput(TEXT_EMPTY);
-                setShowWeekdaySuggestions(false);
                 setWeekday(WEEKDAY_MON);
                 setNthOccurrence(TEXT_ONE);
             } else if (newOption === TYPE_SPECIFIC) {
@@ -153,8 +151,6 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([WEEKDAY_MON]);
-                setWeekdayInput(TEXT_EMPTY);
-                setShowWeekdaySuggestions(false);
                 setWeekday(WEEKDAY_MON);
                 setNthOccurrence(TEXT_ONE);
             } else if (newOption === TYPE_NTH) {
@@ -162,8 +158,6 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([]);
-                setWeekdayInput(TEXT_EMPTY);
-                setShowWeekdaySuggestions(false);
                 setWeekday(WEEKDAY_MON);
                 setNthOccurrence(TEXT_ONE);
             } else {
@@ -171,41 +165,16 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setFromValue(TEXT_EMPTY);
                 setToValue(TEXT_EMPTY);
                 setSelectedWeekdays([]);
-                setWeekdayInput(TEXT_EMPTY);
-                setShowWeekdaySuggestions(false);
                 setWeekday(WEEKDAY_MON);
                 setNthOccurrence(TEXT_ONE);
             }
         }
     };
 
-    // Handle clicks outside to close suggestions
+    // Generate cron expression
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node;
-            const isOutsideMonthInput =
-                inputRef.current && !inputRef.current.contains(target) &&
-                suggestionsRef.current && !suggestionsRef.current.contains(target);
-            const isOutsideWeekdayInput =
-                weekdayInputRef.current && !weekdayInputRef.current.contains(target) &&
-                weekdaySuggestionsRef.current && !weekdaySuggestionsRef.current.contains(target);
-
-            if (isOutsideMonthInput) {
-                setShowSuggestions(false);
-            }
-            if (isOutsideWeekdayInput) {
-                setShowWeekdaySuggestions(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    useEffect(() => {
+        let expression = EVERY_EXPRESSION;
         try {
-            setError(TEXT_EMPTY);
-            let expression = EVERY_EXPRESSION;
-
             if (name === NAME_SECOND) {
                 const options: CronPartOptions = {
                     type: option as any,
@@ -248,51 +217,53 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
                     fromValue: fromValue ? parseInt(fromValue) : undefined,
                     toValue: toValue ? parseInt(toValue) : undefined,
-                    specificValues: selectedMonths.length > 0 ? selectedMonths.join(',') : undefined
+                    specificValues: sortedSelectedMonths.length > 0 ? sortedSelectedMonths.join(',') : undefined
                 };
                 expression = CronUtils.generateMonthExpression(options);
-                if (options.type === TYPE_SPECIFIC && selectedMonths.length === 0) {
-                    setError('At least one month must be selected');
-                    expression = EVERY_EXPRESSION;
-                }
             } else if (name === NAME_DAY_OF_WEEK) {
                 const options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
                     fromValue: fromValue || undefined,
                     toValue: toValue || undefined,
-                    specificValues: selectedWeekdays.length > 0 ? selectedWeekdays.join(',') : undefined,
+                    specificValues: sortedSelectedWeekdays.length > 0 ? sortedSelectedWeekdays.join(',') : undefined,
                     weekday: weekday || undefined,
                     nthOccurrence: nthOccurrence || undefined
                 };
                 expression = CronUtils.generateDayOfWeekExpression(options);
-                if (options.type === TYPE_SPECIFIC && selectedWeekdays.length === 0) {
-                    setError('At least one day of week must be selected');
-                    expression = EVERY_EXPRESSION;
-                }
             }
-            onExpressionChange(expression);
+
+            // Only update if expression has changed
+            if (expression !== prevExpressionRef.current) {
+                prevExpressionRef.current = expression;
+                onExpressionChange(expression);
+            }
         } catch (err) {
             if (err instanceof CronError) {
-                setError(err.message);
-                onExpressionChange(EVERY_EXPRESSION);
+                if (err.message !== error) {
+                    setError(err.message);
+                }
+                if (prevExpressionRef.current !== EVERY_EXPRESSION) {
+                    prevExpressionRef.current = EVERY_EXPRESSION;
+                    onExpressionChange(EVERY_EXPRESSION);
+                }
             }
         }
-    }, [name, option, intervalValue, fromValue, toValue, specificValues, selectedMonths, selectedWeekdays, weekday, nthOccurrence, onExpressionChange]);
+    }, [name, option, intervalValue, fromValue, toValue, specificValues, sortedSelectedMonths, sortedSelectedWeekdays, weekday, nthOccurrence, onExpressionChange, error]);
+
+    // Separate effect for validation errors
+    useEffect(() => {
+        if (name === NAME_MONTH && option === TYPE_SPECIFIC && sortedSelectedMonths.length === 0) {
+            setError('At least one month must be selected');
+        } else if (name === NAME_DAY_OF_WEEK && option === TYPE_SPECIFIC && sortedSelectedWeekdays.length === 0) {
+            setError('At least one day of week must be selected');
+        } else if (error !== TEXT_EMPTY) {
+            setError(TEXT_EMPTY);
+        }
+    }, [name, option, sortedSelectedMonths, sortedSelectedWeekdays, error]);
 
     const minVal = (name === NAME_DAY_OF_MONTH) ? 1 : 0;
     const maxVal = (name === NAME_DAY_OF_MONTH) ? 31 : (isHour ? 23 : 59);
-
-    const availableMonths = MONTHS.filter(month => !selectedMonths.includes(month));
-    const availableWeekdays = WEEK_DAYS.filter(weekday => !selectedWeekdays.includes(weekday));
-
-    const monthOrder = MONTHS.reduce((acc, month, index) => ({
-        ...acc,
-        [month]: index + 1
-    }), {} as Record<string, number>);
-    const sortedSelectedMonths = [...selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]);
-    const weekdayOrder = WEEK_DAYS.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
-    const sortedSelectedWeekdays = [...selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]);
 
     return (
         <fieldset className={styles.cronPart}>
@@ -406,123 +377,29 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
             {option === TYPE_SPECIFIC && (
                 <fieldset className={styles.subFieldset}>
                     <legend>{plural.charAt(0).toUpperCase() + plural.slice(1)}</legend>
-                    <div className={styles.inputContainer}>
+                    <div className={styles.checkboxContainer}>
                         {isMonth ? (
-                            <div className={styles.chipsContainer}>
-                                <div className={styles.chips}>
-                                    {sortedSelectedMonths.map((month) => (
-                                        <div key={month} className={styles.chip}>
-                                            {month}
-                                            <span
-                                                className={styles.chipRemove}
-                                                onClick={() => handleMonthChange(month)}
-                                            >
-                                                ×
-                                            </span>
-                                        </div>
-                                    ))}
+                            MONTHS.map((month) => (
+                                <label key={month} className={styles.checkboxLabel}>
                                     <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={monthInput}
-                                        onChange={(expr: { target: { value: string; }; }) => {
-                                            setMonthInput(expr.target.value.toUpperCase());
-                                            setShowSuggestions(expr.target.value.length > 0);
-                                        }}
-                                        onKeyDown={(expr: { key: string; }) => {
-                                            if (expr.key === 'Enter' && availableMonths.length > 0) {
-                                                const firstMatch = availableMonths.find(month =>
-                                                    month.startsWith(monthInput.toUpperCase())
-                                                );
-                                                if (firstMatch) {
-                                                    handleMonthChange(firstMatch);
-                                                }
-                                            }
-                                        }}
-                                        placeholder="Type a month..."
-                                        className={styles.chipInput}
+                                        type="checkbox"
+                                        checked={selectedMonths.includes(month)}
+                                        onChange={() => handleMonthChange(month)}
                                     />
-                                </div>
-                                {showSuggestions && (
-                                    <div ref={suggestionsRef} className={styles.suggestions}>
-                                        {availableMonths.length > 0 ? (
-                                            availableMonths
-                                                .filter(month => month.startsWith(monthInput.toUpperCase()))
-                                                .map(month => (
-                                                    <div
-                                                        key={month}
-                                                        className={styles.suggestionItem}
-                                                        onClick={() => handleMonthChange(month)}
-                                                    >
-                                                        {month}
-                                                    </div>
-                                                ))
-                                        ) : (
-                                            <div className={styles.noSuggestions}>
-                                                No items available...
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                                    {month}
+                                </label>
+                            ))
                         ) : isWeekday ? (
-                            <div className={styles.chipsContainer}>
-                                <div className={styles.chips}>
-                                    {sortedSelectedWeekdays.map((weekday) => (
-                                        <div key={weekday} className={styles.chip}>
-                                            {weekday}
-                                            <span
-                                                className={styles.chipRemove}
-                                                onClick={() => handleWeekdayChange(weekday)}
-                                            >
-                                                ×
-                                            </span>
-                                        </div>
-                                    ))}
+                            WEEK_DAYS.map((day) => (
+                                <label key={day} className={styles.checkboxLabel}>
                                     <input
-                                        ref={weekdayInputRef}
-                                        type="text"
-                                        value={weekdayInput}
-                                        onChange={(expr: { target: { value: string; }; }) => {
-                                            setWeekdayInput(expr.target.value.toUpperCase());
-                                            setShowWeekdaySuggestions(expr.target.value.length > 0);
-                                        }}
-                                        onKeyDown={(expr: { key: string; }) => {
-                                            if (expr.key === 'Enter' && availableWeekdays.length > 0) {
-                                                const firstMatch = availableWeekdays.find(day =>
-                                                    day.startsWith(weekdayInput.toUpperCase())
-                                                );
-                                                if (firstMatch) {
-                                                    handleWeekdayChange(firstMatch);
-                                                }
-                                            }
-                                        }}
-                                        placeholder="Type a day of week..."
-                                        className={styles.chipInput}
+                                        type="checkbox"
+                                        checked={selectedWeekdays.includes(day)}
+                                        onChange={() => handleWeekdayChange(day)}
                                     />
-                                </div>
-                                {showWeekdaySuggestions && (
-                                    <div ref={weekdaySuggestionsRef} className={styles.suggestions}>
-                                        {availableWeekdays.length > 0 ? (
-                                            availableWeekdays
-                                                .filter(day => day.startsWith(weekdayInput.toUpperCase()))
-                                                .map(day => (
-                                                    <div
-                                                        key={day}
-                                                        className={styles.suggestionItem}
-                                                        onClick={() => handleWeekdayChange(day)}
-                                                    >
-                                                        {day}
-                                                    </div>
-                                                ))
-                                        ) : (
-                                            <div className={styles.noSuggestions}>
-                                                No items available...
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                                    {day}
+                                </label>
+                            ))
                         ) : (
                             <input
                                 type="text"

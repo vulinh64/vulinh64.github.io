@@ -233,10 +233,6 @@
     font-size: 100%;
 }
 
-.dropdownUnit .dropdown {
-    width: 100%;
-}
-
 .dropdownUnit label {
     margin-bottom: 0.5em;
     text-align: left;
@@ -339,93 +335,31 @@
     }
 }
 
-.chipsContainer {
-    display: flex;
-    flex-direction: column;
+.checkboxContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ifm-spacing-horizontal, 1em);
     width: 100%;
-    position: relative;
+    justify-items: center;
 }
 
-.chips {
+.checkboxLabel {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    border-radius: 0.5em;
-    padding: var(--common-gentle-padding);
-    min-height: 2.5em;
-}
-
-.chip {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 1em;
-    padding: var(--common-gentle-padding) var(--common-gentle-padding);
-    margin: 0.1em;
-    font-size: 0.8em;
+    gap: 0.5em;
     font-family: var(--code-font-family);
-    background-color: transparent;
-    border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-}
-
-.chip:hover {
-    background-color: var(--ifm-color-primary-darkest);
-    cursor: pointer;
-}
-
-.chipRemove {
-    cursor: pointer;
-    margin-left: 0.5em;
-    color: var(--ifm-color-content);
-    font-weight: bold;
-}
-
-.chipRemove:hover {
-    color: var(--ifm-color-danger);
-}
-
-.chipInput {
-    border: none;
-    outline: none;
-    flex-grow: 1;
-    padding: var(--common-gentle-padding);
-    border-radius: var(--common-border-radius);
-    font-family: var(--code-font-family);
-}
-
-.suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: var(--ifm-background-color);
-    border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    border-radius: var(--common-border-radius);
-    overflow-y: auto;
-    width: 100%;
-    z-index: 10;
-}
-
-.suggestionItem {
-    padding: var(--common-gentle-padding);
-    cursor: pointer;
-}
-
-.suggestionItem:hover {
-    background-color: var(--ifm-menu-color-background-active);
-}
-
-.noSuggestions {
-    padding: var(--common-gentle-padding);
-    color: var(--ifm-color-content-secondary);
-    cursor: default;
     font-size: 0.9em;
+}
+
+.checkboxLabel input {
+    margin: 0;
 }
 
 .numberInput:focus,
 .textInput:focus,
 .optionSelect:focus,
 .dropdown:focus,
-.copyButton:focus,
-.chipInput:focus {
+.copyButton:focus {
     outline: none;
     border-color: var(--ifm-color-primary);
 }
