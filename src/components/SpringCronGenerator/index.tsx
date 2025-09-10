@@ -45,8 +45,8 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
         selectedMonths: [],
         selectedWeekdays: [],
         intervalValue: isSecondOrMinuteOrHourOrDay ? TEXT_ONE : TEXT_EMPTY,
-        fromValue: isSecondOrMinuteOrHourOrDay ? TEXT_ONE : (isWeekday ? WEEKDAY_SUN : TEXT_EMPTY),
-        toValue: isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? WEEKDAY_MON : TEXT_EMPTY),
+        fromValue: isSecondOrMinuteOrHourOrDay ? TEXT_ONE : (isWeekday ? WEEKDAY_SUN : 'JAN'),
+        toValue: isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? WEEKDAY_MON : 'FEB'),
         specificValues: isSecondOrMinuteOrHourOrDay ? '1,2,3' : TEXT_EMPTY,
         weekday: WEEKDAY_MON,
         nthOccurrence: TEXT_ONE,
@@ -116,8 +116,8 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 return {
                     ...baseState,
                     intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
-                    fromValue: newOption === TYPE_BETWEEN ? TEXT_ONE : TEXT_EMPTY,
-                    toValue: newOption === TYPE_BETWEEN ? '2' : TEXT_EMPTY,
+                    fromValue: newOption === TYPE_BETWEEN ? 'JAN' : TEXT_EMPTY,
+                    toValue: newOption === TYPE_BETWEEN ? 'FEB' : TEXT_EMPTY,
                     selectedMonths: newOption === TYPE_SPECIFIC ? ['JAN'] : []
                 };
             }
@@ -255,7 +255,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
             {options.map(item => (
                 <option
                     key={item}
-                    value={isMonth ? MONTHS.indexOf(item) + 1 : item}
+                    value={item}
                 >
                     {item}
                 </option>

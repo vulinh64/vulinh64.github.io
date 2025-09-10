@@ -196,6 +196,21 @@ export class CronUtils {
         return `${upperWeekday}L`;
     }
 
+    private static validateMonthRange(fromValue: string, toValue: string): string {
+        const fromUpper = fromValue.toUpperCase();
+        const toUpper = toValue.toUpperCase();
+
+        if (!MONTHS.includes(fromUpper)) {
+            throw new CronError(`Invalid from month: ${fromValue}. Must be one of ${MONTHS.join(SPACED_COMMA)}`);
+        }
+
+        if (!MONTHS.includes(toUpper)) {
+            throw new CronError(`Invalid to month: ${toValue}. Must be one of ${MONTHS.join(SPACED_COMMA)}`);
+        }
+
+        return `${fromUpper}-${toUpper}`;
+    }
+
     private static generateNumericExpression(
         options: CronPartOptions,
         part: string,
@@ -282,9 +297,27 @@ export class CronUtils {
     static generateMonthExpression(options: CronPartOptions): string {
         switch (options.type) {
             case CASE_EVERY:
+                return EVERY_EXPRESSION;
+
             case CASE_INTERVAL:
+                if (options.intervalValue === undefined) {
+                    throw new CronError('Interval value is required for interval type');
+                }
+
+                this.validateRange(options.intervalValue, PART_MONTH, MIN_ONE, MAX_MONTHS);
+
+                return `1/${options.intervalValue}`;
+
             case CASE_BETWEEN:
-                return this.generateNumericExpression(options, PART_MONTH, MIN_ONE, MAX_MONTHS, 1);
+                if (options.fromValue === undefined || options.toValue === undefined) {
+                    throw new CronError('From and To values are required for between type');
+                }
+
+                if (typeof options.fromValue !== 'string' || typeof options.toValue !== 'string') {
+                    throw new CronError('Month range must use month names (e.g., JAN, FEB)');
+                }
+
+                return this.validateMonthRange(options.fromValue, options.toValue);
 
             case CASE_SPECIFIC:
                 if (!options.specificValues) {
