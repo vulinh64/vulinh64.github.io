@@ -101,7 +101,6 @@ export class CronUtils {
 
     private static parseSpecificDayOfWeekValues(input: string): string {
         const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
-
         const validValues: string[] = [];
 
         for (const value of values) {
@@ -133,7 +132,6 @@ export class CronUtils {
         }
 
         const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
-
         const ranges: string[] = [];
 
         for (const value of values) {
@@ -198,7 +196,13 @@ export class CronUtils {
         return `${upperWeekday}L`;
     }
 
-    static generateSecondExpression(options: CronPartOptions): string {
+    private static generateNumericExpression(
+        options: CronPartOptions,
+        part: string,
+        min: number,
+        max: number,
+        intervalStart: number = 0
+    ): string {
         switch (options.type) {
             case CASE_EVERY:
                 return EVERY_EXPRESSION;
@@ -208,134 +212,51 @@ export class CronUtils {
                     throw new CronError('Interval value is required for interval type');
                 }
 
-                this.validateRange(options.intervalValue, PART_SECOND, MIN_ONE, 59);
+                this.validateRange(options.intervalValue, part, MIN_ONE, max);
 
-                return `0/${options.intervalValue}`;
+                return `${intervalStart}/${options.intervalValue}`;
 
             case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
 
-                this.validateRange(options.fromValue as number, PART_SECOND, 0, 59);
-                this.validateRange(options.toValue as number, PART_SECOND, 0, 59);
+                this.validateRange(options.fromValue as number, part, min, max);
+                this.validateRange(options.toValue as number, part, min, max);
 
-                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+                return `${Math.min(options.fromValue as number, options.toValue as number)}-${Math.max(options.fromValue as number, options.toValue as number)}`;
 
             case CASE_SPECIFIC:
                 if (!options.specificValues) {
-                    throw new CronError('Specific values are required for specific type');
+                    throw new CronError(`Specific values are required for specific type`);
                 }
 
-                return this.parseSpecificValues(options.specificValues, PART_SECOND, 0, 59);
+                return this.parseSpecificValues(options.specificValues, part, min, max);
 
             default:
                 throw new CronError('Invalid cron part type');
         }
+    }
+
+    static generateSecondExpression(options: CronPartOptions): string {
+        return this.generateNumericExpression(options, PART_SECOND, 0, 59);
     }
 
     static generateMinuteExpression(options: CronPartOptions): string {
-        switch (options.type) {
-            case CASE_EVERY:
-                return EVERY_EXPRESSION;
-
-            case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
-                    throw new CronError('Interval value is required for interval type');
-                }
-
-                this.validateRange(options.intervalValue, PART_MINUTE, MIN_ONE, 59);
-
-                return `0/${options.intervalValue}`;
-
-            case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
-                    throw new CronError('From and To values are required for between type');
-                }
-
-                this.validateRange(options.fromValue as number, PART_MINUTE, 0, 59);
-                this.validateRange(options.toValue as number, PART_MINUTE, 0, 59);
-
-                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
-
-            case CASE_SPECIFIC:
-                if (!options.specificValues) {
-                    throw new CronError('Specific values are required for specific type');
-                }
-
-                return this.parseSpecificValues(options.specificValues, PART_MINUTE, 0, 59);
-
-            default:
-                throw new CronError('Invalid cron part type');
-        }
+        return this.generateNumericExpression(options, PART_MINUTE, 0, 59);
     }
 
     static generateHourExpression(options: CronPartOptions): string {
-        switch (options.type) {
-            case CASE_EVERY:
-                return EVERY_EXPRESSION;
-
-            case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
-                    throw new CronError('Interval value is required for interval type');
-                }
-
-                this.validateRange(options.intervalValue, PART_HOUR, MIN_ONE, 23);
-
-                return `0/${options.intervalValue}`;
-
-            case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
-                    throw new CronError('From and To values are required for between type');
-                }
-
-                this.validateRange(options.fromValue as number, PART_HOUR, 0, 23);
-                this.validateRange(options.toValue as number, PART_HOUR, 0, 23);
-
-                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
-
-            case CASE_SPECIFIC:
-                if (!options.specificValues) {
-                    throw new CronError('Specific values are required for specific type');
-                }
-
-                return this.parseSpecificValues(options.specificValues, PART_HOUR, 0, 23);
-
-            default:
-                throw new CronError('Invalid cron part type');
-        }
+        return this.generateNumericExpression(options, PART_HOUR, 0, 23);
     }
 
     static generateDayOfMonthExpression(options: CronPartOptions): string {
         switch (options.type) {
             case CASE_EVERY:
-                return EVERY_EXPRESSION;
-
             case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
-                    throw new CronError('Interval value is required for interval type');
-                }
-
-                this.validateRange(options.intervalValue, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
-
-                return `1/${options.intervalValue}`;
-
             case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
-                    throw new CronError('From and To values are required for between type');
-                }
-
-                this.validateRange(options.fromValue as number, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
-                this.validateRange(options.toValue as number, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
-
-                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
-
             case CASE_SPECIFIC:
-                if (!options.specificValues) {
-                    throw new CronError('Specific values are required for specific type');
-                }
-
-                return this.parseSpecificValues(options.specificValues, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
+                return this.generateNumericExpression(options, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH, 1);
 
             case CASE_RANGES:
                 if (!options.specificValues) {
@@ -361,26 +282,9 @@ export class CronUtils {
     static generateMonthExpression(options: CronPartOptions): string {
         switch (options.type) {
             case CASE_EVERY:
-                return EVERY_EXPRESSION;
-
             case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
-                    throw new CronError('Interval value is required for interval type');
-                }
-
-                this.validateRange(options.intervalValue, PART_MONTH, MIN_ONE, MAX_MONTHS);
-
-                return `1/${options.intervalValue}`;
-
             case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
-                    throw new CronError('From and To values are required for between type');
-                }
-
-                this.validateRange(options.fromValue as number, PART_MONTH, MIN_ONE, MAX_MONTHS);
-                this.validateRange(options.toValue as number, PART_MONTH, MIN_ONE, MAX_MONTHS);
-
-                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+                return this.generateNumericExpression(options, PART_MONTH, MIN_ONE, MAX_MONTHS, 1);
 
             case CASE_SPECIFIC:
                 if (!options.specificValues) {
@@ -398,16 +302,8 @@ export class CronUtils {
         const validNthOccurrences = NTH_OCCURRENCES;
         switch (options.type) {
             case CASE_EVERY:
-                return EVERY_EXPRESSION;
-
             case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
-                    throw new CronError('Interval value is required for interval type');
-                }
-
-                this.validateRange(options.intervalValue, PART_DAY_OF_WEEK, MIN_ONE, MAX_DAYS_OF_WEEK);
-
-                return `0/${options.intervalValue}`;
+                return this.generateNumericExpression(options, PART_DAY_OF_WEEK, MIN_ONE, MAX_DAYS_OF_WEEK);
 
             case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
