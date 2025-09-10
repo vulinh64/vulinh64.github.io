@@ -377,7 +377,10 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
             {option === TYPE_SPECIFIC && (
                 <fieldset className={styles.subFieldset}>
                     <legend>{plural.charAt(0).toUpperCase() + plural.slice(1)}</legend>
-                    <div className={styles.checkboxContainer}>
+                    <div className={clsx({
+                        [styles.specificContainer]: isMonth || isWeekday,
+                        [styles.specificContainerTextInput]: !(isMonth || isWeekday)
+                    })}>
                         {isMonth ? (
                             MONTHS.map((month) => (
                                 <label key={month} className={styles.checkboxLabel}>

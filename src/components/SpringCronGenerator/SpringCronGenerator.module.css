@@ -12,7 +12,7 @@
     align-items: center;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 769px) {
     .pageContainer {
         width: 100%;
         max-width: 100%;
@@ -204,6 +204,7 @@
     text-align: center;
     font-family: var(--code-font-family);
     width: 100%;
+    box-sizing: border-box;
 }
 
 .dropdown {
@@ -335,12 +336,20 @@
     }
 }
 
-.checkboxContainer {
+.specificContainer {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--ifm-spacing-horizontal, 1em);
     width: 100%;
     justify-items: center;
+}
+
+.specificContainerTextInput {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: var(--ifm-spacing-vertical, 0.5em);
 }
 
 .checkboxLabel {
