@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "@theme/Layout";
-import SpringCronGenerator from "../components/SpringCronGenerator/spring-cron-generator";
+import SpringCronGenerator from "../components/SpringCronGenerator";
 
 export default function SpringCronGeneratorPage() {
     return (

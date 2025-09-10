@@ -1,55 +1,65 @@
-import {MONTHS, WEEK_DAYS} from "./CronSupport";
-
-export class CronError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'CronError';
-    }
-}
-
-export interface CronPartOptions {
-    type: 'every' | 'interval' | 'between' | 'specific' | 'ranges' | 'nth';
-    intervalValue?: number;
-    fromValue?: number | string; // Allow string for day of week names
-    toValue?: number | string; // Allow string for day of week names
-    specificValues?: string;
-    weekday?: string;
-    nthOccurrence?: string;
-}
+import {
+    CASE_BETWEEN,
+    CASE_EVERY,
+    CASE_INTERVAL,
+    CASE_LAST_DAY,
+    CASE_LAST_WEEKDAY,
+    CASE_NTH,
+    CASE_RANGES,
+    CASE_SPECIFIC,
+    COMMA_DELIMITER,
+    CronError,
+    CronPartOptions,
+    dayOrder,
+    EVERY_EXPRESSION,
+    MAX_DAYS_OF_MONTH,
+    MAX_DAYS_OF_WEEK,
+    MAX_MONTHS,
+    MIN_ONE,
+    monthOrder,
+    MONTHS,
+    NTH_OCCURRENCES,
+    PART_DAY,
+    PART_DAY_OF_WEEK,
+    PART_HOUR,
+    PART_LAST_DAY_OFFSET,
+    PART_MINUTE,
+    PART_MONTH,
+    PART_SECOND,
+    SPACED_COMMA,
+    TEXT_EMPTY,
+    WEEK_DAYS
+} from "./CronSupport";
 
 export class CronUtils {
-    /**
-     * Validates if a number is within the specified range
-     */
+
     private static validateRange(value: number, part: string, min: number, max: number): void {
         if (value < min || value > max) {
             throw new CronError(`${part} value ${value} is outside the valid range (${min}-${max})`);
         }
     }
 
-    /**
-     * Parses and validates specific values string
-     */
     private static parseSpecificValues(input: string, part: string, min: number, max: number): string {
-        // Check if input contains only numbers, commas, and whitespace
         if (!/^[\d\s,]+$/.test(input)) {
             throw new CronError(`Specific ${part} values can only contain numbers, commas, and whitespace`);
         }
 
-        // Remove whitespace and split by comma
-        const values = input.replace(/\s+/g, '').split(',');
-
-        // Convert to numbers and validate
+        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
         const numbers: number[] = [];
+
         for (const value of values) {
-            if (value === '') continue; // Skip empty strings from multiple commas
+            if (value === TEXT_EMPTY) {
+                continue;
+            }
 
             const num = parseInt(value, 10);
+
             if (isNaN(num)) {
                 throw new CronError(`Invalid ${part} number: ${value}`);
             }
 
             this.validateRange(num, part, min, max);
+
             numbers.push(num);
         }
 
@@ -57,29 +67,26 @@ export class CronUtils {
             throw new CronError(`At least one valid ${part} value is required`);
         }
 
-        // Sort numerically and remove duplicates
-        // @ts-ignore
         const uniqueSorted = [...new Set(numbers)].sort((a, b) => a - b);
 
-        return uniqueSorted.join(',');
+        return uniqueSorted.join(COMMA_DELIMITER);
     }
 
-    /**
-     * Parses and validates specific month values (e.g., "JAN,FEB,MAR")
-     */
     private static parseSpecificMonthValues(input: string): string {
-        const validMonths = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        // Remove whitespace and split by comma
-        const values = input.replace(/\s+/g, '').split(',');
-
-        // Validate each month
+        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
         const validValues: string[] = [];
+
         for (const value of values) {
-            if (value === '') continue; // Skip empty strings
-            const upperValue = value.toUpperCase();
-            if (!validMonths.includes(upperValue)) {
-                throw new CronError(`Invalid month value: ${value}. Must be one of ${validMonths.join(', ')}`);
+            if (value === TEXT_EMPTY) {
+                continue;
             }
+
+            const upperValue = value.toUpperCase();
+
+            if (!MONTHS.includes(upperValue)) {
+                throw new CronError(`Invalid month value: ${value}. Must be one of ${MONTHS.join(SPACED_COMMA)}`);
+            }
+
             validValues.push(upperValue);
         }
 
@@ -87,33 +94,27 @@ export class CronUtils {
             throw new CronError('At least one valid month value is required');
         }
 
-        // Remove duplicates and sort by month index
-        const monthOrder = validMonths.reduce((acc, month, index) => ({
-            ...acc,
-            [month]: index + 1
-        }), {} as Record<string, number>);
-        // @ts-ignore
         const uniqueSorted = [...new Set(validValues)].sort((a, b) => monthOrder[a] - monthOrder[b]);
 
-        return uniqueSorted.join(',');
+        return uniqueSorted.join(COMMA_DELIMITER);
     }
 
-    /**
-     * Parses and validates specific day of week values (e.g., "MON,TUE,WED")
-     */
     private static parseSpecificDayOfWeekValues(input: string): string {
-        const validDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        // Remove whitespace and split by comma
-        const values = input.replace(/\s+/g, '').split(',');
+        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
 
-        // Validate each day
         const validValues: string[] = [];
+
         for (const value of values) {
-            if (value === '') continue; // Skip empty strings
-            const upperValue = value.toUpperCase();
-            if (!validDays.includes(upperValue)) {
-                throw new CronError(`Invalid day of week value: ${value}. Must be one of ${validDays.join(', ')}`);
+            if (value === TEXT_EMPTY) {
+                continue;
             }
+
+            const upperValue = value.toUpperCase();
+
+            if (!WEEK_DAYS.includes(upperValue)) {
+                throw new CronError(`Invalid day of week value: ${value}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
+            }
+
             validValues.push(upperValue);
         }
 
@@ -121,63 +122,41 @@ export class CronUtils {
             throw new CronError('At least one valid day of week value is required');
         }
 
-        // Remove duplicates and sort by day index
-        const dayOrder = validDays.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
-        // @ts-ignore
         const uniqueSorted = [...new Set(validValues)].sort((a, b) => dayOrder[a] - dayOrder[b]);
 
-        return uniqueSorted.join(',');
+        return uniqueSorted.join(COMMA_DELIMITER);
     }
 
-    /**
-     * Validates day of week names for between type
-     */
-    private static validateDayOfWeekRange(fromValue: string, toValue: string): string {
-        const validDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
-        const fromUpper = fromValue.toUpperCase();
-        const toUpper = toValue.toUpperCase();
-
-        if (!validDays.includes(fromUpper)) {
-            throw new CronError(`Invalid from day of week: ${fromValue}. Must be one of ${validDays.join(', ')}`);
-        }
-        if (!validDays.includes(toUpper)) {
-            throw new CronError(`Invalid to day of week: ${toValue}. Must be one of ${validDays.join(', ')}`);
-        }
-
-        return `${fromUpper}-${toUpper}`;
-    }
-
-    /**
-     * Parses and validates ranges string (e.g., "1-10,12-14")
-     */
     private static parseRanges(input: string, part: string, min: number, max: number): string {
-        // Check if input contains only numbers, commas, hyphens, and whitespace
         if (!/^[\d\s,-]+$/.test(input)) {
             throw new CronError(`Ranges for ${part} can only contain numbers, commas, hyphens, and whitespace`);
         }
 
-        // Remove whitespace and split by comma
-        const values = input.replace(/\s+/g, '').split(',');
+        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
 
-        // Collect and validate ranges
         const ranges: string[] = [];
+
         for (const value of values) {
-            if (value === '') continue; // Skip empty strings
+            if (value === TEXT_EMPTY) {
+                continue;
+            }
 
             const parts = value.split('-');
+
             if (parts.length !== 2) {
                 throw new CronError(`Invalid range format in ${part}: '${value}' must be in the form 'num-num'`);
             }
 
             const start = parseInt(parts[0], 10);
-            const end = parseInt(parts[1], 10);
+            const end = parseInt(parts[MIN_ONE], 10);
+
             if (isNaN(start) || isNaN(end)) {
                 throw new CronError(`Invalid numbers in ${part} range: '${value}'`);
             }
 
             this.validateRange(start, part, min, max);
             this.validateRange(end, part, min, max);
+
             if (start > end) {
                 throw new CronError(`Start must be less than or equal to end in ${part} range: '${value}'`);
             }
@@ -189,199 +168,225 @@ export class CronUtils {
             throw new CronError(`At least one valid ${part} range is required`);
         }
 
-        // Sort ranges by starting number
         ranges.sort((a, b) => parseInt(a.split('-')[0], 10) - parseInt(b.split('-')[0], 10));
 
-        return ranges.join(',');
+        return ranges.join(COMMA_DELIMITER);
     }
 
-    /**
-     * Generates the cron expression for the second part
-     */
+    private static validateDayOfWeekRange(fromValue: string, toValue: string): string {
+        const fromUpper = fromValue.toUpperCase();
+        const toUpper = toValue.toUpperCase();
+
+        if (!WEEK_DAYS.includes(fromUpper)) {
+            throw new CronError(`Invalid from day of week: ${fromValue}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
+        }
+
+        if (!WEEK_DAYS.includes(toUpper)) {
+            throw new CronError(`Invalid to day of week: ${toValue}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
+        }
+
+        return `${fromUpper}-${toUpper}`;
+    }
+
+    private static validateLastWeekday(weekday: string): string {
+        const upperWeekday = weekday.toUpperCase();
+
+        if (!WEEK_DAYS.includes(upperWeekday)) {
+            throw new CronError(`Invalid weekday for last weekday: ${weekday}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
+        }
+
+        return `${upperWeekday}L`;
+    }
+
     static generateSecondExpression(options: CronPartOptions): string {
         switch (options.type) {
-            case 'every':
-                return '*';
+            case CASE_EVERY:
+                return EVERY_EXPRESSION;
 
-            case 'interval':
+            case CASE_INTERVAL:
                 if (options.intervalValue === undefined) {
                     throw new CronError('Interval value is required for interval type');
                 }
-                this.validateRange(options.intervalValue, 'Second', 1, 59);
+
+                this.validateRange(options.intervalValue, PART_SECOND, MIN_ONE, 59);
+
                 return `0/${options.intervalValue}`;
 
-            case 'between':
+            case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
-                this.validateRange(options.fromValue as number, 'Second', 0, 59);
-                this.validateRange(options.toValue as number, 'Second', 0, 59);
 
-                const fromValue = Math.min(options.fromValue as number, options.toValue as number);
-                const toValue = Math.max(options.fromValue as number, options.toValue as number);
-                return `${fromValue}-${toValue}`;
+                this.validateRange(options.fromValue as number, PART_SECOND, 0, 59);
+                this.validateRange(options.toValue as number, PART_SECOND, 0, 59);
 
-            case 'specific':
+                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+
+            case CASE_SPECIFIC:
                 if (!options.specificValues) {
                     throw new CronError('Specific values are required for specific type');
                 }
-                return this.parseSpecificValues(options.specificValues, 'Second', 0, 59);
+
+                return this.parseSpecificValues(options.specificValues, PART_SECOND, 0, 59);
 
             default:
                 throw new CronError('Invalid cron part type');
         }
     }
 
-    /**
-     * Generates the cron expression for the minute part
-     */
     static generateMinuteExpression(options: CronPartOptions): string {
         switch (options.type) {
-            case 'every':
-                return '*';
+            case CASE_EVERY:
+                return EVERY_EXPRESSION;
 
-            case 'interval':
+            case CASE_INTERVAL:
                 if (options.intervalValue === undefined) {
                     throw new CronError('Interval value is required for interval type');
                 }
-                this.validateRange(options.intervalValue, 'Minute', 1, 59);
+
+                this.validateRange(options.intervalValue, PART_MINUTE, MIN_ONE, 59);
+
                 return `0/${options.intervalValue}`;
 
-            case 'between':
+            case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
-                this.validateRange(options.fromValue as number, 'Minute', 0, 59);
-                this.validateRange(options.toValue as number, 'Minute', 0, 59);
 
-                const fromValue = Math.min(options.fromValue as number, options.toValue as number);
-                const toValue = Math.max(options.fromValue as number, options.toValue as number);
-                return `${fromValue}-${toValue}`;
+                this.validateRange(options.fromValue as number, PART_MINUTE, 0, 59);
+                this.validateRange(options.toValue as number, PART_MINUTE, 0, 59);
 
-            case 'specific':
+                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+
+            case CASE_SPECIFIC:
                 if (!options.specificValues) {
                     throw new CronError('Specific values are required for specific type');
                 }
-                return this.parseSpecificValues(options.specificValues, 'Minute', 0, 59);
+
+                return this.parseSpecificValues(options.specificValues, PART_MINUTE, 0, 59);
 
             default:
                 throw new CronError('Invalid cron part type');
         }
     }
 
-    /**
-     * Generates the cron expression for the hour part
-     */
     static generateHourExpression(options: CronPartOptions): string {
         switch (options.type) {
-            case 'every':
-                return '*';
+            case CASE_EVERY:
+                return EVERY_EXPRESSION;
 
-            case 'interval':
+            case CASE_INTERVAL:
                 if (options.intervalValue === undefined) {
                     throw new CronError('Interval value is required for interval type');
                 }
-                this.validateRange(options.intervalValue, 'Hour', 1, 23);
+
+                this.validateRange(options.intervalValue, PART_HOUR, MIN_ONE, 23);
+
                 return `0/${options.intervalValue}`;
 
-            case 'between':
+            case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
-                this.validateRange(options.fromValue as number, 'Hour', 0, 23);
-                this.validateRange(options.toValue as number, 'Hour', 0, 23);
 
-                const fromValue = Math.min(options.fromValue as number, options.toValue as number);
-                const toValue = Math.max(options.fromValue as number, options.toValue as number);
-                return `${fromValue}-${toValue}`;
+                this.validateRange(options.fromValue as number, PART_HOUR, 0, 23);
+                this.validateRange(options.toValue as number, PART_HOUR, 0, 23);
 
-            case 'specific':
+                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+
+            case CASE_SPECIFIC:
                 if (!options.specificValues) {
                     throw new CronError('Specific values are required for specific type');
                 }
-                return this.parseSpecificValues(options.specificValues, 'Hour', 0, 23);
+
+                return this.parseSpecificValues(options.specificValues, PART_HOUR, 0, 23);
 
             default:
                 throw new CronError('Invalid cron part type');
         }
     }
 
-    /**
-     * Generates the cron expression for the day of month part
-     */
     static generateDayOfMonthExpression(options: CronPartOptions): string {
-        const part = 'Day';
-        const min = 1;
-        const max = 31;
-
         switch (options.type) {
-            case 'every':
-                return '*';
+            case CASE_EVERY:
+                return EVERY_EXPRESSION;
 
-            case 'interval':
+            case CASE_INTERVAL:
                 if (options.intervalValue === undefined) {
                     throw new CronError('Interval value is required for interval type');
                 }
-                this.validateRange(options.intervalValue, part, 1, max);
+
+                this.validateRange(options.intervalValue, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
+
                 return `1/${options.intervalValue}`;
 
-            case 'between':
+            case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
-                this.validateRange(options.fromValue as number, part, min, max);
-                this.validateRange(options.toValue as number, part, min, max);
 
-                const fromValue = Math.min(options.fromValue as number, options.toValue as number);
-                const toValue = Math.max(options.fromValue as number, options.toValue as number);
-                return `${fromValue}-${toValue}`;
+                this.validateRange(options.fromValue as number, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
+                this.validateRange(options.toValue as number, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
 
-            case 'specific':
+                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+
+            case CASE_SPECIFIC:
                 if (!options.specificValues) {
                     throw new CronError('Specific values are required for specific type');
                 }
-                return this.parseSpecificValues(options.specificValues, part, min, max);
 
-            case 'ranges':
+                return this.parseSpecificValues(options.specificValues, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
+
+            case CASE_RANGES:
                 if (!options.specificValues) {
                     throw new CronError('Range values are required for ranges type');
                 }
-                return this.parseRanges(options.specificValues, part, min, max);
+
+                return this.parseRanges(options.specificValues, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
+
+            case CASE_LAST_DAY:
+                if (options.lastValue === undefined || options.lastValue === 0) {
+                    return 'L';
+                }
+
+                this.validateRange(options.lastValue, PART_LAST_DAY_OFFSET, MIN_ONE, MAX_DAYS_OF_MONTH);
+
+                return `L-${options.lastValue}`;
 
             default:
                 throw new CronError('Invalid cron part type');
         }
     }
 
-    /**
-     * Generates the cron expression for the month part
-     */
     static generateMonthExpression(options: CronPartOptions): string {
         switch (options.type) {
-            case 'every':
-                return '*';
+            case CASE_EVERY:
+                return EVERY_EXPRESSION;
 
-            case 'interval':
+            case CASE_INTERVAL:
                 if (options.intervalValue === undefined) {
                     throw new CronError('Interval value is required for interval type');
                 }
-                this.validateRange(options.intervalValue, 'Month', 1, 12);
+
+                this.validateRange(options.intervalValue, PART_MONTH, MIN_ONE, MAX_MONTHS);
+
                 return `1/${options.intervalValue}`;
 
-            case 'between':
+            case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
-                this.validateRange(options.fromValue as number, 'Month', 1, 12);
-                this.validateRange(options.toValue as number, 'Month', 1, 12);
-                const fromValue = Math.min(options.fromValue as number, options.toValue as number);
-                const toValue = Math.max(options.fromValue as number, options.toValue as number);
-                return `${fromValue}-${toValue}`;
 
-            case 'specific':
+                this.validateRange(options.fromValue as number, PART_MONTH, MIN_ONE, MAX_MONTHS);
+                this.validateRange(options.toValue as number, PART_MONTH, MIN_ONE, MAX_MONTHS);
+
+                return `${(Math.min(options.fromValue as number, options.toValue as number))}-${(Math.max(options.fromValue as number, options.toValue as number))}`;
+
+            case CASE_SPECIFIC:
                 if (!options.specificValues) {
                     throw new CronError('At least one month must be selected');
                 }
+
                 return this.parseSpecificMonthValues(options.specificValues);
 
             default:
@@ -389,60 +394,63 @@ export class CronUtils {
         }
     }
 
-    /**
-     * Generates the cron expression for the day of week part
-     */
     static generateDayOfWeekExpression(options: CronPartOptions): string {
-        const validDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        const validNthOccurrences = ['1', '2', '3', '4', '5'];
+        const validNthOccurrences = NTH_OCCURRENCES;
         switch (options.type) {
-            case 'every':
-                return '*';
+            case CASE_EVERY:
+                return EVERY_EXPRESSION;
 
-            case 'interval':
+            case CASE_INTERVAL:
                 if (options.intervalValue === undefined) {
                     throw new CronError('Interval value is required for interval type');
                 }
-                this.validateRange(options.intervalValue, 'Day of Week', 1, 7);
+
+                this.validateRange(options.intervalValue, PART_DAY_OF_WEEK, MIN_ONE, MAX_DAYS_OF_WEEK);
+
                 return `0/${options.intervalValue}`;
 
-            case 'between':
+            case CASE_BETWEEN:
                 if (options.fromValue === undefined || options.toValue === undefined) {
                     throw new CronError('From and To values are required for between type');
                 }
+
                 if (typeof options.fromValue !== 'string' || typeof options.toValue !== 'string') {
                     throw new CronError('Day of week range must use day names (e.g., SUN, MON)');
                 }
+
                 return this.validateDayOfWeekRange(options.fromValue, options.toValue);
 
-            case 'specific':
+            case CASE_SPECIFIC:
                 if (!options.specificValues) {
                     throw new CronError('At least one day of week must be selected');
                 }
+
                 return this.parseSpecificDayOfWeekValues(options.specificValues);
 
-            case 'nth':
+            case CASE_NTH:
                 if (!options.weekday || !options.nthOccurrence) {
                     throw new CronError('Weekday and nth occurrence are required for nth type');
                 }
-                if (!validDays.includes(options.weekday)) {
-                    throw new CronError(`Invalid weekday: ${options.weekday}. Must be one of ${validDays.join(', ')}`);
+
+                if (!WEEK_DAYS.includes(options.weekday)) {
+                    throw new CronError(`Invalid weekday: ${options.weekday}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
                 }
+
                 if (!validNthOccurrences.includes(options.nthOccurrence)) {
-                    throw new CronError(`Invalid nth occurrence: ${options.nthOccurrence}. Must be one of ${validNthOccurrences.join(', ')}`);
+                    throw new CronError(`Invalid nth occurrence: ${options.nthOccurrence}. Must be one of ${validNthOccurrences.join(SPACED_COMMA)}`);
                 }
+
                 return `${options.weekday}#${options.nthOccurrence}`;
+
+            case CASE_LAST_WEEKDAY:
+                if (!options.lastWeekday) {
+                    throw new CronError('Weekday is required for last weekday type');
+                }
+
+                return this.validateLastWeekday(options.lastWeekday);
 
             default:
                 throw new CronError('Invalid cron part type');
         }
     }
-} // Static order mappings with better type safety
-
-export const monthOrder = Object.fromEntries(
-    MONTHS.map((month, index) => [month, index + 1])
-) as Record<string, number>;
-
-export const weekdayOrder = Object.fromEntries(
-    WEEK_DAYS.map((day, index) => [day, index])
-) as Record<string, number>;
+}
