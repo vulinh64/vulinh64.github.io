@@ -1,3 +1,5 @@
+import {MONTHS, WEEK_DAYS} from "./CronSupport";
+
 export class CronError extends Error {
     constructor(message: string) {
         super(message);
@@ -86,7 +88,10 @@ export class CronUtils {
         }
 
         // Remove duplicates and sort by month index
-        const monthOrder = validMonths.reduce((acc, month, index) => ({ ...acc, [month]: index + 1 }), {} as Record<string, number>);
+        const monthOrder = validMonths.reduce((acc, month, index) => ({
+            ...acc,
+            [month]: index + 1
+        }), {} as Record<string, number>);
         // @ts-ignore
         const uniqueSorted = [...new Set(validValues)].sort((a, b) => monthOrder[a] - monthOrder[b]);
 
@@ -117,7 +122,7 @@ export class CronUtils {
         }
 
         // Remove duplicates and sort by day index
-        const dayOrder = validDays.reduce((acc, day, index) => ({ ...acc, [day]: index }), {} as Record<string, number>);
+        const dayOrder = validDays.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
         // @ts-ignore
         const uniqueSorted = [...new Set(validValues)].sort((a, b) => dayOrder[a] - dayOrder[b]);
 
@@ -432,4 +437,12 @@ export class CronUtils {
                 throw new CronError('Invalid cron part type');
         }
     }
-}
+} // Static order mappings with better type safety
+
+export const monthOrder = Object.fromEntries(
+    MONTHS.map((month, index) => [month, index + 1])
+) as Record<string, number>;
+
+export const weekdayOrder = Object.fromEntries(
+    WEEK_DAYS.map((day, index) => [day, index])
+) as Record<string, number>;

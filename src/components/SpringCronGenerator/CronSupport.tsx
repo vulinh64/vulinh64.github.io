@@ -25,3 +25,31 @@ export interface CronPartProps {
     plural: string;
     onExpressionChange: (expression: string) => void;
 }
+
+export type CronExpressions = {
+    readonly second: string;
+    readonly minute: string;
+    readonly hour: string;
+    readonly dayOfMonth: string;
+    readonly month: string;
+    readonly dayOfWeek: string;
+};
+
+export type OptionType = typeof TYPE_EVERY | typeof TYPE_INTERVAL | typeof TYPE_BETWEEN |
+    typeof TYPE_SPECIFIC | typeof TYPE_RANGES | typeof TYPE_NTH;
+
+export interface CronPartState {
+    option: OptionType;
+    selectedMonths: readonly string[];
+    selectedWeekdays: readonly string[];
+    intervalValue: string;
+    fromValue: string;
+    toValue: string;
+    specificValues: string;
+    weekday: string;
+    nthOccurrence: string;
+    error: string;
+}
+
+export const WEEKDAY_MON = 'MON';
+export const WEEKDAY_SUN = 'SUN';

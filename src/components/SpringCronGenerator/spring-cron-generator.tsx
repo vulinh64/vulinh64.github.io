@@ -1,9 +1,11 @@
-import React, {SetStateAction, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import styles from './SpringCronGenerator.module.css';
-import clsx from "clsx";
-import {CronError, CronPartOptions, CronUtils} from './CronUtils';
+import clsx from 'clsx';
+import {CronError, CronPartOptions, CronUtils, monthOrder, weekdayOrder} from './CronUtils';
 import {
+    CronExpressions,
     CronPartProps,
+    CronPartState,
     EVERY_EXPRESSION,
     MONTHS,
     NAME_DAY_OF_MONTH,
@@ -13,32 +15,22 @@ import {
     NAME_MONTH,
     NAME_SECOND,
     NTH_OCCURRENCES,
+    OptionType,
     TEXT_EMPTY,
     TEXT_ONE,
     TYPE_BETWEEN,
+    TYPE_EVERY,
     TYPE_INTERVAL,
     TYPE_NTH,
     TYPE_RANGES,
     TYPE_SPECIFIC,
-    TYPE_EVERY,
-    WEEK_DAYS
-} from "./CronSupport";
-
-const WEEKDAY_MON = 'MON';
-const WEEKDAY_SUN = 'SUN';
-
-// Static order mappings
-const monthOrder = MONTHS.reduce((acc, month, index) => ({
-    ...acc,
-    [month]: index + 1
-}), {} as Record<string, number>);
-
-const weekdayOrder = WEEK_DAYS.reduce((acc, day, index) => ({
-    ...acc,
-    [day]: index
-}), {} as Record<string, number>);
+    WEEK_DAYS,
+    WEEKDAY_MON,
+    WEEKDAY_SUN
+} from './CronSupport';
 
 const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) => {
+    // Type guards for better readability
     const isSecond = name === NAME_SECOND;
     const isMinute = name === NAME_MINUTE;
     const isHour = name === NAME_HOUR;
@@ -46,176 +38,161 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
     const isMonth = name === NAME_MONTH;
     const isWeekday = name === NAME_DAY_OF_WEEK;
     const isSecondOrMinuteOrHourOrDay = isSecond || isMinute || isHour || isDay;
-    const [option, setOption] = useState(TYPE_EVERY);
-    const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
-    const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
-    const [intervalValue, setIntervalValue] = useState(isSecondOrMinuteOrHourOrDay ? TEXT_ONE : TEXT_EMPTY);
-    const [fromValue, setFromValue] = useState(isSecondOrMinuteOrHourOrDay ? TEXT_ONE : (isWeekday ? WEEKDAY_SUN : TEXT_EMPTY));
-    const [toValue, setToValue] = useState(isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? WEEKDAY_MON : TEXT_EMPTY));
-    const [specificValues, setSpecificValues] = useState(isSecondOrMinuteOrHourOrDay ? '1,2,3' : TEXT_EMPTY);
-    const [weekday, setWeekday] = useState(WEEKDAY_MON);
-    const [nthOccurrence, setNthOccurrence] = useState(TEXT_ONE);
-    const [error, setError] = useState<string>(TEXT_EMPTY);
+
+    // Initial state factory
+    const createInitialState = (): CronPartState => ({
+        option: TYPE_EVERY,
+        selectedMonths: [],
+        selectedWeekdays: [],
+        intervalValue: isSecondOrMinuteOrHourOrDay ? TEXT_ONE : TEXT_EMPTY,
+        fromValue: isSecondOrMinuteOrHourOrDay ? TEXT_ONE : (isWeekday ? WEEKDAY_SUN : TEXT_EMPTY),
+        toValue: isSecondOrMinuteOrHourOrDay ? '2' : (isWeekday ? WEEKDAY_MON : TEXT_EMPTY),
+        specificValues: isSecondOrMinuteOrHourOrDay ? '1,2,3' : TEXT_EMPTY,
+        weekday: WEEKDAY_MON,
+        nthOccurrence: TEXT_ONE,
+        error: TEXT_EMPTY
+    });
+
+    const [state, setState] = useState<CronPartState>(createInitialState);
     const prevExpressionRef = useRef<string>(EVERY_EXPRESSION);
     const prevErrorRef = useRef<string>(TEXT_EMPTY);
 
-    // Memoize sorted arrays to prevent recreation on every render
+    // Memoized sorted arrays
     const sortedSelectedMonths = useMemo(
-        () => [...selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]),
-        [selectedMonths]
+        () => [...state.selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]),
+        [state.selectedMonths]
     );
+
     const sortedSelectedWeekdays = useMemo(
-        () => [...selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]),
-        [selectedWeekdays]
+        () => [...state.selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]),
+        [state.selectedWeekdays]
     );
 
-    const handleMonthChange = (month: string) => {
-        setSelectedMonths((prev) =>
-            prev.includes(month) ? prev.filter((m) => m !== month) : [...prev, month]
-        );
-    };
+    // Memoized min/max values
+    const {minVal, maxVal} = useMemo(() => ({
+        minVal: isDay ? 1 : 0,
+        maxVal: isDay ? 31 : (isHour ? 23 : 59)
+    }), [isDay, isHour]);
 
-    const handleWeekdayChange = (weekday: string) => {
-        setSelectedWeekdays((prev) =>
-            prev.includes(weekday) ? prev.filter((w) => w !== weekday) : [...prev, weekday]
-        );
-    };
+    // Event handlers with useCallback for optimization
+    const handleMonthChange = useCallback((month: string) => {
+        setState(prev => ({
+            ...prev,
+            selectedMonths: prev.selectedMonths.includes(month)
+                ? prev.selectedMonths.filter(m => m !== month)
+                : [...prev.selectedMonths, month]
+        }));
+    }, []);
 
-    const handleOptionChange = (newOption: string) => {
-        setOption(newOption);
-        if (isSecondOrMinuteOrHourOrDay) {
-            if (newOption === TYPE_INTERVAL) {
-                setIntervalValue(TEXT_ONE);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSpecificValues(TEXT_EMPTY);
-            } else if (newOption === TYPE_BETWEEN) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_ONE);
-                setToValue('2');
-                setSpecificValues(TEXT_EMPTY);
-            } else if (newOption === TYPE_SPECIFIC) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSpecificValues('1,2,3');
-            } else if (newOption === TYPE_RANGES) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSpecificValues('1-5,10-15');
-            } else {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSpecificValues(TEXT_EMPTY);
-            }
-        } else if (isMonth) {
-            if (newOption === TYPE_INTERVAL) {
-                setIntervalValue(TEXT_ONE);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedMonths([]);
-            } else if (newOption === TYPE_BETWEEN) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_ONE);
-                setToValue('2');
-                setSelectedMonths([]);
-            } else if (newOption === TYPE_SPECIFIC) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedMonths(['JAN']);
-            } else {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedMonths([]);
-            }
-        } else if (isWeekday) {
-            if (newOption === TYPE_INTERVAL) {
-                setIntervalValue(TEXT_ONE);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedWeekdays([]);
-                setWeekday(WEEKDAY_MON);
-                setNthOccurrence(TEXT_ONE);
-            } else if (newOption === TYPE_BETWEEN) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(WEEKDAY_SUN);
-                setToValue(WEEKDAY_MON);
-                setSelectedWeekdays([]);
-                setWeekday(WEEKDAY_MON);
-                setNthOccurrence(TEXT_ONE);
-            } else if (newOption === TYPE_SPECIFIC) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedWeekdays([WEEKDAY_MON]);
-                setWeekday(WEEKDAY_MON);
-                setNthOccurrence(TEXT_ONE);
-            } else if (newOption === TYPE_NTH) {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedWeekdays([]);
-                setWeekday(WEEKDAY_MON);
-                setNthOccurrence(TEXT_ONE);
-            } else {
-                setIntervalValue(TEXT_EMPTY);
-                setFromValue(TEXT_EMPTY);
-                setToValue(TEXT_EMPTY);
-                setSelectedWeekdays([]);
-                setWeekday(WEEKDAY_MON);
-                setNthOccurrence(TEXT_ONE);
-            }
-        }
-        setError(TEXT_EMPTY); // Reset error on option change
-    };
+    const handleWeekdayChange = useCallback((weekday: string) => {
+        setState(prev => ({
+            ...prev,
+            selectedWeekdays: prev.selectedWeekdays.includes(weekday)
+                ? prev.selectedWeekdays.filter(w => w !== weekday)
+                : [...prev.selectedWeekdays, weekday]
+        }));
+    }, []);
 
-    // Validate and generate cron expression
+    // Option change handler with cleaner state updates
+    const handleOptionChange = useCallback((newOption: OptionType) => {
+        setState(prev => {
+            const baseState = {
+                ...prev,
+                option: newOption,
+                error: TEXT_EMPTY
+            };
+
+            if (isSecondOrMinuteOrHourOrDay) {
+                return {
+                    ...baseState,
+                    intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
+                    fromValue: newOption === TYPE_BETWEEN ? TEXT_ONE : TEXT_EMPTY,
+                    toValue: newOption === TYPE_BETWEEN ? '2' : TEXT_EMPTY,
+                    specificValues: newOption === TYPE_SPECIFIC ? '1,2,3' :
+                        newOption === TYPE_RANGES ? '1-5,10-15' : TEXT_EMPTY
+                };
+            }
+
+            if (isMonth) {
+                return {
+                    ...baseState,
+                    intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
+                    fromValue: newOption === TYPE_BETWEEN ? TEXT_ONE : TEXT_EMPTY,
+                    toValue: newOption === TYPE_BETWEEN ? '2' : TEXT_EMPTY,
+                    selectedMonths: newOption === TYPE_SPECIFIC ? ['JAN'] : []
+                };
+            }
+
+            if (isWeekday) {
+                return {
+                    ...baseState,
+                    intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
+                    fromValue: newOption === TYPE_BETWEEN ? WEEKDAY_SUN : TEXT_EMPTY,
+                    toValue: newOption === TYPE_BETWEEN ? WEEKDAY_MON : TEXT_EMPTY,
+                    selectedWeekdays: newOption === TYPE_SPECIFIC ? [WEEKDAY_MON] : [],
+                    weekday: WEEKDAY_MON,
+                    nthOccurrence: TEXT_ONE
+                };
+            }
+
+            return baseState;
+        });
+    }, [isSecondOrMinuteOrHourOrDay, isMonth, isWeekday]);
+
+    // Generic input change handler
+    const createInputHandler = useCallback((field: keyof CronPartState) =>
+        (value: string) => {
+            setState(prev => ({...prev, [field]: value}));
+        }, []
+    );
+
+    // Expression generation effect
     useEffect(() => {
         let expression = EVERY_EXPRESSION;
         let newError = TEXT_EMPTY;
 
         try {
-            if (name === NAME_MONTH && option === TYPE_SPECIFIC && sortedSelectedMonths.length === 0) {
+            // Validation
+            if (name === NAME_MONTH && state.option === TYPE_SPECIFIC && sortedSelectedMonths.length === 0) {
                 newError = 'At least one month must be selected';
-            } else if (name === NAME_DAY_OF_WEEK && option === TYPE_SPECIFIC && sortedSelectedWeekdays.length === 0) {
+            } else if (name === NAME_DAY_OF_WEEK && state.option === TYPE_SPECIFIC && sortedSelectedWeekdays.length === 0) {
                 newError = 'At least one day of week must be selected';
             } else {
-                let options: CronPartOptions = {
-                    type: option as any,
-                    intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
-                    fromValue: fromValue || undefined,
-                    toValue: toValue || undefined,
-                    specificValues: specificValues || undefined,
-                    weekday: weekday || undefined,
-                    nthOccurrence: nthOccurrence || undefined
+                const options: CronPartOptions = {
+                    type: state.option as any,
+                    intervalValue: state.intervalValue ? parseInt(state.intervalValue, 10) : undefined,
+                    fromValue: state.fromValue || undefined,
+                    toValue: state.toValue || undefined,
+                    specificValues: state.specificValues || undefined,
+                    weekday: state.weekday || undefined,
+                    nthOccurrence: state.nthOccurrence || undefined
                 };
 
-                if (name === NAME_MONTH) {
-                    options.specificValues = sortedSelectedMonths.length > 0 ? sortedSelectedMonths.join(',') : undefined;
-                } else if (name === NAME_DAY_OF_WEEK) {
-                    options.specificValues = sortedSelectedWeekdays.length > 0 ? sortedSelectedWeekdays.join(',') : undefined;
+                // Set specific values for months and weekdays
+                if (name === NAME_MONTH && sortedSelectedMonths.length > 0) {
+                    options.specificValues = sortedSelectedMonths.join(',');
+                } else if (name === NAME_DAY_OF_WEEK && sortedSelectedWeekdays.length > 0) {
+                    options.specificValues = sortedSelectedWeekdays.join(',');
                 }
 
-                if (name === NAME_SECOND) {
-                    expression = CronUtils.generateSecondExpression(options);
-                } else if (name === NAME_MINUTE) {
-                    expression = CronUtils.generateMinuteExpression(options);
-                } else if (name === NAME_HOUR) {
-                    expression = CronUtils.generateHourExpression(options);
-                } else if (name === NAME_DAY_OF_MONTH) {
-                    expression = CronUtils.generateDayOfMonthExpression(options);
-                } else if (name === NAME_MONTH) {
-                    expression = CronUtils.generateMonthExpression(options);
-                } else if (name === NAME_DAY_OF_WEEK) {
-                    expression = CronUtils.generateDayOfWeekExpression(options);
+                // Generate expression based on name
+                const expressionGenerators = {
+                    [NAME_SECOND]: () => CronUtils.generateSecondExpression(options),
+                    [NAME_MINUTE]: () => CronUtils.generateMinuteExpression(options),
+                    [NAME_HOUR]: () => CronUtils.generateHourExpression(options),
+                    [NAME_DAY_OF_MONTH]: () => CronUtils.generateDayOfMonthExpression(options),
+                    [NAME_MONTH]: () => CronUtils.generateMonthExpression(options),
+                    [NAME_DAY_OF_WEEK]: () => CronUtils.generateDayOfWeekExpression(options)
+                };
+
+                const generator = expressionGenerators[name as keyof typeof expressionGenerators];
+
+                if (generator) {
+                    expression = generator();
                 }
             }
 
-            // Only update expression if it has changed
+            // Update expression only if changed
             if (expression !== prevExpressionRef.current) {
                 prevExpressionRef.current = expression;
                 onExpressionChange(expression);
@@ -230,88 +207,133 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
             }
         }
 
-        // Only update error if it has changed
+        // Update error only if changed
         if (newError !== prevErrorRef.current) {
             prevErrorRef.current = newError;
-            setError(newError);
+            setState(prev => ({...prev, error: newError}));
         }
-    }, [name, option, intervalValue, fromValue, toValue, specificValues, sortedSelectedMonths, sortedSelectedWeekdays, weekday, nthOccurrence, onExpressionChange]);
+    }, [
+        name,
+        state.option,
+        state.intervalValue,
+        state.fromValue,
+        state.toValue,
+        state.specificValues,
+        sortedSelectedMonths,
+        sortedSelectedWeekdays,
+        state.weekday,
+        state.nthOccurrence,
+        onExpressionChange
+    ]);
 
-    const minVal = (name === NAME_DAY_OF_MONTH) ? 1 : 0;
-    const maxVal = (name === NAME_DAY_OF_MONTH) ? 31 : (isHour ? 23 : 59);
+    // Render helper for number inputs
+    const renderNumberInput = (
+        value: string,
+        onChange: (value: string) => void,
+        placeholder: string,
+        min: number = minVal,
+        max: number = maxVal
+    ) => (
+        <input
+            type="number"
+            min={min}
+            max={max}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            className={styles.numberInput}
+        />
+    );
+
+    // Render helper for dropdowns
+    const renderDropdown = (
+        value: string,
+        onChange: (value: string) => void,
+        options: readonly string[],
+        isMonth: boolean = false,
+        className?: string
+    ) => (
+        <select
+            className={clsx(styles.dropdown, className)}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+        >
+            {options.map(item => (
+                <option
+                    key={item}
+                    value={isMonth ? MONTHS.indexOf(item) + 1 : item}
+                >
+                    {item}
+                </option>
+            ))}
+        </select>
+    );
 
     return (
         <fieldset className={styles.cronPart}>
             <legend>{name.charAt(0).toUpperCase() + name.slice(1)} Expression</legend>
-            {error && <div className={styles.errorMessage}
-                           style={{color: 'var(--ifm-color-danger)', marginBottom: '1em'}}>{error}</div>}
+
+            {state.error && (
+                <div
+                    className={styles.errorMessage}
+                    style={{color: 'var(--ifm-color-danger)', marginBottom: '1em'}}
+                >
+                    {state.error}
+                </div>
+            )}
 
             <div className={styles.optionContainer}>
                 <label htmlFor={`${name}-option`}>Option:</label>
                 <select
                     id={`${name}-option`}
-                    value={option}
-                    onChange={(expr: { target: { value: string; }; }) => handleOptionChange(expr.target.value)}
-                    className={clsx(styles.optionSelect, "margin-top--md", "margin-bottom--md")}
+                    value={state.option}
+                    onChange={e => handleOptionChange(e.target.value as OptionType)}
+                    className={clsx(styles.optionSelect, 'margin-top--md', 'margin-bottom--md')}
                 >
-                    <option value="every">Every {name}</option>
-                    <option value="interval">Every N {name}</option>
-                    <option value="between">From ... to ... {name}</option>
-                    <option value="specific">Specific {plural}</option>
-                    {name === NAME_DAY_OF_MONTH && <option value="ranges">Multiple ranges</option>}
-                    {isWeekday && <option value="nth">Nth occurrence</option>}
+                    <option value={TYPE_EVERY}>Every {name}</option>
+                    <option value={TYPE_INTERVAL}>Every N {name}</option>
+                    <option value={TYPE_BETWEEN}>From ... to ... {name}</option>
+                    <option value={TYPE_SPECIFIC}>Specific {plural}</option>
+                    {name === NAME_DAY_OF_MONTH && (
+                        <option value={TYPE_RANGES}>Multiple ranges</option>
+                    )}
+                    {isWeekday && <option value={TYPE_NTH}>Nth occurrence</option>}
                 </select>
             </div>
 
-            {option === TYPE_INTERVAL && (
+            {state.option === TYPE_INTERVAL && (
                 <fieldset className={styles.subFieldset}>
                     <legend>Interval</legend>
                     <div className={styles.inputContainer}>
-                        <input
-                            type="number"
-                            min="1"
-                            max={isMonth ? 12 : (isWeekday ? 7 : maxVal)}
-                            value={intervalValue}
-                            onChange={(expr: {
-                                target: { value: SetStateAction<string>; };
-                            }) => setIntervalValue(expr.target.value)}
-                            placeholder={`Enter ${name} interval`}
-                            className={styles.numberInput}
-                        />
+                        {renderNumberInput(
+                            state.intervalValue,
+                            createInputHandler('intervalValue'),
+                            `Enter ${name} interval`,
+                            1,
+                            isMonth ? 12 : (isWeekday ? 7 : maxVal)
+                        )}
                     </div>
                 </fieldset>
             )}
 
-            {option === TYPE_BETWEEN && (
+            {state.option === TYPE_BETWEEN && (
                 <div className={styles.betweenContainer}>
                     <fieldset className={styles.subFieldset}>
                         <legend>From</legend>
                         <div className={styles.inputContainer}>
                             {isMonth || isWeekday ? (
-                                <select
-                                    className={styles.dropdown}
-                                    value={fromValue}
-                                    onChange={(expr: {
-                                        target: { value: SetStateAction<string>; };
-                                    }) => setFromValue(expr.target.value)}
-                                >
-                                    {(isMonth ? MONTHS : WEEK_DAYS).map((item) => (
-                                        <option key={item}
-                                                value={isMonth ? MONTHS.indexOf(item) + 1 : item}>{item}</option>
-                                    ))}
-                                </select>
+                                renderDropdown(
+                                    state.fromValue,
+                                    createInputHandler('fromValue'),
+                                    isMonth ? MONTHS : WEEK_DAYS,
+                                    isMonth
+                                )
                             ) : (
-                                <input
-                                    type="number"
-                                    min={minVal}
-                                    max={maxVal}
-                                    value={fromValue}
-                                    onChange={(expr: {
-                                        target: { value: SetStateAction<string>; };
-                                    }) => setFromValue(expr.target.value)}
-                                    placeholder={`From ${name}`}
-                                    className={styles.numberInput}
-                                />
+                                renderNumberInput(
+                                    state.fromValue,
+                                    createInputHandler('fromValue'),
+                                    `From ${name}`
+                                )
                             )}
                         </div>
                     </fieldset>
@@ -319,37 +341,25 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                         <legend>To</legend>
                         <div className={styles.inputContainer}>
                             {isMonth || isWeekday ? (
-                                <select
-                                    className={styles.dropdown}
-                                    value={toValue}
-                                    onChange={(expr: {
-                                        target: { value: SetStateAction<string>; };
-                                    }) => setToValue(expr.target.value)}
-                                >
-                                    {(isMonth ? MONTHS : WEEK_DAYS).map((item) => (
-                                        <option key={item}
-                                                value={isMonth ? MONTHS.indexOf(item) + 1 : item}>{item}</option>
-                                    ))}
-                                </select>
+                                renderDropdown(
+                                    state.toValue,
+                                    createInputHandler('toValue'),
+                                    isMonth ? MONTHS : WEEK_DAYS,
+                                    isMonth
+                                )
                             ) : (
-                                <input
-                                    type="number"
-                                    min={minVal}
-                                    max={maxVal}
-                                    value={toValue}
-                                    onChange={(expr: {
-                                        target: { value: SetStateAction<string>; };
-                                    }) => setToValue(expr.target.value)}
-                                    placeholder={`To ${name}`}
-                                    className={styles.numberInput}
-                                />
+                                renderNumberInput(
+                                    state.toValue,
+                                    createInputHandler('toValue'),
+                                    `To ${name}`
+                                )
                             )}
                         </div>
                     </fieldset>
                 </div>
             )}
 
-            {option === TYPE_SPECIFIC && (
+            {state.option === TYPE_SPECIFIC && (
                 <fieldset className={styles.subFieldset}>
                     <legend>{plural.charAt(0).toUpperCase() + plural.slice(1)}</legend>
                     <div className={clsx({
@@ -357,22 +367,22 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                         [styles.specificContainerTextInput]: !(isMonth || isWeekday)
                     })}>
                         {isMonth ? (
-                            MONTHS.map((month) => (
+                            MONTHS.map(month => (
                                 <label key={month} className={styles.checkboxLabel}>
                                     <input
                                         type="checkbox"
-                                        checked={selectedMonths.includes(month)}
+                                        checked={state.selectedMonths.includes(month)}
                                         onChange={() => handleMonthChange(month)}
                                     />
                                     {month}
                                 </label>
                             ))
                         ) : isWeekday ? (
-                            WEEK_DAYS.map((day) => (
+                            WEEK_DAYS.map(day => (
                                 <label key={day} className={styles.checkboxLabel}>
                                     <input
                                         type="checkbox"
-                                        checked={selectedWeekdays.includes(day)}
+                                        checked={state.selectedWeekdays.includes(day)}
                                         onChange={() => handleWeekdayChange(day)}
                                     />
                                     {day}
@@ -381,10 +391,8 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                         ) : (
                             <input
                                 type="text"
-                                value={specificValues}
-                                onChange={(expr: {
-                                    target: { value: SetStateAction<string>; };
-                                }) => setSpecificValues(expr.target.value)}
+                                value={state.specificValues}
+                                onChange={e => createInputHandler('specificValues')(e.target.value)}
                                 placeholder={`e.g., ${isHour ? '0,1,2' : (isDay ? '1,2,3' : '0,15,30')}`}
                                 pattern="^(\d+)(,\d+)*$"
                                 title="Comma-separated numbers only"
@@ -395,16 +403,14 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 </fieldset>
             )}
 
-            {option === TYPE_RANGES && name === NAME_DAY_OF_MONTH && (
+            {state.option === TYPE_RANGES && name === NAME_DAY_OF_MONTH && (
                 <div className={styles.inputContainer}>
                     <fieldset className={styles.inputGroup}>
                         <legend>Day ranges (separated by comma)</legend>
                         <input
                             type="text"
-                            value={specificValues}
-                            onChange={(expr: {
-                                target: { value: SetStateAction<string>; };
-                            }) => setSpecificValues(expr.target.value)}
+                            value={state.specificValues}
+                            onChange={e => createInputHandler('specificValues')(e.target.value)}
                             placeholder="e.g., 1-10,12-14,22-25"
                             pattern="^(\d+-\d+)(,\d+-\d+)*$"
                             title="Comma-separated ranges (e.g., 1-10,12-14)"
@@ -414,39 +420,29 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 </div>
             )}
 
-            {option === TYPE_NTH && isWeekday && (
+            {state.option === TYPE_NTH && isWeekday && (
                 <fieldset className={styles.subFieldset}>
                     <legend>Nth occurrence</legend>
                     <div className={styles.dropdownContainer}>
                         <div className={styles.dropdownUnit}>
                             <label htmlFor="weekday-select">Day of Week:</label>
-                            <select
-                                id="weekday-select"
-                                className={clsx(styles.dropdown, styles.nthDropdown)}
-                                value={weekday}
-                                onChange={(expr: {
-                                    target: { value: SetStateAction<string>; };
-                                }) => setWeekday(expr.target.value)}
-                            >
-                                {WEEK_DAYS.map((weekday) => (
-                                    <option key={weekday} value={weekday}>{weekday}</option>
-                                ))}
-                            </select>
+                            {renderDropdown(
+                                state.weekday,
+                                createInputHandler('weekday'),
+                                WEEK_DAYS,
+                                false,
+                                clsx(styles.nthDropdown)
+                            )}
                         </div>
                         <div className={styles.dropdownUnit}>
                             <label htmlFor="nth-select">nth occurrence:</label>
-                            <select
-                                id="nth-select"
-                                className={clsx(styles.dropdown, styles.nthDropdown)}
-                                value={nthOccurrence}
-                                onChange={(expr: {
-                                    target: { value: SetStateAction<string>; };
-                                }) => setNthOccurrence(expr.target.value)}
-                            >
-                                {NTH_OCCURRENCES.map((n) => (
-                                    <option key={n} value={n}>{n}</option>
-                                ))}
-                            </select>
+                            {renderDropdown(
+                                state.nthOccurrence,
+                                createInputHandler('nthOccurrence'),
+                                NTH_OCCURRENCES,
+                                false,
+                                clsx(styles.nthDropdown)
+                            )}
                         </div>
                     </div>
                 </fieldset>
@@ -457,7 +453,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
 
 const CronGeneratorPage: React.FC = () => {
     const [copied, setCopied] = useState(false);
-    const [cronExpressions, setCronExpressions] = useState({
+    const [cronExpressions, setCronExpressions] = useState<CronExpressions>({
         second: EVERY_EXPRESSION,
         minute: EVERY_EXPRESSION,
         hour: EVERY_EXPRESSION,
@@ -466,51 +462,79 @@ const CronGeneratorPage: React.FC = () => {
         dayOfWeek: EVERY_EXPRESSION
     });
 
-    const cronExpression = `${cronExpressions.second} ${cronExpressions.minute} ${cronExpressions.hour} ${cronExpressions.dayOfMonth} ${cronExpressions.month} ${cronExpressions.dayOfWeek}`;
+    const cronExpression = useMemo(() =>
+            `${cronExpressions.second} ${cronExpressions.minute} ${cronExpressions.hour} ${cronExpressions.dayOfMonth} ${cronExpressions.month} ${cronExpressions.dayOfWeek}`,
+        [cronExpressions]
+    );
 
-    const handleExpressionChange = (part: keyof typeof cronExpressions, expression: string) => {
+    const handleExpressionChange = useCallback((part: keyof CronExpressions, expression: string) => {
         setCronExpressions(prev => ({
             ...prev,
             [part]: expression
         }));
-    };
+    }, []);
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(cronExpression).then(() => {
+    const handleCopy = useCallback(async () => {
+        try {
+            await navigator.clipboard.writeText(cronExpression);
             setCopied(true);
             setTimeout(() => setCopied(false), 1000);
-        });
-    };
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+        }
+    }, [cronExpression]);
 
     return (
-        <div className={clsx(styles.pageContainer, "margin-top--xl", "margin-bottom--md")}>
-            <h1 className={clsx(styles.textCenter, "margin-top--sm", "margin-bottom--md")}>Spring Cron Expression
-                Generator</h1>
+        <div className={clsx(styles.pageContainer, 'margin-top--xl', 'margin-bottom--md')}>
+            <h1 className={clsx(styles.textCenter, 'margin-top--sm', 'margin-bottom--md')}>
+                Spring Cron Expression Generator
+            </h1>
+
             <fieldset className={styles.resultContainer}>
                 <legend>Result</legend>
                 <div className={styles.codeBlockContainer}>
-                    <pre className={styles.resultCode}>
-                        <code>{cronExpression}</code>
-                        <button
-                            className={clsx(styles.copyButton, {[styles.copied]: copied})}
-                            onClick={handleCopy}
-                            aria-label={copied ? 'Copied' : 'Copy'}
-                        />
-                    </pre>
+          <pre className={styles.resultCode}>
+            <code>{cronExpression}</code>
+            <button
+                className={clsx(styles.copyButton, {[styles.copied]: copied})}
+                onClick={handleCopy}
+                aria-label={copied ? 'Copied' : 'Copy'}
+                type="button"
+            />
+          </pre>
                 </div>
             </fieldset>
-            <CronPart name={NAME_SECOND} plural="seconds"
-                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_SECOND, expr)}/>
-            <CronPart name={NAME_MINUTE} plural="minutes"
-                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_MINUTE, expr)}/>
-            <CronPart name={NAME_HOUR} plural="hours"
-                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_HOUR, expr)}/>
-            <CronPart name={NAME_DAY_OF_MONTH} plural="days"
-                      onExpressionChange={(expr: string) => handleExpressionChange('dayOfMonth', expr)}/>
-            <CronPart name={NAME_MONTH} plural="months"
-                      onExpressionChange={(expr: string) => handleExpressionChange(NAME_MONTH, expr)}/>
-            <CronPart name={NAME_DAY_OF_WEEK} plural="days of week"
-                      onExpressionChange={(expr: string) => handleExpressionChange('dayOfWeek', expr)}/>
+
+            <CronPart
+                name={NAME_SECOND}
+                plural="seconds"
+                onExpressionChange={(expr: string) => handleExpressionChange(NAME_SECOND, expr)}
+            />
+            <CronPart
+                name={NAME_MINUTE}
+                plural="minutes"
+                onExpressionChange={(expr: string) => handleExpressionChange(NAME_MINUTE, expr)}
+            />
+            <CronPart
+                name={NAME_HOUR}
+                plural="hours"
+                onExpressionChange={(expr: string) => handleExpressionChange(NAME_HOUR, expr)}
+            />
+            <CronPart
+                name={NAME_DAY_OF_MONTH}
+                plural="days"
+                onExpressionChange={(expr: string) => handleExpressionChange('dayOfMonth', expr)}
+            />
+            <CronPart
+                name={NAME_MONTH}
+                plural="months"
+                onExpressionChange={(expr: string) => handleExpressionChange(NAME_MONTH, expr)}
+            />
+            <CronPart
+                name={NAME_DAY_OF_WEEK}
+                plural="days of week"
+                onExpressionChange={(expr: string) => handleExpressionChange('dayOfWeek', expr)}
+            />
         </div>
     );
 };
