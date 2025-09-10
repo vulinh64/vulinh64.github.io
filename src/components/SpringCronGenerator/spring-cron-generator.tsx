@@ -57,6 +57,7 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
     const [nthOccurrence, setNthOccurrence] = useState(TEXT_ONE);
     const [error, setError] = useState<string>(TEXT_EMPTY);
     const prevExpressionRef = useRef<string>(EVERY_EXPRESSION);
+    const prevErrorRef = useRef<string>(TEXT_EMPTY);
 
     // Memoize sorted arrays to prevent recreation on every render
     const sortedSelectedMonths = useMemo(
@@ -169,98 +170,72 @@ const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) =
                 setNthOccurrence(TEXT_ONE);
             }
         }
+        setError(TEXT_EMPTY); // Reset error on option change
     };
 
-    // Generate cron expression
+    // Validate and generate cron expression
     useEffect(() => {
         let expression = EVERY_EXPRESSION;
+        let newError = TEXT_EMPTY;
+
         try {
-            if (name === NAME_SECOND) {
-                const options: CronPartOptions = {
-                    type: option as any,
-                    intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
-                    fromValue: fromValue ? parseInt(fromValue) : undefined,
-                    toValue: toValue ? parseInt(toValue) : undefined,
-                    specificValues: specificValues || undefined
-                };
-                expression = CronUtils.generateSecondExpression(options);
-            } else if (name === NAME_MINUTE) {
-                const options: CronPartOptions = {
-                    type: option as any,
-                    intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
-                    fromValue: fromValue ? parseInt(fromValue) : undefined,
-                    toValue: toValue ? parseInt(toValue) : undefined,
-                    specificValues: specificValues || undefined
-                };
-                expression = CronUtils.generateMinuteExpression(options);
-            } else if (name === NAME_HOUR) {
-                const options: CronPartOptions = {
-                    type: option as any,
-                    intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
-                    fromValue: fromValue ? parseInt(fromValue) : undefined,
-                    toValue: toValue ? parseInt(toValue) : undefined,
-                    specificValues: specificValues || undefined
-                };
-                expression = CronUtils.generateHourExpression(options);
-            } else if (name === NAME_DAY_OF_MONTH) {
-                const options: CronPartOptions = {
-                    type: option as any,
-                    intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
-                    fromValue: fromValue ? parseInt(fromValue) : undefined,
-                    toValue: toValue ? parseInt(toValue) : undefined,
-                    specificValues: specificValues || undefined
-                };
-                expression = CronUtils.generateDayOfMonthExpression(options);
-            } else if (name === NAME_MONTH) {
-                const options: CronPartOptions = {
-                    type: option as any,
-                    intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
-                    fromValue: fromValue ? parseInt(fromValue) : undefined,
-                    toValue: toValue ? parseInt(toValue) : undefined,
-                    specificValues: sortedSelectedMonths.length > 0 ? sortedSelectedMonths.join(',') : undefined
-                };
-                expression = CronUtils.generateMonthExpression(options);
-            } else if (name === NAME_DAY_OF_WEEK) {
-                const options: CronPartOptions = {
+            if (name === NAME_MONTH && option === TYPE_SPECIFIC && sortedSelectedMonths.length === 0) {
+                newError = 'At least one month must be selected';
+            } else if (name === NAME_DAY_OF_WEEK && option === TYPE_SPECIFIC && sortedSelectedWeekdays.length === 0) {
+                newError = 'At least one day of week must be selected';
+            } else {
+                let options: CronPartOptions = {
                     type: option as any,
                     intervalValue: intervalValue ? parseInt(intervalValue) : undefined,
                     fromValue: fromValue || undefined,
                     toValue: toValue || undefined,
-                    specificValues: sortedSelectedWeekdays.length > 0 ? sortedSelectedWeekdays.join(',') : undefined,
+                    specificValues: specificValues || undefined,
                     weekday: weekday || undefined,
                     nthOccurrence: nthOccurrence || undefined
                 };
-                expression = CronUtils.generateDayOfWeekExpression(options);
+
+                if (name === NAME_MONTH) {
+                    options.specificValues = sortedSelectedMonths.length > 0 ? sortedSelectedMonths.join(',') : undefined;
+                } else if (name === NAME_DAY_OF_WEEK) {
+                    options.specificValues = sortedSelectedWeekdays.length > 0 ? sortedSelectedWeekdays.join(',') : undefined;
+                }
+
+                if (name === NAME_SECOND) {
+                    expression = CronUtils.generateSecondExpression(options);
+                } else if (name === NAME_MINUTE) {
+                    expression = CronUtils.generateMinuteExpression(options);
+                } else if (name === NAME_HOUR) {
+                    expression = CronUtils.generateHourExpression(options);
+                } else if (name === NAME_DAY_OF_MONTH) {
+                    expression = CronUtils.generateDayOfMonthExpression(options);
+                } else if (name === NAME_MONTH) {
+                    expression = CronUtils.generateMonthExpression(options);
+                } else if (name === NAME_DAY_OF_WEEK) {
+                    expression = CronUtils.generateDayOfWeekExpression(options);
+                }
             }
 
-            // Only update if expression has changed
+            // Only update expression if it has changed
             if (expression !== prevExpressionRef.current) {
                 prevExpressionRef.current = expression;
                 onExpressionChange(expression);
             }
         } catch (err) {
             if (err instanceof CronError) {
-                if (err.message !== error) {
-                    setError(err.message);
-                }
+                newError = err.message;
                 if (prevExpressionRef.current !== EVERY_EXPRESSION) {
                     prevExpressionRef.current = EVERY_EXPRESSION;
                     onExpressionChange(EVERY_EXPRESSION);
                 }
             }
         }
-    }, [name, option, intervalValue, fromValue, toValue, specificValues, sortedSelectedMonths, sortedSelectedWeekdays, weekday, nthOccurrence, onExpressionChange, error]);
 
-    // Separate effect for validation errors
-    useEffect(() => {
-        if (name === NAME_MONTH && option === TYPE_SPECIFIC && sortedSelectedMonths.length === 0) {
-            setError('At least one month must be selected');
-        } else if (name === NAME_DAY_OF_WEEK && option === TYPE_SPECIFIC && sortedSelectedWeekdays.length === 0) {
-            setError('At least one day of week must be selected');
-        } else if (error !== TEXT_EMPTY) {
-            setError(TEXT_EMPTY);
+        // Only update error if it has changed
+        if (newError !== prevErrorRef.current) {
+            prevErrorRef.current = newError;
+            setError(newError);
         }
-    }, [name, option, sortedSelectedMonths, sortedSelectedWeekdays, error]);
+    }, [name, option, intervalValue, fromValue, toValue, specificValues, sortedSelectedMonths, sortedSelectedWeekdays, weekday, nthOccurrence, onExpressionChange]);
 
     const minVal = (name === NAME_DAY_OF_MONTH) ? 1 : 0;
     const maxVal = (name === NAME_DAY_OF_MONTH) ? 31 : (isHour ? 23 : 59);
