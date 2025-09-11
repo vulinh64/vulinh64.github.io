@@ -18,6 +18,11 @@ java:
   description: "A versatile, object-oriented programming language for building applications."
   permalink: /java
 
+'java date time':
+  label: "java date time"
+  description: "Java's modern `java.time` API introduced since JDK 8"
+  permalink: /java-date-time
+
 jdk8:
   label: "jdk8"
   description: "Java Development Kit version 8, widely used and stable release."
