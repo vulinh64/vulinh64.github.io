@@ -412,7 +412,7 @@ export const getInitialStateFromUrl = (
     urlConfig: UrlParamConfig
 ): CronPartState => {
     const {optionParam, argParams, validOptions, maxVal} = urlConfig;
-    const urlParams = new URLSearchParams(window.location.search);
+
     const initialState: CronPartState = {
         option: TYPE_EVERY,
         selectedMonths: [],
@@ -427,6 +427,13 @@ export const getInitialStateFromUrl = (
         lastWeekday: WEEKDAY_MON,
         error: TEXT_EMPTY
     };
+
+    // Check if running in a browser environment
+    if (typeof window === 'undefined') {
+        return initialState; // Return default state for non-browser environments
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
 
     if (name === NAME_SECOND || name === NAME_MINUTE || name === NAME_HOUR || name === NAME_DAY_OF_MONTH || name === NAME_MONTH || name === NAME_DAY_OF_WEEK) {
         const optionIndex = parseInt(urlParams.get(optionParam) || '-1', 10);
@@ -533,6 +540,11 @@ export const updateUrlParams = (
     state: CronPartState,
     urlConfig: UrlParamConfig
 ) => {
+    // Check if running in a browser environment
+    if (typeof window === 'undefined') {
+        return; // Skip URL manipulation in non-browser environments
+    }
+
     const {optionParam, argParams, validOptions} = urlConfig;
     const urlParams = new URLSearchParams(window.location.search);
     const optionIndex = validOptions.indexOf(state.option);
