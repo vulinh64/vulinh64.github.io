@@ -1,6 +1,9 @@
 export const WEEK_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
-export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+export const MONTH_JAN = 'JAN';
+export const MONTH_FEB = 'FEB';
+
+export const MONTHS = [MONTH_JAN, MONTH_FEB, 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 export const NTH_OCCURRENCES = ['1', '2', '3', '4', '5'];
 
@@ -54,57 +57,14 @@ export const PART_LAST_DAY_OFFSET = 'Last day offset';
 export const SPACED_COMMA = ', ';
 export const COMMA_DELIMITER = ',';
 
-export class CronError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'CronError';
-    }
-}
-
-export interface CronPartProps {
-    name: string;
-    plural: string;
-    onExpressionChange: (expression: string) => void;
-}
-
-export type CronExpressions = {
-    readonly second: string;
-    readonly minute: string;
-    readonly hour: string;
-    readonly dayOfMonth: string;
-    readonly month: string;
-    readonly dayOfWeek: string;
-};
-
-export type OptionType = typeof TYPE_EVERY | typeof TYPE_INTERVAL | typeof TYPE_BETWEEN |
-    typeof TYPE_SPECIFIC | typeof TYPE_RANGES | typeof TYPE_NTH | typeof TYPE_LAST | typeof TYPE_LAST_WEEKDAY;
-
-export interface CronPartState {
-    option: OptionType;
-    selectedMonths: readonly string[];
-    selectedWeekdays: readonly string[];
-    intervalValue: string;
-    fromValue: string;
-    toValue: string;
-    specificValues: string;
-    weekday: string;
-    nthOccurrence: string;
-    lastValue: string;
-    lastWeekday: string;
-    error: string;
-}
-
-export interface CronPartOptions {
-    type: 'every' | 'interval' | 'between' | 'specific' | 'ranges' | 'nth' | 'last' | 'lastWeekday';
-    intervalValue?: number;
-    fromValue?: number | string;
-    toValue?: number | string;
-    specificValues?: string;
-    weekday?: string;
-    nthOccurrence?: string;
-    lastValue?: number;
-    lastWeekday?: string;
-}
+export const FROM_VALUE_INPUT_FIELD = 'fromValue';
+export const TO_VALUE_INPUT_FIELD = 'toValue';
+export const INTERVAL_INPUT_FIELD = 'intervalValue';
+export const SPECIFIC_VALUE_INPUT_FIELD = 'specificValues';
+export const WEEKDAY_INPUT_FIELD = 'weekday';
+export const NTH_OCCURRENCE_INPUT_FIELD = 'nthOccurrence';
+export const LAST_INPUT_FIELD = 'lastValue';
+export const LAST_WEEKDAY_INPUT_FIELD = 'lastWeekday';
 
 export const monthOrder = Object.fromEntries(
     MONTHS.map((month, index) => [month, index + 1])
