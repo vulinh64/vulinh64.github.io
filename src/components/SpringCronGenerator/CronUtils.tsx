@@ -8,6 +8,9 @@ import {
     CASE_RANGES,
     CASE_SPECIFIC,
     COMMA_DELIMITER,
+    CronError,
+    CronPartOptions,
+    CronPartState,
     dayOrder,
     EVERY_EXPRESSION,
     MAX_DAYS_OF_MONTH,
@@ -41,15 +44,12 @@ import {
     TYPE_NTH,
     TYPE_RANGES,
     TYPE_SPECIFIC,
+    UrlParamConfig,
     WEEK_DAYS,
     WEEKDAY_MON,
     WEEKDAY_SUN,
     weekdayOrder
 } from "./CronSupport";
-import {CronError} from "./components/CronError";
-import {CronPartState} from "./components/CronPartState";
-import {CronPartOptions} from "./components/CronPartOptions";
-import {UrlParamConfig} from "./components/UrlParamConfig";
 
 export class CronUtils {
 
@@ -274,15 +274,63 @@ export class CronUtils {
     }
 
     static generateSecondExpression(options: CronPartOptions): string {
-        return this.generateNumericExpression(options, PART_SECOND, 0, 59);
+        switch (options.type) {
+            case CASE_EVERY:
+            case CASE_INTERVAL:
+            case CASE_BETWEEN:
+            case CASE_SPECIFIC:
+                return this.generateNumericExpression(options, PART_SECOND, 0, 59);
+
+            case CASE_RANGES:
+                if (!options.specificValues) {
+                    throw new CronError('Range values are required for ranges type');
+                }
+
+                return this.parseRanges(options.specificValues, PART_SECOND, 0, 59);
+
+            default:
+                throw new CronError('Invalid cron part type for second');
+        }
     }
 
     static generateMinuteExpression(options: CronPartOptions): string {
-        return this.generateNumericExpression(options, PART_MINUTE, 0, 59);
+        switch (options.type) {
+            case CASE_EVERY:
+            case CASE_INTERVAL:
+            case CASE_BETWEEN:
+            case CASE_SPECIFIC:
+                return this.generateNumericExpression(options, PART_MINUTE, 0, 59);
+
+            case CASE_RANGES:
+                if (!options.specificValues) {
+                    throw new CronError('Range values are required for ranges type');
+                }
+
+                return this.parseRanges(options.specificValues, PART_MINUTE, 0, 59);
+
+            default:
+                throw new CronError('Invalid cron part type for minute');
+        }
     }
 
     static generateHourExpression(options: CronPartOptions): string {
-        return this.generateNumericExpression(options, PART_HOUR, 0, 23);
+        switch (options.type) {
+            case CASE_EVERY:
+            case CASE_INTERVAL:
+            case CASE_BETWEEN:
+            case CASE_SPECIFIC:
+                return this.generateNumericExpression(options, PART_HOUR, 0, 23);
+
+            case CASE_RANGES:
+                if (!options.specificValues) {
+                    throw new CronError('Range values are required for ranges type');
+                }
+
+                return this.parseRanges(options.specificValues, PART_HOUR, 0, 23);
+
+            default:
+                throw new CronError('Invalid cron part type for hour');
+        }
     }
 
     static generateDayOfMonthExpression(options: CronPartOptions): string {
