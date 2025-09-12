@@ -12,19 +12,17 @@ import {
     CronPartOptions,
     CronPartState,
     dayOrder,
+    DEFAULT_RADIX,
     EVERY_EXPRESSION,
+    HYPHEN_DELIMITER,
     MAX_DAYS_OF_MONTH,
     MAX_DAYS_OF_WEEK,
     MAX_MONTHS,
     MIN_ONE,
     monthOrder,
     MONTHS,
-    NAME_DAY_OF_MONTH,
     NAME_DAY_OF_WEEK,
-    NAME_HOUR,
-    NAME_MINUTE,
     NAME_MONTH,
-    NAME_SECOND,
     NTH_OCCURRENCES,
     PART_DAY,
     PART_DAY_OF_WEEK,
@@ -33,6 +31,9 @@ import {
     PART_MINUTE,
     PART_MONTH,
     PART_SECOND,
+    REGEX_RANGES,
+    REGEX_SPECIFIC,
+    REGEX_WHITESPACES,
     SPACED_COMMA,
     TEXT_EMPTY,
     TEXT_ONE,
@@ -60,19 +61,19 @@ export class CronUtils {
     }
 
     private static parseSpecificValues(input: string, part: string, min: number, max: number): string {
-        if (!/^[\d\s,]+$/.test(input)) {
+        if (!REGEX_SPECIFIC.test(input)) {
             throw new CronError(`Specific ${part} values can only contain numbers, commas, and whitespace`);
         }
 
-        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
+        const values = input.replace(REGEX_WHITESPACES, TEXT_EMPTY).split(COMMA_DELIMITER);
         const numbers: number[] = [];
 
         for (const value of values) {
-            if (value === TEXT_EMPTY) {
+            if (isAnyNilOrEmpty(values)) {
                 continue;
             }
 
-            const num = parseInt(value, 10);
+            const num = parseInt(value, DEFAULT_RADIX);
 
             if (isNaN(num)) {
                 throw new CronError(`Invalid ${part} number: ${value}`);
@@ -93,11 +94,11 @@ export class CronUtils {
     }
 
     private static parseSpecificMonthValues(input: string): string {
-        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
+        const values = input.replace(REGEX_WHITESPACES, TEXT_EMPTY).split(COMMA_DELIMITER);
         const validValues: string[] = [];
 
         for (const value of values) {
-            if (value === TEXT_EMPTY) {
+            if (isAnyNilOrEmpty(value)) {
                 continue;
             }
 
@@ -120,11 +121,11 @@ export class CronUtils {
     }
 
     private static parseSpecificDayOfWeekValues(input: string): string {
-        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
+        const values = input.replace(REGEX_WHITESPACES, TEXT_EMPTY).split(COMMA_DELIMITER);
         const validValues: string[] = [];
 
         for (const value of values) {
-            if (value === TEXT_EMPTY) {
+            if (isAnyNilOrEmpty(value)) {
                 continue;
             }
 
@@ -147,26 +148,26 @@ export class CronUtils {
     }
 
     private static parseRanges(input: string, part: string, min: number, max: number): string {
-        if (!/^[\d\s,-]+$/.test(input)) {
+        if (!REGEX_RANGES.test(input)) {
             throw new CronError(`Ranges for ${part} can only contain numbers, commas, hyphens, and whitespace`);
         }
 
-        const values = input.replace(/\s+/g, TEXT_EMPTY).split(COMMA_DELIMITER);
+        const values = input.replace(REGEX_WHITESPACES, TEXT_EMPTY).split(COMMA_DELIMITER);
         const ranges: string[] = [];
 
         for (const value of values) {
-            if (value === TEXT_EMPTY) {
+            if (isAnyNilOrEmpty(value)) {
                 continue;
             }
 
-            const parts = value.split('-');
+            const parts = value.split(HYPHEN_DELIMITER);
 
             if (parts.length !== 2) {
                 throw new CronError(`Invalid range format in ${part}: '${value}' must be in the form 'num-num'`);
             }
 
-            const start = parseInt(parts[0], 10);
-            const end = parseInt(parts[MIN_ONE], 10);
+            const start = parseInt(parts[0], DEFAULT_RADIX);
+            const end = parseInt(parts[MIN_ONE], DEFAULT_RADIX);
 
             if (isNaN(start) || isNaN(end)) {
                 throw new CronError(`Invalid numbers in ${part} range: '${value}'`);
@@ -186,7 +187,7 @@ export class CronUtils {
             throw new CronError(`At least one valid ${part} range is required`);
         }
 
-        ranges.sort((a, b) => parseInt(a.split('-')[0], 10) - parseInt(b.split('-')[0], 10));
+        ranges.sort((a, b) => parseInt(a.split(HYPHEN_DELIMITER)[0], DEFAULT_RADIX) - parseInt(b.split(HYPHEN_DELIMITER)[0], DEFAULT_RADIX));
 
         return ranges.join(COMMA_DELIMITER);
     }
@@ -243,7 +244,7 @@ export class CronUtils {
                 return EVERY_EXPRESSION;
 
             case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
+                if (isAnyNilOrEmpty(options.intervalValue)) {
                     throw new CronError('Interval value is required for interval type');
                 }
 
@@ -252,7 +253,7 @@ export class CronUtils {
                 return `${intervalStart}/${options.intervalValue}`;
 
             case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
+                if (isAnyNilOrEmpty(options.fromValue, options.toValue)) {
                     throw new CronError('From and To values are required for between type');
                 }
 
@@ -262,7 +263,7 @@ export class CronUtils {
                 return `${Math.min(options.fromValue as number, options.toValue as number)}-${Math.max(options.fromValue as number, options.toValue as number)}`;
 
             case CASE_SPECIFIC:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError(`Specific values are required for specific type`);
                 }
 
@@ -282,7 +283,7 @@ export class CronUtils {
                 return this.generateNumericExpression(options, PART_SECOND, 0, 59);
 
             case CASE_RANGES:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError('Range values are required for ranges type');
                 }
 
@@ -302,7 +303,7 @@ export class CronUtils {
                 return this.generateNumericExpression(options, PART_MINUTE, 0, 59);
 
             case CASE_RANGES:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError('Range values are required for ranges type');
                 }
 
@@ -322,7 +323,7 @@ export class CronUtils {
                 return this.generateNumericExpression(options, PART_HOUR, 0, 23);
 
             case CASE_RANGES:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError('Range values are required for ranges type');
                 }
 
@@ -342,7 +343,7 @@ export class CronUtils {
                 return this.generateNumericExpression(options, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH, 1);
 
             case CASE_RANGES:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError('Range values are required for ranges type');
                 }
 
@@ -368,7 +369,7 @@ export class CronUtils {
                 return EVERY_EXPRESSION;
 
             case CASE_INTERVAL:
-                if (options.intervalValue === undefined) {
+                if (isAnyNilOrEmpty(options.intervalValue)) {
                     throw new CronError('Interval value is required for interval type');
                 }
 
@@ -377,7 +378,7 @@ export class CronUtils {
                 return `1/${options.intervalValue}`;
 
             case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
+                if (isAnyNilOrEmpty(options.fromValue, options.toValue)) {
                     throw new CronError('From and To values are required for between type');
                 }
 
@@ -388,7 +389,7 @@ export class CronUtils {
                 return this.validateMonthRange(options.fromValue, options.toValue);
 
             case CASE_SPECIFIC:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError('At least one month must be selected');
                 }
 
@@ -401,13 +402,14 @@ export class CronUtils {
 
     static generateDayOfWeekExpression(options: CronPartOptions): string {
         const validNthOccurrences = NTH_OCCURRENCES;
+
         switch (options.type) {
             case CASE_EVERY:
             case CASE_INTERVAL:
                 return this.generateNumericExpression(options, PART_DAY_OF_WEEK, MIN_ONE, MAX_DAYS_OF_WEEK);
 
             case CASE_BETWEEN:
-                if (options.fromValue === undefined || options.toValue === undefined) {
+                if (isAnyNilOrEmpty(options.fromValue, options.toValue)) {
                     throw new CronError('From and To values are required for between type');
                 }
 
@@ -418,29 +420,29 @@ export class CronUtils {
                 return this.validateDayOfWeekRange(options.fromValue, options.toValue);
 
             case CASE_SPECIFIC:
-                if (!options.specificValues) {
+                if (isAnyNilOrEmpty(options.specificValues)) {
                     throw new CronError('At least one day of week must be selected');
                 }
 
                 return this.parseSpecificDayOfWeekValues(options.specificValues);
 
             case CASE_NTH:
-                if (!options.weekday || !options.nthOccurrence) {
+                if (isAnyNilOrEmpty(options.weekday, options.nthOccurrence)) {
                     throw new CronError('Weekday and nth occurrence are required for nth type');
                 }
 
-                if (!WEEK_DAYS.includes(options.weekday)) {
+                if (!WEEK_DAYS.includes(options.weekday!)) {
                     throw new CronError(`Invalid weekday: ${options.weekday}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
                 }
 
-                if (!validNthOccurrences.includes(options.nthOccurrence)) {
+                if (!validNthOccurrences.includes(options.nthOccurrence!)) {
                     throw new CronError(`Invalid nth occurrence: ${options.nthOccurrence}. Must be one of ${validNthOccurrences.join(SPACED_COMMA)}`);
                 }
 
                 return `${options.weekday}#${options.nthOccurrence}`;
 
             case CASE_LAST_WEEKDAY:
-                if (!options.lastWeekday) {
+                if (isAnyNilOrEmpty(options.lastWeekday)) {
                     throw new CronError('Weekday is required for last weekday type');
                 }
 
@@ -483,101 +485,99 @@ export const getInitialStateFromUrl = (
 
     const urlParams = new URLSearchParams(window.location.search);
 
-    if (name === NAME_SECOND || name === NAME_MINUTE || name === NAME_HOUR || name === NAME_DAY_OF_MONTH || name === NAME_MONTH || name === NAME_DAY_OF_WEEK) {
-        const optionIndex = parseInt(urlParams.get(optionParam) || '-1', 10);
-        const [arg1, arg2] = argParams.map(param => urlParams.get(param));
+    const optionIndex = parseInt(urlParams.get(optionParam) || '-1', DEFAULT_RADIX);
+    const [arg1, arg2] = argParams.map(param => urlParams.get(param));
 
-        // For month or day of week, if mm or dw is specified but arguments are invalid, default to TYPE_EVERY
-        if ((name === NAME_MONTH || name === NAME_DAY_OF_WEEK) && urlParams.has(optionParam)) {
-            if (optionIndex < 0 || optionIndex >= validOptions.length || !validOptions[optionIndex]) {
-                return initialState; // Default to TYPE_EVERY
-            }
-            if (optionIndex === 1 && (!arg1 || isNaN(parseInt(arg1, 10)) || parseInt(arg1, 10) < 1 || parseInt(arg1, 10) > maxVal)) {
-                return initialState; // Invalid interval, default to TYPE_EVERY
-            }
-            if (optionIndex === 2 && (!arg1 || !arg2 || !(name === NAME_MONTH ? MONTHS : WEEK_DAYS).includes(arg1.toUpperCase()) || !(name === NAME_MONTH ? MONTHS : WEEK_DAYS).includes(arg2.toUpperCase()))) {
-                return initialState; // Invalid between args, default to TYPE_EVERY
-            }
-            if (optionIndex === 3 && (!arg1 || !arg1.split(',').every(val => val.trim() === '' || (name === NAME_MONTH ? MONTHS : WEEK_DAYS).includes(val.toUpperCase())))) {
-                return initialState; // Invalid specific months or weekdays, default to TYPE_EVERY
-            }
-            if (name === NAME_DAY_OF_WEEK && optionIndex === 4 && (!arg1 || !WEEK_DAYS.includes(arg1.toUpperCase()) || !arg2 || !NTH_OCCURRENCES.includes(arg2))) {
-                return initialState; // Invalid nth occurrence, default to TYPE_EVERY
-            }
-            if (name === NAME_DAY_OF_WEEK && optionIndex === 5 && (!arg1 || !WEEK_DAYS.includes(arg1.toUpperCase()))) {
-                return initialState; // Invalid last weekday, default to TYPE_EVERY
-            }
+    if (optionIndex < 0 || optionIndex >= validOptions.length || !validOptions[optionIndex]) {
+        return initialState;
+    }
+
+    const option = validOptions[optionIndex];
+
+    // Validate arguments for the given option and return default state if invalid
+    const isMonthOrWeekday = isMonth || isWeekday;
+    if (isMonthOrWeekday && urlParams.has(optionParam)) {
+        const validations = {
+            [TYPE_INTERVAL]: () => isValidInterval(arg1, maxVal),
+            [TYPE_BETWEEN]: () => isValidBetween(name, arg1, arg2),
+            [TYPE_SPECIFIC]: () => isValidSpecific(name, arg1),
+            [TYPE_NTH]: () => name === NAME_DAY_OF_WEEK && isValidNth(arg1, arg2),
+            [TYPE_LAST_WEEKDAY]: () => name === NAME_DAY_OF_WEEK && isValidLastWeekday(arg1),
+        };
+
+        if (validations[option] && !validations[option]()) {
+            return initialState;
         }
+    }
 
-        if (optionIndex >= 0 && optionIndex < validOptions.length && validOptions[optionIndex]) {
-            initialState.option = validOptions[optionIndex];
-            if (optionIndex === 1 && arg1 && !isNaN(parseInt(arg1, 10)) && parseInt(arg1, 10) >= 1 && parseInt(arg1, 10) <= maxVal) {
-                // Interval
+    initialState.option = option;
+
+    switch (option) {
+        case TYPE_INTERVAL:
+            if (isValidInterval(arg1, maxVal)) {
                 initialState.intervalValue = arg1;
-            } else if (optionIndex === 2 && arg1 && arg2) {
-                // Between
-                if (isMonth || isWeekday) {
-                    const fromUpper = arg1.toUpperCase();
-                    const toUpper = arg2.toUpperCase();
-                    if ((isMonth ? MONTHS : WEEK_DAYS).includes(fromUpper) && (isMonth ? MONTHS : WEEK_DAYS).includes(toUpper)) {
-                        initialState.fromValue = fromUpper;
-                        initialState.toValue = toUpper;
-                    }
-                } else if (!isNaN(parseInt(arg1, 10)) && !isNaN(parseInt(arg2, 10))) {
-                    initialState.fromValue = arg1;
-                    initialState.toValue = arg2;
-                }
-            } else if (optionIndex === 3 && arg1) {
-                // Specific
-                if (isMonth || isWeekday) {
-                    const values = arg1.replace(/\s+/g, TEXT_EMPTY).split(',');
-                    const validValues: string[] = [];
-                    for (const value of values) {
-                        if (value === TEXT_EMPTY) continue;
-                        const upperValue = value.toUpperCase();
-                        if ((isMonth ? MONTHS : WEEK_DAYS).includes(upperValue)) {
-                            validValues.push(upperValue);
-                        }
-                    }
+            }
+
+            break;
+
+        case TYPE_BETWEEN:
+            if (isValidBetween(name, arg1, arg2)) {
+                initialState.fromValue = arg1.toUpperCase();
+                initialState.toValue = arg2.toUpperCase();
+            }
+
+            break;
+
+        case TYPE_SPECIFIC:
+            if (isValidSpecific(name, arg1)) {
+                if (isMonthOrWeekday) {
+                    const values = arg1.replace(REGEX_WHITESPACES, TEXT_EMPTY).split(',');
+                    const validValues = values.filter(v => v !== TEXT_EMPTY && (isMonth ? MONTHS : WEEK_DAYS).includes(v.toUpperCase())).map(v => v.toUpperCase());
+
                     if (validValues.length > 0) {
                         const uniqueSorted = [...new Set(validValues)].sort((a, b) => (isMonth ? monthOrder : weekdayOrder)[a] - (isMonth ? monthOrder : weekdayOrder)[b]);
+
                         if (isMonth) {
                             initialState.selectedMonths = uniqueSorted;
                         } else {
                             initialState.selectedWeekdays = uniqueSorted;
                         }
                     }
-                } else if (/^[\d\s,]+$/.test(arg1)) {
+                } else if (REGEX_SPECIFIC.test(arg1)) {
                     initialState.specificValues = arg1;
                 }
-            } else if (optionIndex === 4 && arg1 && /^[\d\s,-]+$/.test(arg1)) {
-                // Ranges (for day of month)
+            }
+
+            break;
+
+        case TYPE_RANGES: // For day of month
+            if (isAllValid(arg1) && REGEX_RANGES.test((arg1)!)) {
                 initialState.specificValues = arg1;
-            } else if (optionIndex === 4 && arg1 && isWeekday && arg2 && WEEK_DAYS.includes(arg1.toUpperCase()) && NTH_OCCURRENCES.includes(arg2)) {
-                // Nth occurrence (for day of week)
+            }
+
+            break;
+
+        case TYPE_NTH: // For day of week
+            if (isValidNth(arg1, arg2)) {
                 initialState.weekday = arg1.toUpperCase();
                 initialState.nthOccurrence = arg2;
-            } else if (optionIndex === 5 && arg1 && isWeekday && WEEK_DAYS.includes(arg1.toUpperCase())) {
-                // Last weekday (for day of week)
-                initialState.lastWeekday = arg1.toUpperCase();
-            } else if (optionIndex === 5 && arg1 && !isNaN(parseInt(arg1, 10))) {
-                // Last (for day of month)
-                initialState.lastValue = arg1;
-            } else {
-                // Invalid parameters, default to every
-                initialState.option = TYPE_EVERY;
-                initialState.intervalValue = TEXT_ONE;
-                initialState.fromValue = isMonth ? 'JAN' : isWeekday ? WEEKDAY_SUN : TEXT_ONE;
-                initialState.toValue = isMonth ? 'FEB' : isWeekday ? WEEKDAY_MON : '2';
-                initialState.specificValues = isMonth || isWeekday ? TEXT_EMPTY : '1,2,3';
-                initialState.lastValue = TEXT_EMPTY;
-                initialState.selectedMonths = [];
-                initialState.selectedWeekdays = [];
-                initialState.weekday = WEEKDAY_MON;
-                initialState.nthOccurrence = TEXT_ONE;
-                initialState.lastWeekday = WEEKDAY_MON;
             }
-        }
+
+            break;
+
+        case TYPE_LAST_WEEKDAY: // For day of week
+            if (isValidLastWeekday(arg1)) {
+                initialState.lastWeekday = arg1.toUpperCase();
+            }
+
+            break;
+
+        case TYPE_LAST: // For day of month
+            if (arg1 && !isNaN(parseInt(arg1, DEFAULT_RADIX))) {
+                initialState.lastValue = arg1;
+            }
+
+            break;
     }
 
     return initialState;
@@ -596,43 +596,150 @@ export const updateUrlParams = (
     const {optionParam, argParams, validOptions} = urlConfig;
     const urlParams = new URLSearchParams(window.location.search);
     const optionIndex = validOptions.indexOf(state.option);
-    if (optionIndex === -1) return; // Invalid option
-    const sValue = optionIndex.toString();
-    urlParams.set(optionParam, sValue);
+
+    if (optionIndex === -1) {
+        return;
+    }
+
+    urlParams.set(optionParam, optionIndex.toString());
 
     // Remove all argument parameters
     argParams.forEach(param => urlParams.delete(param));
 
-    if (state.option === TYPE_INTERVAL && state.intervalValue) {
-        urlParams.set(argParams[0], state.intervalValue);
-    } else if (state.option === TYPE_BETWEEN && state.fromValue && state.toValue) {
-        urlParams.set(argParams[0], state.fromValue);
-        urlParams.set(argParams[1], state.toValue);
-    } else if (state.option === TYPE_SPECIFIC) {
-        let specificStr: string;
-        if (name === NAME_MONTH) {
-            const sortedMonths = [...state.selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]);
-            specificStr = sortedMonths.join(',');
-        } else if (name === NAME_DAY_OF_WEEK) {
-            const sortedWeekdays = [...state.selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]);
-            specificStr = sortedWeekdays.join(',');
-        } else {
-            specificStr = state.specificValues;
-        }
-        if (specificStr) {
-            urlParams.set(argParams[0], specificStr);
-        }
-    } else if (state.option === TYPE_RANGES && state.specificValues) {
-        urlParams.set(argParams[0], state.specificValues);
-    } else if (state.option === TYPE_NTH && state.weekday && state.nthOccurrence) {
-        urlParams.set(argParams[0], state.weekday);
-        urlParams.set(argParams[1], state.nthOccurrence);
-    } else if (state.option === TYPE_LAST_WEEKDAY && state.lastWeekday) {
-        urlParams.set(argParams[0], state.lastWeekday);
-    } else if (state.option === TYPE_LAST && state.lastValue) {
-        urlParams.set(argParams[0], state.lastValue);
+    switch (state.option) {
+        case TYPE_INTERVAL:
+            if (isAllValid(state.intervalValue)) {
+                urlParams.set(argParams[0], state.intervalValue);
+            }
+
+            break;
+
+        case TYPE_BETWEEN:
+            if (isAllValid(state.fromValue, state.toValue)) {
+                urlParams.set(argParams[0], state.fromValue);
+                urlParams.set(argParams[1], state.toValue);
+            }
+
+            break;
+
+        case TYPE_SPECIFIC:
+            const specificStr = getSpecificValuesString(name, state);
+
+            if (isAllValid(specificStr)) {
+                urlParams.set(argParams[0], specificStr);
+            }
+
+            break;
+
+        case TYPE_RANGES:
+            if (isAllValid(state.specificValues)) {
+                urlParams.set(argParams[0], state.specificValues);
+            }
+
+            break;
+
+        case TYPE_NTH:
+            if (isAllValid(state.weekday, state.nthOccurrence)) {
+                urlParams.set(argParams[0], state.weekday);
+                urlParams.set(argParams[1], state.nthOccurrence);
+            }
+
+            break;
+
+        case TYPE_LAST_WEEKDAY:
+            if (isAllValid(state.lastWeekday)) {
+                urlParams.set(argParams[0], state.lastWeekday);
+            }
+
+            break;
+
+        case TYPE_LAST:
+            if (isAllValid(state.lastValue)) {
+                urlParams.set(argParams[0], state.lastValue);
+            }
+
+            break;
     }
 
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-    window.history.replaceState({}, '', newUrl);
+
+    window.history.replaceState({}, TEXT_EMPTY, newUrl);
+};
+
+export const isAnyNilOrEmpty = (...values: unknown[]): boolean => values && values.some(v => v === null || v === undefined || typeof v === 'string' && v.trim() === TEXT_EMPTY)
+
+const isAllValid = (...values: unknown[]): boolean => !isAnyNilOrEmpty(values);
+
+const isValidInterval = (arg1: string | null, maxVal: number): boolean => {
+    if (isAnyNilOrEmpty(arg1)) {
+        return false;
+    }
+
+    const num = parseInt(arg1, DEFAULT_RADIX);
+
+    return !isNaN(num) && num >= 1 && num <= maxVal;
+};
+
+const isValidBetween = (name: string, arg1: string | null, arg2: string | null): boolean => {
+    if (isAnyNilOrEmpty(arg1, arg2)) {
+        return false;
+    }
+
+    let up1 = arg1.toUpperCase();
+    let up2 = arg2.toUpperCase();
+
+    switch (name) {
+        case NAME_MONTH:
+            return MONTHS.includes(up1) && MONTHS.includes(up2);
+
+        case NAME_DAY_OF_WEEK:
+            return WEEK_DAYS.includes(up1) && WEEK_DAYS.includes(up2);
+
+        default:
+            return !isNaN(parseInt(arg1, DEFAULT_RADIX)) && !isNaN(parseInt(arg2, DEFAULT_RADIX));
+    }
+};
+
+const isValidSpecific = (name: string, arg1: string | null): boolean => {
+    if (isAnyNilOrEmpty(arg1)) {
+        return false;
+    }
+
+    switch (name) {
+        case NAME_MONTH:
+            return arg1.split(',').every(val => val.trim() === TEXT_EMPTY || MONTHS.includes(val.toUpperCase()));
+
+        case NAME_DAY_OF_WEEK:
+            return arg1.split(',').every(val => val.trim() === TEXT_EMPTY || WEEK_DAYS.includes(val.toUpperCase()));
+
+        default:
+            return REGEX_SPECIFIC.test(arg1);
+    }
+
+};
+
+const isValidNth = (arg1: string | null, arg2: string | null): boolean => {
+    return isAllValid(arg1, arg2) && WEEK_DAYS.includes(arg1.toUpperCase()) && NTH_OCCURRENCES.includes(arg2);
+};
+
+const isValidLastWeekday = (arg1: string | null): boolean => {
+    return isAllValid(arg1) && WEEK_DAYS.includes(arg1.toUpperCase());
+};
+
+const getSpecificValuesString = (name: string, state: CronPartState): string => {
+    if (name === NAME_MONTH) {
+        // Sort months by their defined order before joining
+        const sortedMonths = [...state.selectedMonths].sort((a, b) => monthOrder[a] - monthOrder[b]);
+
+        return sortedMonths.join(',');
+    }
+
+    if (name === NAME_DAY_OF_WEEK) {
+        // Sort weekdays by their defined order before joining
+        const sortedWeekdays = [...state.selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]);
+
+        return sortedWeekdays.join(',');
+    }
+
+    return state.specificValues;
 };

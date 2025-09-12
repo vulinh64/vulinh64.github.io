@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {CronUtils, getInitialStateFromUrl, updateUrlParams} from "./CronUtils";
+import {CronUtils, getInitialStateFromUrl, isAnyNilOrEmpty, updateUrlParams} from "./CronUtils";
 import styles from "./SpringCronGenerator.module.css";
 import clsx from "clsx";
 
@@ -61,6 +61,7 @@ export const PART_LAST_DAY_OFFSET = 'Last day offset';
 
 export const SPACED_COMMA = ', ';
 export const COMMA_DELIMITER = ',';
+export const HYPHEN_DELIMITER = '-';
 
 export const FROM_VALUE_INPUT_FIELD = 'fromValue';
 export const TO_VALUE_INPUT_FIELD = 'toValue';
@@ -70,6 +71,12 @@ export const WEEKDAY_INPUT_FIELD = 'weekday';
 export const NTH_OCCURRENCE_INPUT_FIELD = 'nthOccurrence';
 export const LAST_INPUT_FIELD = 'lastValue';
 export const LAST_WEEKDAY_INPUT_FIELD = 'lastWeekday';
+
+export const REGEX_SPECIFIC = /^[\d\s,]+$/;
+export const REGEX_WHITESPACES = /\s+/g;
+export const REGEX_RANGES = /^[\d\s,-]+$/;
+
+export const DEFAULT_RADIX = 10;
 
 export const monthOrder = Object.fromEntries(
     MONTHS.map((month, index) => [month, index + 1])
@@ -267,14 +274,14 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
             } else {
                 const options: CronPartOptions = {
                     type: state.option as any,
-                    intervalValue: state.intervalValue ? parseInt(state.intervalValue, 10) : undefined,
-                    fromValue: state.fromValue || undefined,
-                    toValue: state.toValue || undefined,
-                    specificValues: state.specificValues || undefined,
-                    weekday: state.weekday || undefined,
-                    nthOccurrence: state.nthOccurrence || undefined,
-                    lastValue: state.lastValue ? parseInt(state.lastValue, 10) : undefined,
-                    lastWeekday: state.lastWeekday || undefined
+                    intervalValue: isAnyNilOrEmpty(state.intervalValue) ? undefined : parseInt(state.intervalValue, 10),
+                    fromValue: isAnyNilOrEmpty(state.fromValue) ? undefined : state.fromValue,
+                    toValue: isAnyNilOrEmpty(state.toValue) ? undefined : state.toValue,
+                    specificValues: isAnyNilOrEmpty(state.specificValues) ? undefined : state.specificValues,
+                    weekday: isAnyNilOrEmpty(state.weekday) ? undefined : state.weekday,
+                    nthOccurrence: isAnyNilOrEmpty(state.nthOccurrence) ? undefined : state.nthOccurrence,
+                    lastValue: isAnyNilOrEmpty(state.lastValue) ? undefined : parseInt(state.lastValue, 10),
+                    lastWeekday: isAnyNilOrEmpty(state.lastWeekday) ? undefined : state.lastWeekday
                 };
 
                 if (name === NAME_MONTH && sortedSelectedMonths.length > 0) {
