@@ -1,92 +1,78 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {CronUtils, getInitialStateFromUrl, isAnyNilOrEmpty, updateUrlParams} from "./CronUtils";
+import {
+    CronUtils,
+    dayOrder,
+    getInitialState,
+    getMaxVal,
+    handleSpecificSelection,
+    isAnyNilOrEmpty,
+    isDayOfMonth,
+    isDayOfWeek,
+    isMonth,
+    isOptionTypeBetween,
+    isOptionTypeInterval,
+    isOptionTypeIntervalBetween,
+    isOptionTypeLastOf,
+    isOptionTypeSpecific,
+    monthOrder,
+    updateUrlParams,
+    weekdayOrder
+} from "./CronUtils";
 import styles from "./SpringCronGenerator.module.css";
 import clsx from "clsx";
-
-export const WEEK_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
-export const MONTH_JAN = 'JAN';
-export const MONTH_FEB = 'FEB';
-
-export const MONTHS = [MONTH_JAN, MONTH_FEB, 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-
-export const NTH_OCCURRENCES = ['1', '2', '3', '4', '5'];
-
-export const EVERY_EXPRESSION = '*';
-
-export const NAME_SECOND = 'second';
-export const NAME_MINUTE = 'minute';
-export const NAME_HOUR = 'hour';
-export const NAME_DAY_OF_MONTH = 'day';
-export const NAME_MONTH = 'month';
-export const NAME_DAY_OF_WEEK = 'day of week';
-
-export const TEXT_EMPTY = '';
-export const TEXT_ONE = '1';
-
-export const TYPE_SPECIFIC = 'specific';
-export const TYPE_INTERVAL = 'interval';
-export const TYPE_BETWEEN = 'between';
-export const TYPE_RANGES = 'ranges';
-export const TYPE_NTH = 'nth';
-export const TYPE_EVERY = 'every';
-export const TYPE_LAST = 'last';
-export const TYPE_LAST_WEEKDAY = 'lastWeekday';
-
-export const WEEKDAY_MON = 'MON';
-export const WEEKDAY_SUN = 'SUN';
-
-export const CASE_EVERY = 'every';
-export const CASE_INTERVAL = 'interval';
-export const CASE_BETWEEN = 'between';
-export const CASE_SPECIFIC = 'specific';
-export const CASE_RANGES = 'ranges';
-export const CASE_LAST_DAY = 'last';
-export const CASE_NTH = 'nth';
-export const CASE_LAST_WEEKDAY = 'lastWeekday';
-
-export const MAX_MONTHS = 12;
-export const MAX_DAYS_OF_WEEK = 7;
-export const MAX_DAYS_OF_MONTH = 31;
-export const MIN_ONE = 1;
-
-export const PART_SECOND = 'Second';
-export const PART_MINUTE = 'Minute';
-export const PART_HOUR = 'Hour'
-
-export const PART_DAY = 'Day';
-export const PART_MONTH = 'Month';
-export const PART_DAY_OF_WEEK = 'Day of Week';
-export const PART_LAST_DAY_OFFSET = 'Last day offset';
-
-export const SPACED_COMMA = ', ';
-export const COMMA_DELIMITER = ',';
-export const HYPHEN_DELIMITER = '-';
-
-export const FROM_VALUE_INPUT_FIELD = 'fromValue';
-export const TO_VALUE_INPUT_FIELD = 'toValue';
-export const INTERVAL_INPUT_FIELD = 'intervalValue';
-export const SPECIFIC_VALUE_INPUT_FIELD = 'specificValues';
-export const WEEKDAY_INPUT_FIELD = 'weekday';
-export const NTH_OCCURRENCE_INPUT_FIELD = 'nthOccurrence';
-export const LAST_INPUT_FIELD = 'lastValue';
-export const LAST_WEEKDAY_INPUT_FIELD = 'lastWeekday';
-
-export const REGEX_SPECIFIC = /^[\d\s,]+$/;
-export const REGEX_WHITESPACES = /\s+/g;
-export const REGEX_RANGES = /^[\d\s,-]+$/;
-
-export const DEFAULT_RADIX = 10;
-
-export const monthOrder = Object.fromEntries(
-    MONTHS.map((month, index) => [month, index + 1])
-) as Record<string, number>;
-
-export const weekdayOrder = Object.fromEntries(
-    WEEK_DAYS.map((day, index) => [day, index])
-) as Record<string, number>;
-
-export const dayOrder = WEEK_DAYS.reduce((acc, day, index) => ({...acc, [day]: index}), {} as Record<string, number>);
+import {
+    END_DAY_OF_WEEK,
+    EVERY_EXPRESSION,
+    FROM_VALUE_INPUT_FIELD,
+    INTERVAL_INPUT_FIELD,
+    LAST_INPUT_FIELD,
+    LAST_WEEKDAY_INPUT_FIELD,
+    MAX_DAYS_OF_MONTH,
+    MAX_DAYS_OF_WEEK,
+    MAX_HOUR,
+    MAX_MONTHS,
+    MAX_SECONDS_MINUTES,
+    MIN_ONE,
+    MIN_TIME,
+    MIN_ZERO,
+    MONTH_FEB,
+    MONTH_JAN,
+    MONTHS,
+    NAME_DAY_OF_MONTH,
+    NAME_DAY_OF_WEEK,
+    NAME_HOUR,
+    NAME_MINUTE,
+    NAME_MONTH,
+    NAME_SECOND,
+    NTH_OCCURRENCE_INPUT_FIELD,
+    NTH_OCCURRENCES,
+    PART_DAY,
+    PART_DAY_OF_WEEK,
+    PART_HOUR,
+    PART_LAST_DAY_OFFSET,
+    PART_MINUTE,
+    PART_MONTH,
+    PART_SECOND,
+    SPACED_COMMA,
+    SPECIFIC_VALUE_INPUT_FIELD,
+    TEXT_EMPTY,
+    TEXT_ONE,
+    TEXT_TWO,
+    TO_VALUE_INPUT_FIELD,
+    TYPE_BETWEEN,
+    TYPE_EVERY,
+    TYPE_INTERVAL,
+    TYPE_INTERVAL_BETWEEN,
+    TYPE_LAST,
+    TYPE_LAST_WEEKDAY,
+    TYPE_NTH,
+    TYPE_RANGES,
+    TYPE_SPECIFIC,
+    WEEK_DAYS,
+    WEEKDAY_INPUT_FIELD,
+    WEEKDAY_MON,
+    WEEKDAY_SUN
+} from "./Const";
 
 export class CronError extends Error {
     constructor(message: string) {
@@ -105,7 +91,7 @@ export type CronExpressions = {
 };
 
 export interface CronPartOptions {
-    type: 'every' | 'interval' | 'between' | 'specific' | 'ranges' | 'nth' | 'last' | 'lastWeekday';
+    type: OptionType;
     intervalValue?: number;
     fromValue?: number | string;
     toValue?: number | string;
@@ -122,8 +108,15 @@ export interface CronPartProps {
     onExpressionChange: (expression: string) => void;
 }
 
-export type OptionType = typeof TYPE_EVERY | typeof TYPE_INTERVAL | typeof TYPE_BETWEEN |
-    typeof TYPE_SPECIFIC | typeof TYPE_RANGES | typeof TYPE_NTH | typeof TYPE_LAST | typeof TYPE_LAST_WEEKDAY;
+export type OptionType = typeof TYPE_EVERY
+    | typeof TYPE_INTERVAL
+    | typeof TYPE_BETWEEN
+    | typeof TYPE_SPECIFIC
+    | typeof TYPE_RANGES
+    | typeof TYPE_NTH
+    | typeof TYPE_LAST
+    | typeof TYPE_LAST_WEEKDAY
+    | typeof TYPE_INTERVAL_BETWEEN;
 
 export interface CronPartState {
     option: OptionType;
@@ -148,29 +141,17 @@ export interface UrlParamConfig {
 }
 
 export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) => {
-    const isSecond = name === NAME_SECOND;
-    const isMinute = name === NAME_MINUTE;
-    const isHour = name === NAME_HOUR;
-    const isDay = name === NAME_DAY_OF_MONTH;
-    const isMonth = name === NAME_MONTH;
-    const isWeekday = name === NAME_DAY_OF_WEEK;
-    const isSecondOrMinuteOrHour = isSecond || isMinute || isHour;
-    const isSecondOrMinuteOrHourOrDay = isSecond || isMinute || isHour || isDay;
+    const config = cronPartConfig[name];
 
     const urlConfig: UrlParamConfig = useMemo(() => ({
-        optionParam: isSecond ? 's' : isMinute ? 'm' : isHour ? 'h' : isDay ? 'dm' : isMonth ? 'mm' : isWeekday ? 'dw' : '',
-        argParams: isSecond ? ['a0', 'b0'] : isMinute ? ['a1', 'b1'] : isHour ? ['a2', 'b2'] : isDay ? ['a3', 'b3'] : isMonth ? ['a4', 'b4'] : isWeekday ? ['a5', 'b5'] : [],
-        validOptions: isDay
-            ? [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_RANGES, TYPE_LAST]
-            : isWeekday
-                ? [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_NTH, TYPE_LAST_WEEKDAY]
-                : isSecondOrMinuteOrHour ? [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_RANGES]
-                    : [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC],
-        maxVal: isMonth ? 12 : isWeekday ? 7 : isSecond || isMinute ? 59 : isHour ? 23 : 31
-    }), [isSecond, isMinute, isHour, isDay, isMonth, isWeekday]);
+        optionParam: config.url.optionParam,
+        argParams: config.url.argParams,
+        validOptions: config.validOptions,
+        maxVal: config.maxVal
+    }), [config]);
 
     const [state, setState] = useState<CronPartState>(() =>
-        getInitialStateFromUrl(name, isSecondOrMinuteOrHourOrDay, isMonth, isWeekday, urlConfig)
+        getInitialState(name, urlConfig)
     );
 
     const prevExpressionRef = useRef<string>(EVERY_EXPRESSION);
@@ -185,11 +166,6 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
         () => [...state.selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]),
         [state.selectedWeekdays]
     );
-
-    const {minVal, maxVal} = useMemo(() => ({
-        minVal: isDay ? 1 : 0,
-        maxVal: isDay ? 31 : (isHour ? 23 : 59)
-    }), [isDay, isHour]);
 
     const handleMonthChange = useCallback((month: string) => {
         setState(prev => ({
@@ -217,44 +193,49 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                 error: TEXT_EMPTY
             };
 
-            if (isSecondOrMinuteOrHourOrDay) {
-                return {
-                    ...baseState,
-                    intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
-                    fromValue: newOption === TYPE_BETWEEN ? TEXT_ONE : TEXT_EMPTY,
-                    toValue: newOption === TYPE_BETWEEN ? '2' : TEXT_EMPTY,
-                    specificValues: newOption === TYPE_SPECIFIC ? '1,2,3' :
-                        newOption === TYPE_RANGES ? (isHour ? '1-2,3-4' : isSecondOrMinuteOrHour ? '0-10,15-25' : '1-5,10-15') : TEXT_EMPTY,
-                    lastValue: newOption === TYPE_LAST ? TEXT_EMPTY : TEXT_EMPTY
-                };
+            switch (name) {
+                case NAME_MONTH:
+                    return {
+                        ...baseState,
+                        intervalValue: isOptionTypeInterval(newOption) ? config.defaults.interval : TEXT_EMPTY,
+                        fromValue: isOptionTypeBetween(newOption) ? config.defaults.from : TEXT_EMPTY,
+                        toValue: isOptionTypeBetween(newOption) ? config.defaults.to : TEXT_EMPTY,
+                        selectedMonths: isOptionTypeSpecific(newOption) ? config.defaults.specific as string[] : []
+                    };
+                case NAME_DAY_OF_WEEK:
+                    return {
+                        ...baseState,
+                        intervalValue: isOptionTypeInterval(newOption) ? config.defaults.interval : TEXT_EMPTY,
+                        fromValue: isOptionTypeBetween(newOption) ? config.defaults.from : TEXT_EMPTY,
+                        toValue: isOptionTypeBetween(newOption) ? config.defaults.to : TEXT_EMPTY,
+                        selectedWeekdays: isOptionTypeSpecific(newOption) ? config.defaults.specific as string[] : [],
+                        weekday: config.defaults.nthWeekday,
+                        nthOccurrence: config.defaults.nthOccurrence,
+                        lastWeekday: config.defaults.lastWeekday
+                    };
+                default:
+                    return {
+                        ...baseState,
+                        intervalValue: (isOptionTypeInterval(newOption) || isOptionTypeIntervalBetween(newOption)) ? config.defaults.interval : TEXT_EMPTY,
+                        fromValue: (isOptionTypeBetween(newOption) || isOptionTypeIntervalBetween(newOption)) ? config.defaults.from : TEXT_EMPTY,
+                        toValue: (isOptionTypeBetween(newOption) || isOptionTypeIntervalBetween(newOption)) ? config.defaults.to : TEXT_EMPTY,
+                        specificValues: getSpecificValuesForOption(newOption, config.defaults),
+                        lastValue: isOptionTypeLastOf(newOption) ? config.defaults.last : TEXT_EMPTY
+                    };
             }
-
-            if (isMonth) {
-                return {
-                    ...baseState,
-                    intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
-                    fromValue: newOption === TYPE_BETWEEN ? MONTH_JAN : TEXT_EMPTY,
-                    toValue: newOption === TYPE_BETWEEN ? MONTH_FEB : TEXT_EMPTY,
-                    selectedMonths: newOption === TYPE_SPECIFIC ? [MONTH_JAN] : []
-                };
-            }
-
-            if (isWeekday) {
-                return {
-                    ...baseState,
-                    intervalValue: newOption === TYPE_INTERVAL ? TEXT_ONE : TEXT_EMPTY,
-                    fromValue: newOption === TYPE_BETWEEN ? WEEKDAY_SUN : TEXT_EMPTY,
-                    toValue: newOption === TYPE_BETWEEN ? WEEKDAY_MON : TEXT_EMPTY,
-                    selectedWeekdays: newOption === TYPE_SPECIFIC ? [WEEKDAY_MON] : [],
-                    weekday: WEEKDAY_MON,
-                    nthOccurrence: TEXT_ONE,
-                    lastWeekday: WEEKDAY_MON
-                };
-            }
-
-            return baseState;
         });
-    }, [isSecondOrMinuteOrHourOrDay, isMonth, isWeekday]);
+    }, [name, config]);
+
+    const getSpecificValuesForOption = (option: OptionType, defaults: any) => {
+        switch (option) {
+            case TYPE_SPECIFIC:
+                return defaults.specific;
+            case TYPE_RANGES:
+                return defaults.ranges;
+            default:
+                return TEXT_EMPTY;
+        }
+    };
 
     const createInputHandler = useCallback((field: keyof CronPartState) =>
         (value: string) => {
@@ -267,41 +248,34 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
         let newError = TEXT_EMPTY;
 
         try {
-            if (name === NAME_MONTH && state.option === TYPE_SPECIFIC && sortedSelectedMonths.length === 0) {
-                newError = 'At least one month must be selected';
-            } else if (name === NAME_DAY_OF_WEEK && state.option === TYPE_SPECIFIC && sortedSelectedWeekdays.length === 0) {
-                newError = 'At least one day of week must be selected';
-            } else {
-                const options: CronPartOptions = {
-                    type: state.option as any,
-                    intervalValue: isAnyNilOrEmpty(state.intervalValue) ? undefined : parseInt(state.intervalValue, 10),
-                    fromValue: isAnyNilOrEmpty(state.fromValue) ? undefined : state.fromValue,
-                    toValue: isAnyNilOrEmpty(state.toValue) ? undefined : state.toValue,
-                    specificValues: isAnyNilOrEmpty(state.specificValues) ? undefined : state.specificValues,
-                    weekday: isAnyNilOrEmpty(state.weekday) ? undefined : state.weekday,
-                    nthOccurrence: isAnyNilOrEmpty(state.nthOccurrence) ? undefined : state.nthOccurrence,
-                    lastValue: isAnyNilOrEmpty(state.lastValue) ? undefined : parseInt(state.lastValue, 10),
-                    lastWeekday: isAnyNilOrEmpty(state.lastWeekday) ? undefined : state.lastWeekday
-                };
+            const options: CronPartOptions = {
+                type: state.option as any,
+                intervalValue: isAnyNilOrEmpty(state.intervalValue) ? undefined : parseInt(state.intervalValue, 10),
+                fromValue: isAnyNilOrEmpty(state.fromValue) ? undefined : state.fromValue,
+                toValue: isAnyNilOrEmpty(state.toValue) ? undefined : state.toValue,
+                specificValues: isAnyNilOrEmpty(state.specificValues) ? undefined : state.specificValues,
+                weekday: isAnyNilOrEmpty(state.weekday) ? undefined : state.weekday,
+                nthOccurrence: isAnyNilOrEmpty(state.nthOccurrence) ? undefined : state.nthOccurrence,
+                lastValue: isAnyNilOrEmpty(state.lastValue) ? undefined : parseInt(state.lastValue, 10),
+                lastWeekday: isAnyNilOrEmpty(state.lastWeekday) ? undefined : state.lastWeekday
+            };
 
-                if (name === NAME_MONTH && sortedSelectedMonths.length > 0) {
-                    options.specificValues = sortedSelectedMonths.join(',');
-                } else if (name === NAME_DAY_OF_WEEK && sortedSelectedWeekdays.length > 0) {
-                    options.specificValues = sortedSelectedWeekdays.join(',');
-                }
+            switch (name) {
+                case NAME_MONTH:
+                    newError = handleSpecificSelection(state, sortedSelectedMonths, NAME_MONTH, options);
+                    break;
+                case NAME_DAY_OF_WEEK:
+                    newError = handleSpecificSelection(state, sortedSelectedWeekdays, NAME_DAY_OF_WEEK, options);
+                    break;
+            }
 
-                const expressionGenerators = {
-                    [NAME_SECOND]: () => CronUtils.generateSecondExpression(options),
-                    [NAME_MINUTE]: () => CronUtils.generateMinuteExpression(options),
-                    [NAME_HOUR]: () => CronUtils.generateHourExpression(options),
-                    [NAME_DAY_OF_MONTH]: () => CronUtils.generateDayOfMonthExpression(options),
-                    [NAME_MONTH]: () => CronUtils.generateMonthExpression(options),
-                    [NAME_DAY_OF_WEEK]: () => CronUtils.generateDayOfWeekExpression(options)
-                };
+            if (isAnyNilOrEmpty(newError)) {
+                const generator = expressionGeneratorMatrix[name]?.[options.type];
 
-                const generator = expressionGenerators[name as keyof typeof expressionGenerators];
                 if (generator) {
-                    expression = generator();
+                    expression = generator(options);
+                } else {
+                    throw new CronError(`Invalid option '${options.type}' for cron part '${name}'`);
                 }
             }
 
@@ -347,8 +321,8 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
         value: string,
         onChange: (value: string) => void,
         placeholder: string,
-        min: number = minVal,
-        max: number = maxVal
+        min: number = config.minVal,
+        max: number = config.maxVal
     ) => (
         <input
             type="number"
@@ -383,6 +357,9 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
         </select>
     );
 
+    const isFieldMonth = isMonth(name);
+    const isFieldDayOfWeek = isDayOfWeek(name);
+
     return (
         <fieldset className={styles.cronPart}>
             <legend>{name.charAt(0).toUpperCase() + name.slice(1)} Expression</legend>
@@ -406,15 +383,18 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                 >
                     <option value={TYPE_EVERY}>Every {name}</option>
                     <option value={TYPE_INTERVAL}>Every N {name}</option>
-                    <option value={TYPE_BETWEEN}>From ... to ... {name}</option>
+                    <option value={TYPE_BETWEEN}>Between {name} range</option>
                     <option value={TYPE_SPECIFIC}>Specific {plural}</option>
-                    {(isSecondOrMinuteOrHour || isDay) && (
+                    {config.isNumeric && (
                         <option value={TYPE_RANGES}>Multiple ranges</option>
                     )}
-                    {isDay && (
+                    {config.isNumeric && (
+                        <option value={TYPE_INTERVAL_BETWEEN}>Every N {name} between range</option>
+                    )}
+                    {isDayOfMonth(name) && (
                         <option value={TYPE_LAST}>N-to-last day of month</option>
                     )}
-                    {isWeekday && (
+                    {isFieldDayOfWeek && (
                         <>
                             <option value={TYPE_NTH}>Nth occurrence</option>
                             <option value={TYPE_LAST_WEEKDAY}>Last weekday of month</option>
@@ -431,23 +411,25 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                             state.intervalValue,
                             createInputHandler(INTERVAL_INPUT_FIELD),
                             `Enter ${name} interval`,
-                            1,
-                            isMonth ? 12 : (isWeekday ? 7 : maxVal)
+                            MIN_ONE,
+                            getMaxVal(name, config)
                         )}
                     </div>
                 </fieldset>
             )}
 
             {state.option === TYPE_BETWEEN && (
-                <div className={styles.betweenContainer}>
-                    <fieldset className={styles.subFieldset}>
+
+                <fieldset className={styles.subFieldset}>
+                    <legend>From ... to ... {name}</legend>
+                    <div className={styles.betweenContainer}>
                         <legend>From</legend>
                         <div className={styles.inputContainer}>
-                            {isMonth || isWeekday ? (
+                            {!config.isNumeric ? (
                                 renderDropdown(
                                     state.fromValue,
                                     createInputHandler(FROM_VALUE_INPUT_FIELD),
-                                    isMonth ? MONTHS : WEEK_DAYS,
+                                    isFieldMonth ? MONTHS : WEEK_DAYS,
                                 )
                             ) : (
                                 renderNumberInput(
@@ -457,15 +439,13 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                                 )
                             )}
                         </div>
-                    </fieldset>
-                    <fieldset className={styles.subFieldset}>
                         <legend>To</legend>
                         <div className={styles.inputContainer}>
-                            {isMonth || isWeekday ? (
+                            {!config.isNumeric ? (
                                 renderDropdown(
                                     state.toValue,
                                     createInputHandler(TO_VALUE_INPUT_FIELD),
-                                    isMonth ? MONTHS : WEEK_DAYS,
+                                    isFieldMonth ? MONTHS : WEEK_DAYS,
                                 )
                             ) : (
                                 renderNumberInput(
@@ -475,57 +455,98 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                                 )
                             )}
                         </div>
-                    </fieldset>
-                </div>
+                    </div>
+                </fieldset>
+            )}
+
+            {state.option === TYPE_INTERVAL_BETWEEN && (
+                <fieldset className={styles.subFieldset}>
+                    <legend>Every N {name}(s) from ... to ... {name}</legend>
+                    <div className={styles.betweenContainer}>
+                        <legend>Interval</legend>
+                        <div className={styles.inputContainer}>
+                            {renderNumberInput(
+                                state.intervalValue,
+                                createInputHandler(INTERVAL_INPUT_FIELD),
+                                'Enter interval value, e.g., 5',
+                                MIN_ONE,
+                                config.maxVal
+                            )}
+                        </div>
+                        <legend>From</legend>
+                        <div className={styles.inputContainer}>
+                            {renderNumberInput(
+                                state.fromValue,
+                                createInputHandler(FROM_VALUE_INPUT_FIELD),
+                                'Enter start value, e.g., 0',
+                                config.minVal,
+                                config.maxVal
+                            )}
+                        </div>
+                        <legend>To</legend>
+                        <div className={styles.inputContainer}>
+                            {renderNumberInput(
+                                state.toValue,
+                                createInputHandler(TO_VALUE_INPUT_FIELD),
+                                'Enter end value, e.g., 59',
+                                config.minVal,
+                                config.maxVal
+                            )}
+                        </div>
+                    </div>
+                </fieldset>
             )}
 
             {state.option === TYPE_SPECIFIC && (
                 <fieldset className={styles.subFieldset}>
                     <legend>{plural.charAt(0).toUpperCase() + plural.slice(1)}</legend>
                     <div className={clsx({
-                        [styles.specificContainer]: isMonth || isWeekday,
-                        [styles.specificContainerTextInput]: !(isMonth || isWeekday)
+                        [styles.specificContainer]: !config.isNumeric,
+                        [styles.specificContainerTextInput]: config.isNumeric
                     })}>
-                        {isMonth ? (
-                            MONTHS.map(month => (
-                                <label key={month} className={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        checked={state.selectedMonths.includes(month)}
-                                        onChange={() => handleMonthChange(month)}
-                                    />
-                                    {month}
-                                </label>
-                            ))
-                        ) : isWeekday ? (
-                            WEEK_DAYS.map(day => (
-                                <label key={day} className={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        checked={state.selectedWeekdays.includes(day)}
-                                        onChange={() => handleWeekdayChange(day)}
-                                    />
-                                    {day}
-                                </label>
-                            ))
-                        ) : (
-                            <input
-                                type="text"
-                                value={state.specificValues}
-                                onChange={(e: {
-                                    target: { value: string; };
-                                }) => createInputHandler(SPECIFIC_VALUE_INPUT_FIELD)(e.target.value)}
-                                placeholder={`e.g., ${isHour ? '0,1,2' : (isDay ? '1,2,3' : '0,15,30')}`}
-                                pattern="^(\d+)(,\d+)*$"
-                                title="Comma-separated numbers only"
-                                className={styles.textInput}
-                            />
-                        )}
+                        {(() => {
+                            switch (name) {
+                                case NAME_MONTH:
+                                    return MONTHS.map(month => (
+                                        <label key={month} className={styles.checkboxLabel}>
+                                            <input
+                                                type="checkbox"
+                                                checked={state.selectedMonths.includes(month)}
+                                                onChange={() => handleMonthChange(month)}
+                                            />
+                                            {month}
+                                        </label>
+                                    ));
+                                case NAME_DAY_OF_WEEK:
+                                    return WEEK_DAYS.map(day => (
+                                        <label key={day} className={styles.checkboxLabel}>
+                                            <input
+                                                type="checkbox"
+                                                checked={state.selectedWeekdays.includes(day)}
+                                                onChange={() => handleWeekdayChange(day)}
+                                            />
+                                            {day}
+                                        </label>
+                                    ));
+                                default:
+                                    return <input
+                                        type="text"
+                                        value={state.specificValues}
+                                        onChange={(e: {
+                                            target: { value: string; };
+                                        }) => createInputHandler(SPECIFIC_VALUE_INPUT_FIELD)(e.target.value)}
+                                        placeholder={`e.g., ${config.defaults.specific}`}
+                                        pattern="^(\d+)(,\d+)*$"
+                                        title="Comma-separated numbers only"
+                                        className={styles.textInput}
+                                    />;
+                            }
+                        })()}
                     </div>
                 </fieldset>
             )}
 
-            {state.option === TYPE_RANGES && (isSecondOrMinuteOrHour || isDay) && (
+            {state.option === TYPE_RANGES && config.isNumeric && (
                 <div className={styles.inputContainer}>
                     <fieldset className={styles.inputGroup}>
                         <legend>Ranges (separated by comma)</legend>
@@ -535,7 +556,7 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                             onChange={(e: {
                                 target: { value: string; };
                             }) => createInputHandler(SPECIFIC_VALUE_INPUT_FIELD)(e.target.value)}
-                            placeholder={isHour ? "e.g., 1-2,3-4" : isSecondOrMinuteOrHour ? "e.g., 0-10,15-25" : "e.g., 1-10,12-14,22-25"}
+                            placeholder={`e.g., ${config.defaults.ranges}`}
                             pattern="^(\d+-\d+)(,\d+-\d+)*$"
                             title="Comma-separated ranges (e.g., 1-10,12-14)"
                             className={styles.textInput}
@@ -544,7 +565,7 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                 </div>
             )}
 
-            {state.option === TYPE_NTH && isWeekday && (
+            {state.option === TYPE_NTH && isFieldDayOfWeek && (
                 <fieldset className={styles.subFieldset}>
                     <legend>Nth occurrence</legend>
                     <div className={styles.dropdownContainer}>
@@ -570,7 +591,7 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                 </fieldset>
             )}
 
-            {state.option === TYPE_LAST && name === NAME_DAY_OF_MONTH && (
+            {state.option === TYPE_LAST && isDayOfMonth(name) && (
                 <fieldset className={styles.subFieldset}>
                     <legend>N-to-last day of month</legend>
                     <div className={styles.inputContainer}>
@@ -578,14 +599,14 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                             state.lastValue,
                             createInputHandler(LAST_INPUT_FIELD),
                             "Enter days from last day (optional, e.g., 1 for L-1)",
-                            1,
-                            31
+                            MIN_ONE,
+                            MAX_DAYS_OF_MONTH
                         )}
                     </div>
                 </fieldset>
             )}
 
-            {state.option === TYPE_LAST_WEEKDAY && isWeekday && (
+            {state.option === TYPE_LAST_WEEKDAY && isFieldDayOfWeek && (
                 <fieldset className={styles.subFieldset}>
                     <legend>Last weekday of month</legend>
                     <div className={styles.inputContainer}>
@@ -600,4 +621,188 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
             )}
         </fieldset>
     );
+};
+
+const cronPartConfig = {
+    [NAME_SECOND]: {
+        plural: 'seconds',
+        url: {optionParam: 's', argParams: ['a0', 'b0', 'c0']},
+        validOptions: [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_RANGES, TYPE_INTERVAL_BETWEEN] as OptionType[],
+        minVal: MIN_TIME, maxVal: MAX_SECONDS_MINUTES,
+        defaults: {
+            interval: TEXT_ONE, from: TEXT_ONE, to: TEXT_TWO,
+            specific: '0,1,2', ranges: '0-1,2-3'
+        },
+        isNumeric: true,
+    },
+    [NAME_MINUTE]: {
+        plural: 'minutes',
+        url: {optionParam: 'm', argParams: ['a1', 'b1', 'c1']},
+        validOptions: [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_RANGES, TYPE_INTERVAL_BETWEEN] as OptionType[],
+        minVal: MIN_TIME, maxVal: MAX_SECONDS_MINUTES,
+        defaults: {
+            interval: TEXT_ONE, from: TEXT_ONE, to: TEXT_TWO,
+            specific: '0,1,2', ranges: '0-1,2-3'
+        },
+        isNumeric: true,
+    },
+    [NAME_HOUR]: {
+        plural: 'hours',
+        url: {optionParam: 'h', argParams: ['a2', 'b2', 'c2']},
+        validOptions: [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_RANGES, TYPE_INTERVAL_BETWEEN] as OptionType[],
+        minVal: MIN_TIME, maxVal: MAX_HOUR,
+        defaults: {
+            interval: TEXT_ONE, from: TEXT_ONE, to: TEXT_TWO,
+            specific: '0,1,2', ranges: '0-1,2-3'
+        },
+        isNumeric: true,
+    },
+    [NAME_DAY_OF_MONTH]: {
+        plural: 'days of month',
+        url: {optionParam: 'dm', argParams: ['a3', 'b3', 'c3']},
+        validOptions: [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_RANGES, TYPE_LAST, TYPE_INTERVAL_BETWEEN] as OptionType[],
+        minVal: MIN_ONE, maxVal: MAX_DAYS_OF_MONTH,
+        defaults: {
+            interval: TEXT_ONE, from: TEXT_ONE, to: TEXT_TWO,
+            specific: '1,2,3', ranges: '1-2,3-4', last: TEXT_EMPTY
+        },
+        isNumeric: true,
+    },
+    [NAME_MONTH]: {
+        plural: 'months',
+        url: {optionParam: 'mm', argParams: ['a4', 'b4']},
+        validOptions: [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC] as OptionType[],
+        minVal: MIN_ONE, maxVal: MAX_MONTHS,
+        defaults: {
+            interval: TEXT_ONE, from: MONTH_JAN, to: MONTH_FEB,
+            specific: [MONTH_JAN]
+        },
+        isNumeric: false,
+    },
+    [NAME_DAY_OF_WEEK]: {
+        plural: 'days of week',
+        url: {optionParam: 'dw', argParams: ['a5', 'b5']},
+        validOptions: [TYPE_EVERY, TYPE_INTERVAL, TYPE_BETWEEN, TYPE_SPECIFIC, TYPE_NTH, TYPE_LAST_WEEKDAY] as OptionType[],
+        minVal: MIN_ZERO, maxVal: END_DAY_OF_WEEK,
+        defaults: {
+            interval: TEXT_ONE, from: WEEKDAY_SUN, to: WEEKDAY_MON,
+            specific: [WEEKDAY_MON], nthWeekday: WEEKDAY_MON, nthOccurrence: TEXT_ONE, lastWeekday: WEEKDAY_MON
+        },
+        isNumeric: false,
+    }
+};
+
+const expressionGeneratorMatrix = {
+    [NAME_SECOND]: {
+        [TYPE_EVERY]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_SECOND, MAX_SECONDS_MINUTES),
+        [TYPE_INTERVAL]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_SECOND, MAX_SECONDS_MINUTES),
+        [TYPE_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_SECOND, MAX_SECONDS_MINUTES),
+        [TYPE_SPECIFIC]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_SECOND, MAX_SECONDS_MINUTES),
+        [TYPE_RANGES]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_SECOND, MAX_SECONDS_MINUTES),
+        [TYPE_INTERVAL_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_SECOND, MAX_SECONDS_MINUTES),
+    },
+    [NAME_MINUTE]: {
+        [TYPE_EVERY]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_MINUTE, MAX_SECONDS_MINUTES),
+        [TYPE_INTERVAL]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_MINUTE, MAX_SECONDS_MINUTES),
+        [TYPE_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_MINUTE, MAX_SECONDS_MINUTES),
+        [TYPE_SPECIFIC]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_MINUTE, MAX_SECONDS_MINUTES),
+        [TYPE_RANGES]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_MINUTE, MAX_SECONDS_MINUTES),
+        [TYPE_INTERVAL_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_MINUTE, MAX_SECONDS_MINUTES),
+    },
+    [NAME_HOUR]: {
+        [TYPE_EVERY]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_HOUR, MAX_HOUR),
+        [TYPE_INTERVAL]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_HOUR, MAX_HOUR),
+        [TYPE_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_HOUR, MAX_HOUR),
+        [TYPE_SPECIFIC]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_HOUR, MAX_HOUR),
+        [TYPE_RANGES]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_HOUR, MAX_HOUR),
+        [TYPE_INTERVAL_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTimePartExpression(opts, PART_HOUR, MAX_HOUR),
+    },
+    [NAME_DAY_OF_MONTH]: {
+        [TYPE_EVERY]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH, 1),
+        [TYPE_INTERVAL]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH, 1),
+        [TYPE_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH, 1),
+        [TYPE_SPECIFIC]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH, 1),
+        [TYPE_RANGES]: (opts: { specificValues: string; }) => {
+            if (isAnyNilOrEmpty(opts.specificValues)) {
+                throw new CronError('Range values are required for ranges type');
+            }
+
+            return CronUtils.parseRanges(opts.specificValues, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH);
+        },
+        [TYPE_LAST]: (opts: { lastValue: number; }) => {
+            if (opts.lastValue === undefined || opts.lastValue === 0) {
+                return 'L';
+            }
+
+            CronUtils.validateRange(opts.lastValue, PART_LAST_DAY_OFFSET, MIN_ONE, MAX_DAYS_OF_MONTH);
+
+            return `L-${opts.lastValue}`;
+        },
+        [TYPE_INTERVAL_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateIntervalBetweenExpression(opts, PART_DAY, MIN_ONE, MAX_DAYS_OF_MONTH),
+    },
+    [NAME_MONTH]: {
+        [TYPE_EVERY]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_MONTH, MIN_ONE, MAX_MONTHS, 1),
+        [TYPE_INTERVAL]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_MONTH, MIN_ONE, MAX_MONTHS, 1),
+        [TYPE_SPECIFIC]: (opts: CronPartOptions) =>
+            CronUtils.parseSpecificTextValues(opts, PART_MONTH, MONTHS, monthOrder),
+        [TYPE_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTextRangeExpression(opts, PART_MONTH, MONTHS),
+    },
+    [NAME_DAY_OF_WEEK]: {
+        [TYPE_EVERY]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_DAY_OF_WEEK, MIN_ONE, MAX_DAYS_OF_WEEK),
+        [TYPE_INTERVAL]: (opts: CronPartOptions) =>
+            CronUtils.generateNumericExpression(opts, PART_DAY_OF_WEEK, MIN_ONE, MAX_DAYS_OF_WEEK),
+        [TYPE_BETWEEN]: (opts: CronPartOptions) =>
+            CronUtils.generateTextRangeExpression(opts, PART_DAY_OF_WEEK, WEEK_DAYS),
+        [TYPE_SPECIFIC]: (opts: CronPartOptions) =>
+            CronUtils.parseSpecificTextValues(opts, PART_DAY_OF_WEEK, WEEK_DAYS, dayOrder),
+        [TYPE_NTH]: (opts: { weekday: string; nthOccurrence: string; }) => {
+            if (isAnyNilOrEmpty(opts.weekday, opts.nthOccurrence)) {
+                throw new CronError('Weekday and nth occurrence are required for nth type');
+            }
+
+            if (!WEEK_DAYS.includes(opts.weekday)) {
+                throw new CronError(`Invalid weekday: ${opts.weekday}. Must be one of ${WEEK_DAYS.join(SPACED_COMMA)}`);
+            }
+
+            if (!NTH_OCCURRENCES.includes(opts.nthOccurrence)) {
+                throw new CronError(`Invalid nth occurrence: ${opts.nthOccurrence}. Must be one of ${NTH_OCCURRENCES.join(SPACED_COMMA)}`);
+            }
+
+            return `${opts.weekday}#${opts.nthOccurrence}`;
+        },
+        [TYPE_LAST_WEEKDAY]: (opts: { lastWeekday: string; }) => {
+            if (isAnyNilOrEmpty(opts.lastWeekday)) {
+                throw new CronError('Weekday is required for last weekday type');
+            }
+
+            return CronUtils.validateLastWeekday(opts.lastWeekday);
+        },
+    }
 };

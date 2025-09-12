@@ -346,7 +346,6 @@
 
 .specificContainerTextInput {
     display: flex;
-    flex-direction: column;
     align-items: stretch;
     width: 100%;
     gap: var(--ifm-spacing-vertical, 0.5em);

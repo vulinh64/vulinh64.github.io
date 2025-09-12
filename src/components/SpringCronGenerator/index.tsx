@@ -1,9 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import styles from './SpringCronGenerator.module.css';
 import clsx from 'clsx';
+import {CronExpressions, CronPart} from './CronSupport';
 import {
-    CronExpressions,
-    CronPart,
     EVERY_EXPRESSION,
     NAME_DAY_OF_MONTH,
     NAME_DAY_OF_WEEK,
@@ -11,7 +10,7 @@ import {
     NAME_MINUTE,
     NAME_MONTH,
     NAME_SECOND
-} from './CronSupport';
+} from "./Const";
 
 const CronGeneratorPage: React.FC = () => {
     const [copied, setCopied] = useState(false);
