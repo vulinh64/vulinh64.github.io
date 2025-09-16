@@ -6,6 +6,7 @@ import RecentBlogPosts from "../components/RecentBlogPosts";
 import FeatureArticles from "../components/FeatureArticles";
 import styles from "./index.module.css";
 import {JSX} from "react";
+import YoutubePlayer from "../components/YoutubePlayer/YoutubePlayer";
 
 interface SiteConfig {
     title: string;
@@ -64,6 +65,13 @@ export default function Home(): JSX.Element {
             description="My own space for writing random stuff..."
         >
             <HomepageHeader/>
+            <fieldset className={clsx("container", "margin-top--xl", "margin-bottom--xl")}
+                      style={{'padding': '1em 2em', 'border-radius': '0.5em'}}>
+                <legend style={{'padding': '0 1em'}}>
+                    Java 25 Launch Stream
+                </legend>
+                <YoutubePlayer videoId={"duIceCXObrA"}/>
+            </fieldset>
             <FeatureArticles articles={featureArticles}/>
             <RecentBlogPosts/>
         </Layout>
