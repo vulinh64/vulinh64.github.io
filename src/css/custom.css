@@ -101,31 +101,31 @@ article details {
 
 .alert--secondary {
     background-color: rgba(47, 47, 47, var(--admonition-alpha-intensity));
-    margin-top:var(--admonition-margin-vertical);
+    margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--warning {
     background-color: rgba(45, 30, 0, var(--admonition-alpha-intensity));
-    margin-top:var(--admonition-margin-vertical);
+    margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--info {
     background-color: rgba(19, 60, 71, var(--admonition-alpha-intensity));
-    margin-top:var(--admonition-margin-vertical);
+    margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--danger {
     background-color: rgba(75, 17, 21, var(--admonition-alpha-less-intensity));
-    margin-top:var(--admonition-margin-vertical);
+    margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--success {
     background-color: rgba(0, 49, 0, var(--admonition-alpha-intensity));
-    margin-top:var(--admonition-margin-vertical);
+    margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
@@ -232,4 +232,19 @@ details [class*="collapsibleContent"] {
     border-top: var(--border-very-thin) solid var(--ifm-toc-border-color);
     border-right: var(--border-very-thin) solid var(--ifm-toc-border-color);
     border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color);
+}
+
+.tabs-container {
+    border: var(--border-very-thin) solid var(--ifm-toc-border-color);
+    padding: 0 0.5em 1em 1em;
+    border-radius: 0.5em;
+}
+
+.tabs-container:hover {
+    border: var(--border-very-thin) solid var(--ifm-color-primary-darkest);
+}
+
+
+.tabs-container details {
+    border: 0;
 }

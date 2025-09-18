@@ -8,6 +8,9 @@ thumbnail: 2025-08-13-smaller-spring-boot-docker-image.png
 image: ./thumbnails/2025-08-13-smaller-spring-boot-docker-image.png
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Today we're going on a container diet journey that'll make your Spring Boot apps leaner than the bloated things you often see during your Docker builds.
 
 <!-- truncate -->
@@ -16,7 +19,13 @@ Today we're going on a container diet journey that'll make your Spring Boot apps
 
 Alright, alright! I see you scrolling down looking for the goods. Here's the complete `Dockerfile` that'll make your containers skinnier than a supermodel on a juice cleanse:
 
+<Tabs>
+
+<TabItem value="jdk21" label="JDK 21">
+
 <details>
+
+<summary>In JDK 21</summary>
 
 ```dockerfile
 #
@@ -64,17 +73,17 @@ RUN jlink \
     --compress 2  \
     --no-header-files  \
     --no-man-pages \
-    --output /jre-21-minimalist
+    --output /jre-minimalist
 
 # Stage 2: The lean, mean, production machine
 FROM alpine:3.21.3 AS final
 
 # Set up our custom Java home
-ENV JAVA_HOME=/opt/java/jre-21-minimalist
+ENV JAVA_HOME=/opt/java/jre-minimalist
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Move in our custom-built JRE
-COPY --from=build /jre-21-minimalist $JAVA_HOME
+COPY --from=build /jre-minimalist $JAVA_HOME
 
 # Security 101: Don't run as root
 RUN addgroup -S springgroup \
@@ -104,6 +113,105 @@ ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0"
 
 </details>
 
+</TabItem>
+
+<TabItem value="jdk25" label="JDK 25">
+
+<details>
+
+<summary>In JDK 25</summary>
+
+```dockerfile
+#
+# Multi-stage Dockerfile for Java Spring Boot application
+#
+
+# Stage 1: Build stage - Compile the application and create a minimal JRE
+FROM amazoncorretto:25-alpine-full AS build
+WORKDIR /usr/src/project
+
+ENV JAVA_VERSION=25
+
+# Copy Maven configuration files first to leverage Docker cache
+COPY pom.xml mvnw ./
+COPY .mvn/ .mvn/
+RUN chmod +x mvnw
+
+# Download dependencies (will be cached if pom.xml doesn't change)
+RUN ./mvnw dependency:go-offline
+
+# Copy source code
+COPY src/ src/
+
+# Build the application using Maven wrapper
+RUN ./mvnw clean package -DskipTests
+
+# Extract the JAR to analyze its dependencies
+RUN jar xf target/app.jar
+
+# Use jdeps to identify necessary Java modules for a minimal JRE
+RUN jdeps  \
+    --ignore-missing-deps  \
+    -q --recursive  \
+    --multi-release ${JAVA_VERSION} \
+    --print-module-deps  \
+    --class-path 'BOOT-INF/lib/*' \
+    target/app.jar > deps.info
+
+# Create a custom JRE with only the required modules
+# jdk.crypto.ec is needed for HTTPS
+# JDEPS currently does not detect this module
+RUN jlink \
+    --add-modules $(cat deps.info),jdk.crypto.ec \
+    --strip-java-debug-attributes  \
+    --compress 2  \
+    --no-header-files  \
+    --no-man-pages \
+    --output /jre-minimalist
+
+# Stage 2: Production stage - Minimal Alpine image with custom JRE
+FROM alpine:3.22 AS final
+
+# Set up Java environment
+ENV JAVA_HOME=/opt/java/jre-minimalist
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Copy the custom JRE from the build stage
+COPY --from=build /jre-minimalist $JAVA_HOME
+
+# Create a non-root user for security
+RUN addgroup -S springgroup \
+    && adduser -S springuser -G springgroup \
+    && mkdir -p /app \
+    && chown -R springuser:springgroup /app
+
+# Copy application artifacts from build stage
+COPY --from=build /usr/src/project/target/app.jar /app/
+
+WORKDIR /app
+
+USER springuser
+
+#
+# Run the application with optimized JVM settings
+#
+
+# - UseCompactObjectHeaders: See JEP 519 (https://openjdk.org/jeps/519)
+# - MaxRAMPercentage: Limit max heap to 75% of container memory
+# - InitialRAMPercentage: Start with 50% of container memory
+# - MaxMetaspaceSize: Limit metaspace to 512MB
+# - UseG1GC: Use the G1 garbage collector for better performance
+ENTRYPOINT ["java", "-XX:+UseCompactObjectHeaders", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-XX:MaxMetaspaceSize=512m", "-XX:+UseG1GC", "-jar", "app.jar"]
+```
+
+</details>
+
+</TabItem>
+
+<TabItem value="additional-info" label="Additional Info">
+
+In JDK 21, `--strip-debug` parameter for `jlink` works, but not anymore in JDK 25, and we have to use `--strip-java-debug-attributes` instead.
+
 Also, in the `pom.xml` file, add the following line inside the `<build>` section:
 
 ```xml
@@ -111,6 +219,18 @@ Also, in the `pom.xml` file, add the following line inside the `<build>` section
 ```
 
 This ensures the generated JAR file is always named `app.jar`, instead of something like `your-awesome-project-0.0.1-SNAPSHOT.jar`. This is especially useful if you don’t need versioned filenames for your application.
+
+</TabItem>
+
+</Tabs>
+
+A word for those who are still stuck with JDK 8 and below:
+
+:::warning[No Party for JDK 8 and Below]
+
+Sorry folks, this party is JDK 9+ only! If you're still on JDK 8, maybe it's time to have that awkward conversation with your tech lead about upgrading to JDK 17. I know, I know. They'll probably give you the classic "no resources, no time, no budget" triple threat. But hey, at least you tried!
+
+:::
 
 Still with me? Cool! Let's break this bad boy down and see what's happening under the hood.
 
@@ -124,7 +244,7 @@ Absolutely ***THICC***. Like, "takes-up-half-your-hard-drive" thicc. But don't w
 
 ~~Extra THICC indeed, Mr. Aku.~~
 
-You may be using `eclipse-temurin:21-jdk` and wondering why your "simple" Spring Boot app is pushing 300+ MB? Well, congratulations! You've just packed the entire Java kitchen sink into your container. Your app probably uses like 10% of what's in there, but Java's all "*here, take ALL the modules, you might need them someday!*"
+You may be using eclipse-temurin JDK and wondering why your "simple" Spring Boot app is pushing 300+ MB? Well, congratulations! You've just packed the entire Java kitchen sink into your container. Your app probably uses like 10% of what's in there, but Java's all "*here, take ALL the modules, you might need them someday!*"
 
 (spoiler: most of the time, you might not)
 
@@ -132,15 +252,13 @@ You may be using `eclipse-temurin:21-jdk` and wondering why your "simple" Spring
 
 Java 9 gave us some pretty neat tools called `jdeps` (the nosy neighbor who knows exactly what your app is using) and `jlink` (the minimalist guru who helps you throw away everything you don't need).
 
-:::info[PSA for the JDK 8 holdouts]
-
-Sorry folks, this party is JDK 9+ only! If you're still on JDK 8, maybe it's time to have that awkward conversation with your tech lead about upgrading to JDK 17. I know, I know. They'll probably give you the classic "no resources, no time, no budget" triple threat. But hey, at least you tried!
-
-:::
-
 ## Multi-Stage Dockerfile Breakdown
 
 ### Stage 1: Build and Analysis
+
+<Tabs>
+
+<TabItem value="stage-1-jdk-21" label="JDK 21">
 
 ```dockerfile
 FROM eclipse-temurin:21-jdk-alpine AS build
@@ -157,9 +275,38 @@ COPY src/ src/
 RUN ./mvnw clean package -DskipTests
 ```
 
+</TabItem>
+
+<TabItem value="stage-1-jdk-25" label="JDK 25">
+
+```dockerfile
+FROM amazoncorretto:25-alpine-full AS build
+WORKDIR /usr/src/project
+
+ENV JAVA_VERSION=25
+
+COPY pom.xml mvnw ./
+COPY .mvn/ .mvn/
+RUN chmod +x mvnw
+
+RUN ./mvnw dependency:go-offline
+
+COPY src/ src/
+
+RUN ./mvnw clean package -DskipTests
+```
+
+</TabItem>
+
+</Tabs>
+
 We're copying the Maven files first because Docker layer caching is basically magic. If your `pom.xml` doesn't change, Docker will "remember" this and use the cache to speed up the build process. Thank the almighty Docker Gods!
 
-> If your project does not have Maven wrapper (`.mvnw` folder and `mvnw` file), you can visit [here](https://start.spring.io/) to get your own
+:::tip
+
+If your project does not have Maven wrapper (`.mvnw` folder and `mvnw` file), you can visit [here](https://start.spring.io/) to get your own
+
+:::
 
 Still, consult with your DevOps engineers and ask them if caching is viable (and also about the option to purge the cache in case of caching problems).
 
@@ -179,6 +326,10 @@ Before we reach the next step, a small modification for the `pom.xml` file is ne
 
 And now, the next part:
 
+<Tabs>
+
+<TabItem value="stage-2-jdk-21" label="JDK 21">
+
 ```dockerfile
 # The app is the name we defined inside <finalName> tag
 RUN jar xf target/app.jar
@@ -195,6 +346,30 @@ RUN jdeps  \
 RUN echo "Required Java modules:" && cat deps.info
 ```
 
+</TabItem>
+
+<TabItem value="stage-2-jdk-25" label="JDK 25">
+
+```dockerfile
+# The app is the name we defined inside <finalName> tag
+RUN jar xf target/app.jar
+
+RUN jdeps  \
+    --ignore-missing-deps  \
+    -q --recursive  \
+    --multi-release ${JAVA_VERSION} \
+    --print-module-deps  \
+    --class-path 'BOOT-INF/lib/*' \
+    target/app.jar > deps.info
+
+# Debug: Let's see what this sneaky tool found
+RUN echo "Required Java modules:" && cat deps.info
+```
+
+</TabItem>
+
+</Tabs>
+
 `jdeps` is basically telling you what modules you are actually using since 2019. The `--ignore-missing-deps` flag is crucial because sometimes dependencies are like "hey, I reference this class" but it's nowhere to be found.
 
 :::tip[Pro Developer Move]
@@ -207,27 +382,49 @@ Is the performance gain worth it? Probably not. Will it make you feel like an op
 
 #### `jlink`, the Minimalist Guru
 
+<Tabs>
+
+<TabItem value="stage-3-jdk-21" label="JDK 21">
+
 ```dockerfile
 RUN jlink \
     --add-modules $(cat deps.info),jdk.crypto.ec \
-    --strip-debug  \
-    --compress 2  \
-    --no-header-files  \
+    --strip-debug \
+    --compress 2 \
+    --no-header-files \
     --no-man-pages \
-    --output /jre-21-minimalist
+    --output /jre-minimalist
 ```
+
+</TabItem>
+
+<TabItem value="stage-3-jdk-25" label="JDK 25">
+
+```dockerfile
+RUN jlink \
+    --add-modules $(cat deps.info),jdk.crypto.ec \
+    --strip-java-debug-attributes \
+    --compress 2 \
+    --no-header-files \
+    --no-man-pages \
+    --output /jre-minimalist
+```
+
+</TabItem>
+
+</Tabs>
 
 `jlink` is where the magic happens! It's like having a personal trainer for your JRE: no fluff, no unnecessary bulk, just pure, lean runtime goodness. We're manually adding `jdk.crypto.ec` because `jdeps` sometimes doesn't realize that HTTPS exists, and in the sample project, we need HTTPS support.
 
 ### Stage 2: The Lean Production Machine
 
 ```dockerfile
-FROM alpine:3.21.3 AS final
+FROM alpine:3.22 AS final
 
-ENV JAVA_HOME=/opt/java/jre-21-minimalist
+ENV JAVA_HOME=/opt/java/jre-minimalist
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-COPY --from=build /jre-21-minimalist $JAVA_HOME
+COPY --from=build /jre-minimalist $JAVA_HOME
 ```
 
 #### The Great libc Compatibility Drama
@@ -245,7 +442,7 @@ These two are like oil and water: they just don't mix! If you build on glibc and
 
 :::
 
-This is why we use `eclipse-temurin:21-jdk-alpine` for building. We're keeping everything in the Alpine family. It's like a very exclusive club, but for libraries. Again, `alpine` is what makes our reduced image size successful!
+This is why we use `eclipse-temurin:21-jdk-alpine` or `amazoncorretto:25-alpine-full` for building (anything that supports Linux Alpine). We're keeping everything in the Alpine family. It's like a very exclusive club, but for libraries. Again, `alpine` is what makes our reduced image size successful!
 
 #### Security Theater
 
@@ -276,6 +473,8 @@ These JVM flags are like seasoning for your container, and the right amount make
 - `InitialRAMPercentage=50.0`: "Start reasonable, scale as needed"
 - `MaxMetaspaceSize=512m`: "Metaspace, you have a budget. Stick to it!"
 - `UseG1GC`: "Use the fancy garbage collector that makes things go zoom"
+
+For JDK 25 only, you can add `+UseCompactObjectHeaders` to use the new compact object headers (JEP 519).
 
 ## The Results
 
