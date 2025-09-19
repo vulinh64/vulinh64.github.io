@@ -292,6 +292,10 @@ var instantToLdt = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
 
 Notice something? You need a timezone to provide the time context: either to convert from local date time to universal time, or vice versa. That's exactly why you can't completely ditch `ZonedDateTime`, even if you wanted to. Not everyone lives in the UTC +0 ideal land where time conversions are just academic exercises. The timezone becomes the bridge between your local reality and the universal truth. It's like having a translator who speaks both "what time my users think it is" and "what time the universe knows it actually is."
 
+## Comparing Objects with Null Safety
+
+The tip was so long that I got a dedicated article [here](2025-09-19-null-safe-comparisons.md).
+
 ---
 
 Leave a comment below, and tell me some of the tips and tricks you've been using to great successes!

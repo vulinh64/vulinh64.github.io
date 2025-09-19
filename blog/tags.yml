@@ -88,6 +88,11 @@ singleton:
   description: "A design pattern ensuring a class has only one instance."
   permalink: /singleton
 
+sorting:
+  label: "sorting"
+  description: "The act of arranging items in a collection in a certain order"
+  permalink: /sorting
+
 'spring boot':
   label: "spring boot"
   description: "A framework for building production-ready Spring applications quickly."

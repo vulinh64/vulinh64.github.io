@@ -37,7 +37,7 @@
     --ifm-color-primary-lighter: #359962;
     --ifm-color-primary-lightest: #3cad6e;
     --ifm-code-font-size: 90%;
-    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+    --docusaurus-highlighted-code-line-bg: rgba(192, 192, 192, 0.1);
     --admonition-alpha-intensity: 10%;
     --admonition-alpha-less-intensity: 20%;
     --details-border-color: rgb(76, 179, 212);
@@ -92,7 +92,6 @@ blockquote {
     --ifm-color-primary-light: #29d5b0;
     --ifm-color-primary-lighter: #32d8b4;
     --ifm-color-primary-lightest: #4fddbf;
-    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
 article details {
