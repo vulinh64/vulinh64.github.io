@@ -37,7 +37,7 @@ You start typing and your first instinct is to implement `Comparator<Person>` in
 You then create your "naive" comparator:
 
 ```java
-public static class PersonComparator implements Comparator<Person> {
+class PersonComparator implements Comparator<Person> {
 
   static final int EQUAL = 0;
   static final int LESS_THAN = -1;
@@ -52,6 +52,14 @@ public static class PersonComparator implements Comparator<Person> {
     return p1.birthdate().compareTo(p2.birthdate());
   }
 }
+```
+
+Then do the sorting business:
+
+```java
+people.stream()
+    .sorted(new PersonComparator())
+    .toList();
 ```
 
 :::note
@@ -181,8 +189,8 @@ public int compare(Person p1, Person p2) {
     return LESS_THAN;
   }
     
+  // *Heavy sigh* Here we go again...  
 // highlight-start
-  // *Heavy sigh* Here we go again...
   var p1Birthdate = p1.birthdate();
   var p2Birthdate = p2.birthdate();
     
@@ -218,8 +226,8 @@ public int compare(Person p1, Person p2) {
     return LESS_THAN;
   }
     
-// highlight-start
   // At least someone else wrote the null handling logic...
+// highlight-start
   return org.apache.commons.lang3.ObjectUtils.compare(
         p1.birthdate(), p2.birthdate());
 // highlight-end
@@ -246,7 +254,9 @@ Check this out:
 
 ```java
 people.stream()
+// highlight-start
     .sorted(Comparator.comparing(Person::birthdate))
+// highlight-end
     .toList();
 ```
 
@@ -264,11 +274,11 @@ So here's how you tell nulls to sit at the back of the bus (nulls last):
 
 ```java
 people.stream()
+    .sorted(
 // highlight-start
-    .sorted(Comparator.nullsLast(
         Comparator.nullsLast(
+            Comparator.comparing(Person::birthdate, Comparator.nullsLast(Comparator.naturalOrder()))
 // highlight-end
-            Comparator.comparing(Person::birthdate))))
     .toList();
 ```
 
@@ -278,12 +288,11 @@ Oh, you beautiful overachiever:
 
 ```java
 people.stream()
-    .sorted(Comparator.nullsLast(
+    .sorted(
         Comparator.nullsLast(
-            Comparator.comparing(Person::birthdate))
+            Comparator.comparing(Person::birthdate, Comparator.nullsLast(Comparator.naturalOrder()))
 // highlight-start
-        .thenComparing(Person::name, 
-            Comparator.nullsLast(Comparator.naturalOrder()))))
+                .thenComparing(Person::name, Comparator.nullsLast(Comparator.naturalOrder()))
 // highlight-end
     .toList();
 ```
@@ -294,13 +303,12 @@ Fine, here's your kitchen sink solution:
 
 ```java
 people.stream()
-    .sorted(Comparator.nullsLast(
+    .sorted(
         Comparator.nullsLast(
-            Comparator.comparing(Person::birthdate))
-        .thenComparing(Person::name, 
-            Comparator.nullsLast(Comparator.naturalOrder()))
+            Comparator.comparing(Person::birthdate, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(Person::name, Comparator.nullsLast(Comparator.naturalOrder()))
 // highlight-start
-        .thenComparingInt(Person::id)))
+                .thenComparingInt(Person::id)))
 // highlight-end
     .toList();
 ```
