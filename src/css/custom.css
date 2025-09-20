@@ -235,14 +235,13 @@ details [class*="collapsibleContent"] {
 
 .tabs-container {
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0 0.5em 1em 1em;
+    padding: 0 0.5em 1em 0.5em;
     border-radius: 0.5em;
 }
 
 .tabs-container:hover {
     border: var(--border-very-thin) solid var(--ifm-color-primary-darkest);
 }
-
 
 .tabs-container details {
     border: 0;
