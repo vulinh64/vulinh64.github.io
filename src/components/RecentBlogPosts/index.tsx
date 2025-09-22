@@ -23,7 +23,7 @@ function BlogPostItem({title, date, permalink}) {
         <Link to={permalink} className={clsx("text--no-decoration", styles.blogPostItem)}>
             <CustomBlogThumbnail filename={thumbnailFilename} />
 
-            <Heading as="h2" className={styles.blogPostTitle}>
+            <Heading as="h2" className={clsx(styles.blogPostTitle, "margin-top--md", "margin-bottom--md")}>
                 {title}
             </Heading>
 

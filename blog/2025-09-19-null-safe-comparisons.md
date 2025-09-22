@@ -4,6 +4,8 @@ title: Null-safe Comparisons in Java
 authors: [ vulinh64 ]
 tags: [ java, sorting ]
 description: Compare objects for sorting safely!
+thumbnail: 2025-09-19-null-safe-comparisons.png
+image: ./thumbnails/2025-09-19-null-safe-comparisons.png
 ---
 
 import Tabs from '@theme/Tabs';
