@@ -39,7 +39,10 @@ export default function BlogPostItem({children, className}: BlogPostItemProps) {
         <BlogPostItemContainer className={clsx(containerClassName, className)}>
             <BlogPostItemHeader/>
             <BlogPostItemContent>
-                {!containerClassName && <CustomBlogThumbnail filename={thumbnail}/>}
+                {!containerClassName &&
+                    <div className={"margin-bottom--lg"}>
+                        <CustomBlogThumbnail filename={thumbnail}/>
+                    </div>}
                 {children}
             </BlogPostItemContent>
             <BlogPostItemFooter/>
