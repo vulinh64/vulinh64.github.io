@@ -7,6 +7,5 @@
 .thumbnail {
     width: 100%;
     height: auto;
-    border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color);
     border-radius: 0.5rem 0.5rem 0 0;
 }
