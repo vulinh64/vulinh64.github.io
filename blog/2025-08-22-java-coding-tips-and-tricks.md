@@ -8,6 +8,9 @@ image: ./thumbnails/2025-08-22-java-coding-tips-and-tricks.png
 thumbnail: 2025-08-22-java-coding-tips-and-tricks.png
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Here are some non-exhaustive battle-tested tips and tricks for coding with Java (yes, yes, I hear you muttering about Kotlin, Go, or C#, but if Java is currently keeping the lights on and ramen in your bowl, then buckle up and keep reading).
 
 <!-- truncate -->
@@ -18,15 +21,9 @@ AKA: Stop Playing Russian Roulette with null pointers.
 
 The full deep-dive article is [here](2025-08-11-java-optional-usage.md), where I geek out about `java.util.Optional` like it's the best thing since sliced bread. But here's the TL;DR version with a side of common sense:
 
-Instead of this disaster waiting to happen:
+<Tabs>
 
-```java
-public User getUser(UUID id) {
-  // Find active user with "true"
-  // This can return null (spoiler alert: it will, at the worst possible moment)
-  return fetchUser(id, true);
-}
-```
+<TabItem value="return-optional" label="Do This">
 
 Do this and sleep better at night:
 
@@ -39,6 +36,24 @@ public Optional<User> getUser(UUID id) {
   return Optional.ofNullable(fetchUser(id, true));
 }
 ```
+
+</TabItem>
+
+<TabItem value="return-null" label="Don't Do This">
+
+Instead of this disaster waiting to happen:
+
+```java
+public User getUser(UUID id) {
+  // Find active user with "true"
+  // This can return null (spoiler alert: it will, at the worst possible moment)
+  return fetchUser(id, true);
+}
+```
+
+</TabItem>
+
+</Tabs>
 
 Why? Because when you return `null`, your only option is the boring old null check (yawn), and you are tempted to forget this (just like how C or C++ developers forget to free the memory). But with `Optional`, you get access to a whole arsenal of awesome methods like `map`, `filter`, `stream`, `flatMap`, and more! It's like upgrading from a rusty bicycle to a Tesla.
 
@@ -56,15 +71,9 @@ Still sailing on the HMS Anti-Null, I see!
 
 Joshua Bloch already roasted this topic to perfection in "Effective Java" (item 43), so I'll just give you the highlight reel:
 
-Instead of this ticking time bomb:
+<Tabs>
 
-```java
-public List<User> getUsers() {
-  // Only return users if user has correct authorization
-  // Otherwise, let's return null and watch the world burn
-  return isAuthorized ? fetchUsers() : null;
-}
-```
+<TabItem value="return-empty" label="Return Empty Collections">
 
 Be the hero your codebase deserves:
 
@@ -73,6 +82,23 @@ public List<User> getUsers() {
   return isAuthorized ? fetchUsers() : Collections.emptyList();
 }
 ```
+
+</TabItem>
+
+<TabItem value="return-null" label="Don't Return Null">
+
+Instead of this ticking time bomb:
+
+```java
+public List<User> getUsers() {
+  // Let's return null and watch the world burn
+  return isAuthorized ? fetchUsers() : null;
+}
+```
+
+</TabItem>
+
+</Tabs>
 
 Here's your emergency cheat sheet (screenshot this, print it, tattoo it on your arm):
 
@@ -83,7 +109,6 @@ Here's your emergency cheat sheet (screenshot this, print it, tattoo it on your 
 * **For Maps**: Choose from `Map.of()`, `Map.ofEntries()` (Java 9+ gang) or the classic `Collections.emptyMap()`.
 
 Trust me on this one: your future self will send you a thank-you card. Your teammates will stop giving you the stink eye. Your team lead might even crack a smile. And most importantly, you won't be debugging a nasty `NullPointerException` at 2 AM while surviving on energy drinks and regret.
-
 
 ## Exception Handling: Don't Let Your Errors Vanish Into the Void
 
@@ -104,7 +129,10 @@ When you swallow exceptions like this, you're essentially creating a black hole 
 
 Instead, always handle exceptions properly by either logging them appropriately or rethrowing them:
 
-### Option 1: Log the Exception
+<Tabs>
+
+<TabItem value="relog" label="Re-Log the Exception">
+
 
 ```java
 // For exceptional cases - use WARN or ERROR level
@@ -124,7 +152,9 @@ try {
 }
 ```
 
-### Option 2: Rethrow with Context
+</TabItem>
+
+<TabItem value="rethrow" label="Re-throw the Exception">
 
 If you need to rethrow the exception, **always include the original exception** to preserve the complete stack trace:
 
@@ -143,6 +173,10 @@ try {
   throw new ServiceException("User processing failed", e);
 }
 ```
+
+</TabItem>
+
+</Tabs>
 
 ### Why This Matters
 
@@ -212,9 +246,13 @@ JwtBuilder builder = Jwts.builder()
     .setExpiration(Date.from(now.plusHours(1).atZone(ZoneId.systemDefault()).toInstant()));
 ```
 
-### Pro Tip: Even the Good Guys Benefit
+<details>
+
+<summary>Pro Tip: Even the Good Guys Benefit</summary>
 
 Here's a bonus nugget: even those well-behaved, idempotent methods can benefit from the "introduce variable" treatment. Sure, calling `user.getName()` five times in a row won't break anything, but extracting it to a variable makes your code cleaner and more maintainable. Don't expect miracles in performance, because modern JVMs are goddamn smart and will optimize the hell out of your code anyway, but your fellow developers (including future you) will appreciate the clarity.
+
+</details>
 
 ### Final Takeaway ~~(Yes, I am using A.I to generate this)~~
 
@@ -284,11 +322,25 @@ One source of truth for time, minimal complexity, maximum sanity. Your future se
 
 Sometimes you'll need to convert between these types, and here's where things get interesting:
 
+<Tabs>
+
+<TabItem value="to-instant" label="To Instant">
+
 ```java
 var ldtToInstant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+```
 
+</TabItem>
+
+<TabItem value="to-ldt" label="To LocalDateTime">
+
+```java
 var instantToLdt = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
 ```
+
+</TabItem>
+
+</Tabs>
 
 Notice something? You need a timezone to provide the time context: either to convert from local date time to universal time, or vice versa. That's exactly why you can't completely ditch `ZonedDateTime`, even if you wanted to. Not everyone lives in the UTC +0 ideal land where time conversions are just academic exercises. The timezone becomes the bridge between your local reality and the universal truth. It's like having a translator who speaks both "what time my users think it is" and "what time the universe knows it actually is."
 

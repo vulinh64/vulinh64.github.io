@@ -9,6 +9,8 @@ image: ./thumbnails/2025-08-18-java-25-new-features.png
 ---
 
 import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 Java 25 drops on September 25 this year (as of August 18, when I'm writing this). Will enterprises immediately jump on the Java 25 hype train? LOL, nope. They'll probably stick with Java 8 until the heat death of the universe (there are tons of breaking changes from Java 21 to Java 25, so without a solid migration plan, your services will explode spectacularly), but hey, we can still have some fun exploring what's new!
 
@@ -78,16 +80,30 @@ With JEP 456, you can just slap a `_` character (yeah, it kinda looks like a sid
 
 Take this example:
 
-```java
-// What IntelliJ suggests (bless its silicon heart)
-list.removeIf(ignored -> LocalDateTime.now().isBefore(threshold));
-```
+<Tabs>
+
+<TabItem value="jdk22" label="JDK 22">
 
 With JDK 22+, you can just:
 
 ```java
 list.removeIf(_ -> LocalDateTime.now().isBefore(threshold));
 ```
+
+</TabItem>
+
+<TabItem value="pre-jdk22" label="Before JDK 22">
+
+Suggested by IDE like IntelliJ:
+
+```java
+// What IntelliJ suggests (bless its silicon heart)
+list.removeIf(ignored -> LocalDateTime.now().isBefore(threshold));
+```
+
+</TabItem>
+
+</Tabs>
 
 There are various places where you can unleash this JEP. Read the docs for more chaos!
 
@@ -148,26 +164,17 @@ You've got two choices: wrap your objects in some custom contraption or drag Goo
 public record Person(Integer id, String name) {}
 ```
 
-#### The Guava Approach (A.K.A. "Help, I Need An Adult")
+#### The Implementations
 
-```java
-import com.google.common.base.Equivalence;
+<Tabs>
 
-persons.stream()
-    .map(Equivalence.equals().onResultOf(Person::name)::wrap)
-    .distinct()
-    .map(Equivalence.Wrapper::get)
-    .toList();
-```
-
-We create an equivalence for `Person` objects using Google Guava's `Equivalence` class (because apparently we need an entire library to compare names). We wrap each object, apply `distinct()` to yeet the duplicates, then unwrap everything. Three stream operations to do what should be simple: peak Java energy!
-
-#### Stream Gatherer Approach (The New Hotness)
+<TabItem value="use-stream-gatherer" label="Use Stream Gatherer">
 
 First we create our own gatherer:
 
 ```java
-public class DistinctByNameGatherer implements Gatherer<Person, Set<String>, Person> {
+public class DistinctByNameGatherer 
+    implements Gatherer<Person, Set<String>, Person> {
 
   @Override
   public Supplier<Set<String>> initializer() {
@@ -205,6 +212,26 @@ persons.stream()
     .gather(new DistinctByNameGatherer())
     .toList();
 ```
+
+</TabItem>
+
+<TabItem value="use-google-guava" label="Use Guava's Equivalence">
+
+```java
+import com.google.common.base.Equivalence;
+
+persons.stream()
+    .map(Equivalence.equals().onResultOf(Person::name)::wrap)
+    .distinct()
+    .map(Equivalence.Wrapper::get)
+    .toList();
+```
+
+We create an equivalence for `Person` objects using Google Guava's `Equivalence` class (because apparently we need an entire library to compare names). We wrap each object, apply `distinct()` to yeet the duplicates, then unwrap everything. Three stream operations to do what should be simple: peak Java energy!
+
+</TabItem>
+
+</Tabs>
 
 <details>
 
@@ -292,7 +319,7 @@ Call to 'super()' must be first statement in constructor body
 
 Good news! As of JDK 25, Java finally allows statements before `super(...)` or `this(...)` in constructors. No more juggling validation logic into awkward static helper methods just to appease the compiler gods. Thank you, JEP 513, you beautiful thing!
 
-Now you can write sensible code:
+See this example:
 
 ```java
 abstract class Member {
@@ -303,26 +330,35 @@ abstract class Member {
     this.name = name;
   }
 }
+```
 
-public class ClubMember extends Member {
+And do the validation when instantiating new objects:
 
-  private final int age;
+<Tabs>
 
-  public ClubMember(String name, int age) {
-    if (name == null || name.isBlank()) {
-      throw new IllegalArgumentException("Name cannot be empty");
-    }
-    
-    if (age < 18) {
-      throw new IllegalArgumentException("Must be an adult to register!");
-    }
-    
-    super(name); // No longer needs to be first!
-      
-    this.age = age;
+<TabItem value="with-jep-513" label="Flexible Constructor Body">
+
+Now you can write sensible code:
+
+```java
+public ClubMember(String name, int age) {
+  if (name == null || name.isBlank()) {
+    throw new IllegalArgumentException("Name cannot be empty");
   }
+    
+  if (age < 18) {
+    throw new IllegalArgumentException("Must be an adult to register!");
+  }
+    
+  super(name); // No longer needs to be first!
+      
+  this.age = age;
 }
 ```
+
+</TabItem>
+
+<TabItem value="without-jep-513" label="Previous Usage"> 
 
 Previously, Java forced you into this abomination:
 
@@ -351,6 +387,39 @@ private static int parseAge(int age) {
 
 An ugly workaround: validation logic banished to static methods just to satisfy arbitrary language rules. Yikes...
 
+</TabItem>
+
+<TabItem value="static-factory-method" label="Use Static Factory Methods">
+
+You can "outsource" the object instantiation to a static factory method like this:
+
+```java
+public class ClubMember extends Member {
+  
+  public static ClubMember of(String name, int age) {
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("Name cannot be empty");
+    }
+    
+    if (age < 18) {
+      throw new IllegalArgumentException("Must be an adult to register!");
+    }
+    
+    return new ClubMember(name, age);
+  }
+  
+  // Make it private for your convenience
+  private ClubMember(String name, int age) {
+    super(name);
+    this.age = age;
+  }
+}
+```
+
+</TabItem>
+
+</Tabs>
+
 Still:
 
 Code before `super(...)` or `this(...)` may only perform safe operations (validating parameters, assigning fields, computing values), but cannot access the instance under construction (no `this`, instance methods, or field reads).
@@ -377,7 +446,7 @@ Some of the notable incompatibility problem I've encountered when testing JDK 25
 
 <details>
 
-* Lombok `1.18.38` does not work with JDK 25.
+* Lombok `1.18.38` does not work with JDK 25. Requires `1.18.40` or above.
 
 * Maven Surefire plugins requires this configuration for Mockito:
 

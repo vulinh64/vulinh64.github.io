@@ -9,6 +9,9 @@ image: ./thumbnails/2025-08-15-lombok-usage.png
 ---
 
 import GoBackToTldrButton from '@site/src/components/GoBackToTldrButton';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 
 The usage of Project Lombok's different annotations for specialized use cases (and how to avoid becoming the person everyone blames when the build breaks).
 
@@ -880,11 +883,15 @@ This issue commonly arises when a field is annotated with Spring's `@Qualifier` 
 
 There are several ways to solve this problem:
 
-#### 1. (RECOMMENDED) Switch to Using Pure Java All-Args Constructor
+<Tabs>
+
+<TabItem value="option-1" label="Switch to Using Pure Java All-Args Constructor">
 
 Of course, this defeats the purpose of using Lombok (it's like buying a dishwasher and then washing dishes by hand), but it is the easiest way without requiring any tinkering with project configurations. Sometimes the old-fashioned way is the path of least resistance.
 
-#### 2. Configure Lombok
+</TabItem>
+
+<TabItem value="option-2" label="Configure Lombok">
 
 Create a `lombok.config` file inside your `src` folder and add this magical incantation:
 
@@ -894,7 +901,9 @@ lombok.copyableAnnotations += org.springframework.beans.factory.annotation.Quali
 
 This tells Lombok "*hey, please copy this annotation too, thanks*" in a way that won't get lost in translation.
 
-#### 3. Consider Refactoring Your Code
+</TabItem>
+
+<TabItem value="option-3" label="Consider Refactoring Your Code">
 
 Frequent usage of `@Qualifier` can indicate a need for more structured bean configuration (like having too many passwords and realizing you need a password manager). You might achieve better maintainability by:
 
@@ -904,11 +913,13 @@ Frequent usage of `@Qualifier` can indicate a need for more structured bean conf
 
 This approach requires some architectural thinking, but your future self will thank you when you're not playing "guess which bean Spring injected" during a production incident.
 
+</TabItem>
+
+</Tabs>
+
 ## The Cool Kid `@Locked` Over Big Boss `@Synchronized`
 
 <GoBackToTldrButton></GoBackToTldrButton>
-
-### Historical Context
 
 <details>
 
@@ -938,9 +949,9 @@ It's literally that easy. No XML configuration nightmares, no complex setup ritu
 
 This annotation is preferable over Lombok's own `@Synchronized` (sorry `@Synchronized`, your time has passed like dial-up internet).
 
-#### Lombok Code (The Easy Button)
+<Tabs>
 
-<details>
+<TabItem value="use-lombok" label="Lombok Code (The Easy Button)">
 
 ```java
 import lombok.Locked;
@@ -964,47 +975,9 @@ public class YourBusinessService {
 }
 ```
 
-</details>
+</TabItem>
 
-As of the time of writing (2025-06-17), it is currently not possible to specify fairness of the locks (Lombok hasn't figured out how to be fair yet), and you will have to resort to vanilla Java code for better fine-tuning, or doing something like this masterpiece:
-
-<details>
-
-```java
-import lombok.extern.slf4j.Slf4j;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-@Slf4j
-public class YourBusinessService {
-  
-  private final Lock lock = new ReentrantLock(true); // true = fair lock (everyone gets a turn)
-  
-  public void execute() {
-    // Attempt to acquire the lock only if it's currently available. 
-    // This is particularly useful in scenarios where scheduled tasks (e.g., cron jobs) might overlap:
-    // such as one job starting at 08:01 AM while the previous execution is still running
-    // (because cron jobs have no concept of "hey, maybe wait for me to finish").
-    if (!lock.tryLock(5000L, TimeUnit.MILLISECONDS)) {
-      log.warn("Current task is still running, aborting...");
-      return;
-    }
-    
-    try {
-      // your business code (finally, some peace and quiet)
-    } finally {
-      lock.unlock(); // ALWAYS unlock, or face the wrath of deadlocks
-    }
-  }
-}
-```
-
-</details>
-
-#### Vanilla Java Code
-
-<details>
+<TabItem value="vanilla-java" label="Vanilla Java Code (The DIY Button)"> 
 
 ```java
 import java.util.concurrent.locks.Lock;
@@ -1051,6 +1024,44 @@ public class YourBusinessService {
 ```
 
 The vanilla approach gives you complete control but requires more ceremony (like wearing a tuxedo to write code). The Lombok approach gives you convenience but less flexibility (like wearing pajamas to write code). Choose based on whether you prefer control or comfort, but remember: with great locking power comes great deadlock responsibility!
+
+</TabItem>
+
+</Tabs>
+
+As of the time of writing (2025-06-17), it is currently not possible to specify fairness of the locks (Lombok hasn't figured out how to be fair yet), and you will have to resort to vanilla Java code for better fine-tuning, or doing something like this masterpiece:
+
+<details>
+
+```java
+import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+@Slf4j
+public class YourBusinessService {
+  
+  private final Lock lock = new ReentrantLock(true); // true = fair lock (everyone gets a turn)
+  
+  public void execute() {
+    // Attempt to acquire the lock only if it's currently available. 
+    // This is particularly useful in scenarios where scheduled tasks (e.g., cron jobs) might overlap:
+    // such as one job starting at 08:01 AM while the previous execution is still running
+    // (because cron jobs have no concept of "hey, maybe wait for me to finish").
+    if (!lock.tryLock(5000L, TimeUnit.MILLISECONDS)) {
+      log.warn("Current task is still running, aborting...");
+      return;
+    }
+    
+    try {
+      // your business code (finally, some peace and quiet)
+    } finally {
+      lock.unlock(); // ALWAYS unlock, or face the wrath of deadlocks
+    }
+  }
+}
+```
 
 </details>
 
