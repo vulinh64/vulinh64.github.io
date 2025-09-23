@@ -15,7 +15,7 @@ const config = {
     plugins: [
         'docusaurus-plugin-zooming',
     ],
-    title: 'VuLinh64\'s Tech Articles',
+    title: 'Vu Linh Java',
     tagline: 'Random stuff I wrote (with some assistance from ChatGPT)',
     favicon: 'img/favicon.ico',
 
@@ -111,7 +111,7 @@ const config = {
             }],
             image: 'https://avatars.githubusercontent.com/u/35946488',
             navbar: {
-                title: 'VuLinh64\'s Tech Articles',
+                title: 'Vu Linh Java',
                 logo: {
                     alt: 'corrupted-sekiro',
                     src: 'https://avatars.githubusercontent.com/u/35946488',
