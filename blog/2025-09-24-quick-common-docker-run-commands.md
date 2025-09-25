@@ -53,7 +53,7 @@ docker run --detach --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -e M
 
 </TabItem>
 
-<TabItem value="linux/macos" label="Linux/MacOS">
+<TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
 docker run \
@@ -100,7 +100,7 @@ docker run --detatch --name mariadb -e MARIADB_ROOT_PASSWORD=123456 -e MARIADB_D
 
 </TabItem>
 
-<TabItem value="linux/macos" label="Linux/MacOS">
+<TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
 docker run \ 
@@ -123,6 +123,8 @@ Create a local instance of Microsoft SQL Server, using `mcr.microsoft.com/mssql/
 
 <details>
 
+SQL Server requires a complex password usage so we cannot use the simple `123456` as our default SA password.
+
 * Container name: `sqlserver`
 
 * Root user: `sa`
@@ -134,8 +136,6 @@ Create a local instance of Microsoft SQL Server, using `mcr.microsoft.com/mssql/
 * Exposed port: `1433`
 
 * Volume: `sqlserver-volume`
-
-SQL Server requires a complex password usage so we cannot use the simple `123456` as our default SA password.
 
 </details>
 
@@ -149,7 +149,7 @@ docker run --detach -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=123456Aa@" -e "MSSQ
 
 </TabItem>
 
-<TabItem value="linux/macos" label="Linux/MacOS">
+<TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
 docker run \
@@ -198,7 +198,7 @@ docker run --detach --name postgresql -e "POSTGRES_USER=postgres" -e "POSTGRES_P
 
 </TabItem>
 
-<TabItem value="linux/macos" label="Linux/MacOS">
+<TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
 docker run \
@@ -246,7 +246,7 @@ docker run --detach --name oracledb -e "ORACLE_PASSWORD=123456" -v oracledb-volu
 
 </TabItem>
 
-<TabItem value="linux/macos" label="Linux/MacOS">
+<TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
 docker run \
@@ -284,7 +284,7 @@ docker run --detach --name default-kafka -p 9092:9092 bashj79/kafka-kraft
 
 </TabItem>
 
-<TabItem value="linux/macos" label="Linux/MacOS">
+<TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
 docker run \
@@ -297,5 +297,161 @@ docker run \
 </TabItem>
 
 </Tabs>
+
+## Redis
+
+Create a local instance of Redis, using `redis:alpine` image, with the following information:
+
+<details>
+
+* Container name: `redis`
+
+* Exposed port: `6379`
+
+* Password: `123456` (use `redis-cli` and type `auth 123456` to access Redis on Command Line interface)
+
+* Volume: `redis-volume`
+
+</details>
+
+<Tabs>
+
+<TabItem value="windows" label="Windows">
+
+```shell
+docker run --detach --name redis -v redis-volume:/data -p 6379:6379 redis:alpine redis-server --requirepass 123456 --save 60 1 --loglevel warning
+```
+
+</TabItem>
+
+<TabItem value="not-windows" label="Linux/MacOS">
+
+```shell
+docker run \
+  --detach \
+  --name redis \
+  -v redis-volume:/data \
+  -p 6379:6379 \
+  redis:alpine \
+  redis-server --requirepass 123456 --save 60 1 --loglevel warning
+```
+
+</TabItem>
+
+</Tabs>
+
+## KeyCloak
+
+### Without External Database
+
+Create a local instance of Keycloak, using `quay.io/keycloak/keycloak:latest` image, with the following information:
+
+<details>
+
+- Container name: `keycloak`
+
+- Credentials:
+
+  - Admin username: `admin`
+
+  - Admin password: `123456`
+  
+  - Visit `localhost:8080` and use `admin`/`123456` as username and password to login
+
+- Exposed port: `8080` and `9000` (for health check and metrics)
+
+</details>
+
+<Tabs>
+
+<TabItem value="windows" label="Windows">
+
+```shell
+docker run --name keycloak --detach -p 8080:8080 -p 9000:9000 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=123456 -e KC_HEALTH_ENABLED=true -e KC_METRICS_ENABLED=true quay.io/keycloak/keycloak:latest start-dev
+```
+
+</TabItem>
+
+<TabItem value="not-windows" label="Linux/MacOS">
+
+```shell
+docker run \
+  --name keycloak \
+  --detach \
+  -p 8080:8080 \
+  -p 9000:9000 \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=123456 \
+  -e KC_HEALTH_ENABLED=true \
+  -e KC_METRICS_ENABLED=true \
+  quay.io/keycloak/keycloak:latest \
+  start-dev
+```
+
+</TabItem>
+
+</Tabs>
+
+### With External Database
+
+With an external database, you need additional environment variables:
+
+<details>
+
+* `KC_DB`: The vendor of external database. Supported values are `mariadb` (MariaDB), `mssql` (SQL Server), `mysql` (MySQL), `oracle` (Oracle Database) and `postgres` (PostgreSQL).
+
+* `KC_DB_URL_HOST`: The hostname of the chosen database vendor
+
+* `KC_DB_URL_PORT`: The port number of the chosen database vendor (by default, `3306` for MySQL/MariaDB, `1433` for SQL Server, `5432` for PostgreSQL, and `1521` for Oracle Database)
+
+* `KC_DB_DATABASE`: The database schema to be used. Sometimes you need to provide `KC_DB_SCHEMA` too.
+
+* `KC_DB_USERNAME`: The username
+
+* `KC_DB_PASSWORD`: The password
+
+</details>
+
+#### Example
+
+Supposed that you want to connect to an external PostgreSQL database (often on the same network) with the host name `postgres` and credentials `keycloak`/`123456`, this will be your new `docker run` command:
+
+<Tabs>
+
+<TabItem value="windows" label="Windows">
+
+```shell
+docker run --name keycloak --detach -p 8080:8080 -p 9000:9000 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=123456 -e KC_HEALTH_ENABLED=true -e KC_METRICS_ENABLED=true -e KC_DB=postgres -e KC_DB_URL_HOST=postgres -e KC_DB_URL_PORT=5432 -e KC_DB_DATABASE=keycloak -e KC_DB_USERNAME=keycloak -e KC_DB_PASSWORD=123456 quay.io/keycloak/keycloak:latest start-dev
+```
+
+</TabItem>
+
+<TabItem value="not-windows" label="Linux/MacOS">
+
+```shell
+docker run \
+  --name keycloak \
+  --detach \
+  -p 8080:8080 \
+  -p 9000:9000 \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=123456 \
+  -e KC_HEALTH_ENABLED=true \
+  -e KC_METRICS_ENABLED=true \
+  -e KC_DB=postgres \
+  -e KC_DB_URL_HOST=postgres \
+  -e KC_DB_URL_PORT=5432 \
+  -e KC_DB_DATABASE=keycloak \
+  -e KC_DB_USERNAME=keycloak \
+  -e KC_DB_PASSWORD=123456 \
+  quay.io/keycloak/keycloak:latest \
+  start-dev
+```
+
+</TabItem>
+
+</Tabs>
+
+You can see this [demo repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for a better usage of KeyCloak with external PostgreSQL.
 
 (to be updated)
