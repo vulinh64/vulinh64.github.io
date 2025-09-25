@@ -11,13 +11,13 @@ image: ./thumbnails/2025-09-24-quick-common-docker-run-commands.png
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-A simple cheat sheet for some of the most common `docker run` commands. Suitable for development environment, but more tinkering is needed if you want to run a production-grade container.
+A simple cheat sheet for some of the most common `docker run` commands. Suitable for development environments, but more tinkering is needed if you want to run production-grade containers.
 
 <!-- truncate -->
 
 :::warning
 
-You will need to adjust the value of container names, environment variables and other information by yourself to suit your development need.
+You will need to adjust the values of container names, environment variables, and other information yourself to suit your development needs.
 
 :::
 
@@ -25,7 +25,7 @@ You will need to adjust the value of container names, environment variables and 
 
 ### MySQL
 
-Create a local instance of MySQL, using `mysql:latest` image with the following information:
+Create a local instance of MySQL, using the `mysql:latest` image with the following information:
 
 <details>
 
@@ -37,7 +37,7 @@ Create a local instance of MySQL, using `mysql:latest` image with the following 
 
 * Initial database: `mydatabase`
 
-* Exposed ports: `3306`
+* Exposed port: `3306`
 
 * Volume: `mysql-volume`
 
@@ -58,11 +58,11 @@ docker run --detach --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -e M
 ```shell
 docker run \
   --detach \
-  --name mysql \ 
+  --name mysql \
   -p 3306:3306 \
   -e MYSQL_ROOT_PASSWORD=123456 \
   -e MYSQL_DATABASE=mydatabase \
-  -v mysql-volume:/var/lib/mysql 
+  -v mysql-volume:/var/lib/mysql \
   mysql:latest
 ```
 
@@ -72,7 +72,7 @@ docker run \
 
 ### MariaDB
 
-Create a local instance of MariaDB, using `mariadb:lts` image, with the following information:
+Create a local instance of MariaDB, using the `mariadb:lts` image, with the following information:
 
 <details>
 
@@ -95,7 +95,7 @@ Create a local instance of MariaDB, using `mariadb:lts` image, with the followin
 <TabItem value="windows" label="Windows">
 
 ```shell
-docker run --detatch --name mariadb -e MARIADB_ROOT_PASSWORD=123456 -e MARIADB_DATABASE=mydatabase -p 3306:3306 -v mariadb-volume:/var/lib/mysql mariadb:lts
+docker run --detach --name mariadb -e MARIADB_ROOT_PASSWORD=123456 -e MARIADB_DATABASE=mydatabase -p 3306:3306 -v mariadb-volume:/var/lib/mysql mariadb:lts
 ```
 
 </TabItem>
@@ -103,7 +103,7 @@ docker run --detatch --name mariadb -e MARIADB_ROOT_PASSWORD=123456 -e MARIADB_D
 <TabItem value="not-windows" label="Linux/MacOS">
 
 ```shell
-docker run \ 
+docker run \
   --detach \
   --name mariadb \
   -e MARIADB_ROOT_PASSWORD=123456 \
@@ -119,11 +119,11 @@ docker run \
 
 ### SQL Server
 
-Create a local instance of Microsoft SQL Server, using `mcr.microsoft.com/mssql/server:2025-latest` image, with the following information:
+Create a local instance of Microsoft SQL Server, using the `mcr.microsoft.com/mssql/server:2025-latest` image, with the following information:
 
 <details>
 
-SQL Server requires a complex password usage so we cannot use the simple `123456` as our default SA password.
+SQL Server requires complex password usage, so we cannot use the simple `123456` as our default SA password.
 
 * Container name: `sqlserver`
 
@@ -170,13 +170,13 @@ docker run \
 
 ### PostgreSQL
 
-Create a local instance of PostgreSQL, using `postgres:latest` image, with the following information:
+Create a local instance of PostgreSQL, using the `postgres:latest` image, with the following information:
 
 <details>
 
-* Container name: `posgresql`
+* Container name: `postgresql`
 
-* Root user: `posgres`
+* Root user: `postgres`
 
 * Password: `123456`
 
@@ -218,7 +218,7 @@ docker run \
 
 ### Oracle Database
 
-Create a local instance of Oracle Database, using `gvenzl/oracle-free:slim-faststart` image, with the following information:
+Create a local instance of Oracle Database, using the `gvenzl/oracle-free:slim-faststart` image, with the following information:
 
 <details>
 
@@ -264,7 +264,7 @@ docker run \
 
 ## Apache Kafka (Without Zookeeper)
 
-Create a local instance of Apache Kafka, using `bashj79/kafka-kraft` image, with the following information:
+Create a local instance of Apache Kafka, using the `bashj79/kafka-kraft` image, with the following information:
 
 <details>
 
@@ -279,7 +279,7 @@ Create a local instance of Apache Kafka, using `bashj79/kafka-kraft` image, with
 <TabItem value="windows" label="Windows">
 
 ```shell
-docker run --detach --name default-kafka -p 9092:9092 bashj79/kafka-kraft
+docker run --detach --name kafka -p 9092:9092 bashj79/kafka-kraft
 ```
 
 </TabItem>
@@ -300,7 +300,7 @@ docker run \
 
 ## Redis
 
-Create a local instance of Redis, using `redis:alpine` image, with the following information:
+Create a local instance of Redis, using the `redis:alpine` image, with the following information:
 
 <details>
 
@@ -308,7 +308,7 @@ Create a local instance of Redis, using `redis:alpine` image, with the following
 
 * Exposed port: `6379`
 
-* Password: `123456` (use `redis-cli` and type `auth 123456` to access Redis on Command Line interface)
+* Password: `123456` (use `redis-cli` and type `auth 123456` to access Redis on the command line interface)
 
 * Volume: `redis-volume`
 
@@ -340,25 +340,25 @@ docker run \
 
 </Tabs>
 
-## KeyCloak
+## Keycloak
 
 ### Without External Database
 
-Create a local instance of Keycloak, using `quay.io/keycloak/keycloak:latest` image, with the following information:
+Create a local instance of Keycloak, using the `quay.io/keycloak/keycloak:latest` image, with the following information:
 
 <details>
 
-- Container name: `keycloak`
+* Container name: `keycloak`
 
-- Credentials:
+* Credentials:
 
-  - Admin username: `admin`
-
-  - Admin password: `123456`
+  * Admin username: `admin`
   
-  - Visit `localhost:8080` and use `admin`/`123456` as username and password to login
+  * Admin password: `123456`
 
-- Exposed port: `8080` and `9000` (for health check and metrics)
+  - Visit `localhost:8080` and use `admin`/`123456` as username and password to log in
+
+- Exposed ports: `8080` and `9000` (for health check and metrics)
 
 </details>
 
@@ -398,13 +398,13 @@ With an external database, you need additional environment variables:
 
 <details>
 
-* `KC_DB`: The vendor of external database. Supported values are `mariadb` (MariaDB), `mssql` (SQL Server), `mysql` (MySQL), `oracle` (Oracle Database) and `postgres` (PostgreSQL).
+* `KC_DB`: The vendor of the external database. Supported values are `mariadb` (MariaDB), `mssql` (SQL Server), `mysql` (MySQL), `oracle` (Oracle Database), and `postgres` (PostgreSQL).
 
 * `KC_DB_URL_HOST`: The hostname of the chosen database vendor
 
 * `KC_DB_URL_PORT`: The port number of the chosen database vendor (by default, `3306` for MySQL/MariaDB, `1433` for SQL Server, `5432` for PostgreSQL, and `1521` for Oracle Database)
 
-* `KC_DB_DATABASE`: The database schema to be used. Sometimes you need to provide `KC_DB_SCHEMA` too.
+* `KC_DB_DATABASE`: The database schema to be used. Sometimes you need to provide `KC_DB_SCHEMA` as well.
 
 * `KC_DB_USERNAME`: The username
 
@@ -414,7 +414,7 @@ With an external database, you need additional environment variables:
 
 #### Example
 
-Supposed that you want to connect to an external PostgreSQL database (often on the same network) with the host name `postgres` and credentials `keycloak`/`123456`, this will be your new `docker run` command:
+Suppose you want to connect to an external PostgreSQL database (often on the same network) with the hostname `postgres` and credentials `keycloak`/`123456`. This will be your new `docker run` command:
 
 <Tabs>
 
@@ -452,6 +452,6 @@ docker run \
 
 </Tabs>
 
-You can see this [demo repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for a better usage of KeyCloak with external PostgreSQL.
+You can see this [demo repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for better usage of Keycloak with external PostgreSQL.
 
 (to be updated)
