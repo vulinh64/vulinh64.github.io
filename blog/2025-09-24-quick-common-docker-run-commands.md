@@ -25,6 +25,8 @@ You will need to adjust the values of container names, environment variables, an
 
 ### MySQL
 
+> https://hub.docker.com/_/mysql
+
 Create a local instance of MySQL, using the `mysql:latest` image with the following information:
 
 <details>
@@ -72,6 +74,8 @@ docker run \
 
 ### MariaDB
 
+> https://hub.docker.com/_/mariadb
+
 Create a local instance of MariaDB, using the `mariadb:lts` image, with the following information:
 
 <details>
@@ -118,6 +122,8 @@ docker run \
 </Tabs>
 
 ### SQL Server
+
+> https://hub.docker.com/r/microsoft/windows-server
 
 Create a local instance of Microsoft SQL Server, using the `mcr.microsoft.com/mssql/server:2025-latest` image, with the following information:
 
@@ -170,7 +176,9 @@ docker run \
 
 ### PostgreSQL
 
-Create a local instance of PostgreSQL, using the `postgres:latest` image, with the following information:
+> https://hub.docker.com/_/postgres
+
+Create a local instance of PostgreSQL, using the `postgres:alpine` image, with the following information:
 
 <details>
 
@@ -193,7 +201,7 @@ Create a local instance of PostgreSQL, using the `postgres:latest` image, with t
 <TabItem value="windows" label="Windows">
 
 ```shell
-docker run --detach --name postgresql -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=123456" -e "POSTGRES_DB=mydatabase" -p 5432:5432 -v postgresql-volume:/var/lib/postgresql/data postgres:latest
+docker run --detach --name postgresql -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=123456" -e "POSTGRES_DB=mydatabase" -p 5432:5432 -v postgresql-volume:/var/lib/postgresql/data postgres:alpine
 ```
 
 </TabItem>
@@ -209,7 +217,7 @@ docker run \
   -e "POSTGRES_DB=mydatabase" \
   -p 5432:5432 \
   -v postgresql-volume:/var/lib/postgresql/data \
-  postgres:latest
+  postgres:alpine
 ```
 
 </TabItem>
@@ -217,6 +225,8 @@ docker run \
 </Tabs>
 
 ### Oracle Database
+
+> https://hub.docker.com/r/gvenzl/oracle-free
 
 Create a local instance of Oracle Database, using the `gvenzl/oracle-free:slim-faststart` image, with the following information:
 
@@ -262,9 +272,13 @@ docker run \
 
 </Tabs>
 
-## Apache Kafka (Without Zookeeper)
+## Message Queues/Brokers
 
-Create a local instance of Apache Kafka, using the `bashj79/kafka-kraft` image, with the following information:
+### Apache Kafka (Without Zookeeper)
+
+> https://hub.docker.com/r/bashj79/kafka-kraft
+
+Create a local instance of Apache Kafka, using the `bashj79/kafka-kraft:latest` image, with the following information:
 
 <details>
 
@@ -298,7 +312,58 @@ docker run \
 
 </Tabs>
 
+### RabbitMQ
+
+> https://hub.docker.com/_/rabbitmq
+
+Create a local instance of RabbitMQ, using the `rabbitmq:alpine` image, with the following information:
+
+<details>
+
+* Container name: `rabbitmq`
+
+* Host name: `rabbitmq-host`
+
+* Username: `rabbitmq`
+
+* Password: `123456`
+
+* Exposed ports: `5672` and `15672` (bind to `8080`)
+
+</details>
+
+<Tabs>
+
+<TabItem value="windows" label="Windows">
+
+```shell
+docker run --detach --name rabbitmq --hostname rabbitmq-host -e RABBITMQ_DEFAULT_USER=rabbitmq -e RABBITMQ_DEFAULT_PASS=123456 -p 5672:5672 -p 8080:15672 rabbitmq:alpine
+```
+
+</TabItem>
+
+<TabItem value="not-windows" label="Linux/MacOS">
+
+```shell
+docker run \
+  --detach \
+  --name rabbitmq \
+  --hostname rabbitmq-host \
+  -e RABBITMQ_DEFAULT_USER=rabbitmq \
+  -e RABBITMQ_DEFAULT_PASS=123456 \
+  -p 5672:5672 \
+  -p 8080:15672 \
+  rabbitmq:alpine
+
+```
+
+</TabItem>
+
+</Tabs>
+
 ## Redis
+
+> https://hub.docker.com/_/redis
 
 Create a local instance of Redis, using the `redis:alpine` image, with the following information:
 
@@ -341,6 +406,8 @@ docker run \
 </Tabs>
 
 ## Keycloak
+
+> https://quay.io/repository/keycloak/keycloak
 
 ### Without External Database
 
