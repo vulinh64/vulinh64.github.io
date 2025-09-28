@@ -235,7 +235,7 @@ details [class*="collapsibleContent"] {
 
 .tabs-container {
     border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    padding: 0 0.5em 1em 0.5em;
+    padding: 0 0.8em 1em 0.8em;
     border-radius: 0.5em;
 }
 

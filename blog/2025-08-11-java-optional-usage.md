@@ -8,6 +8,9 @@ thumbnail: 2025-08-11-java-optional-usage.png
 image: ./thumbnails/2025-08-11-java-optional-usage.png
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Are you sure you have used `Optional` the right way?
 
 <!-- truncate -->
@@ -28,7 +31,13 @@ The *real* superpower of `Optional`? It's the ultimate weapon against the nested
 
 ## The Nested Hell We All Know and Hate
 
-Picture this: You're happily coding along when suddenly you need to safely navigate through some nested objects. Before you know it, you're writing this monstrosity:
+Take a look at this example of hellish object null checks vs. using the `Optional` chain:
+
+<Tabs> 
+
+<TabItem value="not-optional" label="Traditional Null Checks">
+
+Before you know it, you're writing this monstrosity:
 
 ```java
 if (student != null && 
@@ -47,6 +56,10 @@ if (student != null &&
 ```
 
 Look at that beauty. It's like a Russian nesting doll (a *Matryoshka*) made of paranoia. Each null check is another layer of "what if everything goes wrong?" And honestly? It's ugly enough to make even a non-designer cry.
+
+</TabItem>
+
+<TabItem value="optional" label="Using Optional">
 
 Now, watch this transformation:
 
@@ -67,21 +80,17 @@ Optional.ofNullable(student) // They can just use a simple Optional.of here
 
 It reads like a story: "Take this student, if they have an address, get it. If that address has lines, get those. If we've got something at the end of this journey, let's party with it."
 
+</TabItem>
+
+</Tabs>
+
 ## Another Classic Case of "Why Do We Do This to Ourselves?"
 
-Here's another old friend that shows up in every codebase:
+Another example of multiple null checks in nested objects:
 
-```java
-boolean isGmailUser(Student student) {
-    return student != null && 
-           student.getEmail() != null && 
-           student.getEmail().endsWith("@gmail.com");
-}
-```
+<Tabs>
 
-It's the programming equivalent of asking "Are you sure? Are you really sure? Are you absolutely, positively sure?" before doing anything.
-
-With `Optional`, it becomes this elegant little number:
+<TabItem value="optional" label="Try This">
 
 ```java
 boolean isGmailUser(Student student) {
@@ -93,6 +102,24 @@ boolean isGmailUser(Student student) {
 ```
 
 It's like the code learned to speak in complete sentences instead of stuttering through safety checks.
+
+</TabItem>
+
+<TabItem value="not-optional" label="Instead of This">
+
+```java
+boolean isGmailUser(Student student) {
+    return student != null && 
+           student.getEmail() != null && 
+           student.getEmail().endsWith("@gmail.com");
+}
+```
+
+It's the programming equivalent of asking "Are you sure? Are you really sure? Are you absolutely, positively sure?" before doing anything.
+
+</TabItem>
+
+</Tabs>
 
 ## The Method Arsenal That Makes It All Work
 
@@ -132,6 +159,10 @@ They are: `OptionalInt` (for `int` number), `OptionalLong` (for `long` value, ob
 
 Remember those awkward if-else blocks that made you feel like you were writing COBOL? Java 9 said "not today, friend":
 
+<Tabs>
+
+<TabItem value="old" label="The Old Way">
+
 ```java
 // The old way: verbose and nobody's favorite
 var userOpt = findUser(id);
@@ -140,7 +171,13 @@ if (userOpt.isPresent()) {
 } else {
     createGuestSession();
 }
+```
 
+</TabItem>
+
+<TabItem value="new" label="The New Way">
+
+```java
 // The new hotness: one smooth operator
 findUser(id).ifPresentOrElse(
     user -> processUser(user),
@@ -149,6 +186,10 @@ findUser(id).ifPresentOrElse(
 ```
 
 It's like having your cake and eating it too, but for control flow.
+
+</TabItem>
+
+</Tabs>
 
 ### Stream Integration: The Ultimate Team-Up
 
@@ -244,14 +285,6 @@ var result = Optional.ofNullable(fastValue)
 
 On the other hand, using `Optional.orElseGet` with an already computed value is wasteful: you pay the cost of creating a pointless `Supplier<T>` just to return a constant, when you could return the value directly.
 
-## The Secret SonarQube Hack Nobody Talks About
-
-Here's a fun secret: SonarQube may get confused by `Optional` chains and often thinks they have lower cognitive complexity than traditional null checks. So not only does your code look better, but your static analysis tools think you're a genius (maybe not). It's like getting an A+ for showing your work in a way that's actually cleaner.
-
-Your traditional nested null checks? Cognitive complexity through the roof. Your elegant `Optional` chain? "This developer clearly knows what they're doing."
-
-It's not cheating: it's just that cleaner code happens to score better on complexity metrics. Funny how that works!
-
 ## What's the Catch?
 
 Before you go refactoring your entire codebase in a caffeine-fueled `Optional` frenzy, let's talk about the elephant in the room: performance.
@@ -282,7 +315,7 @@ Optional.ofNullable(student)
     .ifPresent(lines -> { /* do stuff */ });
 ```
 
-This bad boy runs the whole gauntlet. Each `map` call creates a new `Optional` object, and here's the kicker: performance tests show that JVMs consistently fail to optimize `Optional` chains away, even with escape analysis enabled. It's like staying for the entire boring meeting because you're too polite to leave early.
+This bad boy runs the whole gauntlet. Each `map` call creates a new `Optional` object, and here's the kicker: performance tests show that JVMs consistently fail to optimize `Optional` chains away. It's like staying for the entire boring meeting because you're too polite to leave early.
 
 :::info
 
@@ -309,10 +342,6 @@ You can read this article to see how much your performance will degrade with the
 * When code readability matters more than squeezing out every nanosecond
 
 * One-off operations where the performance difference is negligible
-
-### The Light at the End of the Tunnel
-
-Project Valhalla is coming to save us all by making `Optional` a value class. When that happens, the performance overhead mostly disappears, and we can use `Optional` everywhere without guilt. Until then, use your judgment and maybe don't Optional-ify your high-frequency trading algorithms.
 
 #### The Impatient Developer's Solution
 
