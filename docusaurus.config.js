@@ -12,6 +12,13 @@ import {
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+    markdown: {
+        mermaid: true,
+        hooks: {
+            onBrokenMarkdownLinks: "warn",
+            onBrokenMarkdownImages: "warn"
+        }
+    },
     plugins: [
         'docusaurus-plugin-zooming',
     ],
@@ -32,12 +39,11 @@ const config = {
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: 'vulinh64', // Usually your GitHub org/user name.
-    projectName: 'vulinh64.github.io', // Usually your repo name.
-    deploymentBranch: 'gh-pages',
+    // organizationName: 'vulinh64', // Usually your GitHub org/user name.
+    // projectName: 'vulinh64.github.io', // Usually your repo name.
+    // deploymentBranch: 'gh-pages',
 
     onBrokenLinks: 'throw',
-    onBrokenMarkdownLinks: 'warn',
 
     // Even if you don't use internationalization, you can use this field to set
     // useful metadata like html lang. For example, if your site is Chinese, you
@@ -68,7 +74,7 @@ const config = {
                     onInlineAuthors: 'warn',
                     onUntruncatedBlogPosts: 'warn',
                     blogSidebarTitle: 'Recent Posts',
-                    blogSidebarCount: 10,
+                    blogSidebarCount: 12,
                     postsPerPage: 6,
                 },
                 theme: {

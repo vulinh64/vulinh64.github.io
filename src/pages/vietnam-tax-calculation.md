@@ -13,20 +13,17 @@ import TabItem from '@theme/TabItem';
 
 <hr />
 
-Đây là bài viết hướng dẫn nhanh cách các bạn tự tính thuế TNCN và thu nhập thực nhận của bạn theo luật LĐ của Việt Nam,
-tính đến thời điểm hiện tại (2025).
+Đây là bài viết hướng dẫn nhanh cách các bạn tự tính thuế TNCN và thu nhập thực nhận của bạn theo luật LĐ của Việt Nam, tính đến thời điểm hiện tại (2025).
 
 <!-- truncate -->
 
-<sub>Nguồn
-ảnh: [luatvietnam.vn](https://english.luatvietnam.vn/latest-news/2-cases-are-ineligible-for-personal-income-tax-exemption-in-house-trading-4727-97267-article.html)</sub>
+<sub>Nguồn ảnh: [luatvietnam.vn](https://english.luatvietnam.vn/latest-news/2-cases-are-ineligible-for-personal-income-tax-exemption-in-house-trading-4727-97267-article.html)</sub>
 
 ![Tax calculation](./img/vietnam-tax-calculation-thumbnail.jpg "Tax Calculation")
 
 Bạn có thể trải nghiệm công cụ tính thuế TNCN dưới đây:
 
-<Link style={{'margin-left': 'auto', 'margin-right': 'auto'}} to='/tax-calculator' className='button button--outline
-button--primary button--lg button--block margin-top--sm margin-bottom--xl'>Công cụ tính thuế TNCN</Link>
+<Link style={{'margin-left': 'auto', 'margin-right': 'auto'}} to='/tax-calculator' className='button button--outline button--primary button--lg button--block margin-top--sm margin-bottom--xl'>Công cụ tính thuế TNCN</Link>
 
 ## Thử Việc
 
@@ -60,21 +57,17 @@ Nếu bạn đang thử việc thì bạn có thể bỏ qua các phần khác.
   d. Không giao kết hợp đồng lao động với người lao động khi thử việc đạt yêu cầu đối với trường hợp hai bên có giao kết
   hợp đồng thử việc.
 
-  **Tham khảo
-  **: https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Nghi-dinh-12-2022-ND-CP-xu-phat-vi-pham-hanh-chinh-lao-dong-bao-hiem-nguoi-lam-viec-nuoc-ngoai-479312.aspx?anchor=dieu_10
+  **Tham khảo**: https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Nghi-dinh-12-2022-ND-CP-xu-phat-vi-pham-hanh-chinh-lao-dong-bao-hiem-nguoi-lam-viec-nuoc-ngoai-479312.aspx?anchor=dieu_10
 
     </details>
 
-* Nếu thu nhập thử việc vượt quá **11.000.000 VNĐ/tháng**, bạn phải đóng thuế TNCN. Mức đóng thuế TNCN sẽ là **10%**
-  trên tổng thu nhập.
+* Nếu thu nhập thử việc vượt quá **11.000.000 VNĐ/tháng**, bạn phải đóng thuế TNCN. Mức đóng thuế TNCN sẽ là **10%** trên tổng thu nhập.
 
 Nếu bạn đã hoàn thành thử việc và ký HĐLĐ chính thức, bạn hãy tiếp tục đọc phần dưới đây:
 
 ## Lương Tối Thiểu
 
-Theo Nghị định số [**74/2024/NĐ-CP
-**](https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Nghi-dinh-74-2024-ND-CP-muc-luong-toi-thieu-lao-dong-lam-viec-theo-hop-dong-603278.aspx)
-ban hành ngày **30/06/2024**, mức lương tối thiểu của người lao động được tính như sau:
+Theo Nghị định số [**74/2024/NĐ-CP**](https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Nghi-dinh-74-2024-ND-CP-muc-luong-toi-thieu-lao-dong-lam-viec-theo-hop-dong-603278.aspx) ban hành ngày **30/06/2024**, mức lương tối thiểu của người lao động được tính như sau:
 
 |   Vùng   | Mức lương tối thiểu/tháng | Quy đổi ra lương/giờ | Đơn vị |
 |:--------:|:-------------------------:|:--------------------:|-------:|
@@ -83,19 +76,13 @@ ban hành ngày **30/06/2024**, mức lương tối thiểu của người lao �
 | Vùng III |         3.860.000         |        18.600        |    VNĐ |
 | Vùng IV  |         3.450.000         |        16.600        |    VNĐ |
 
-Như vậy, để đơn giản, thì công cụ tính thuế TNCN sẽ mặc định mức lương cơ bản đóng bảo hiểm **không được thấp hơn** mức
-cơ sở là **3.450.000** VNĐ.
+Như vậy, để đơn giản, thì công cụ tính thuế TNCN sẽ mặc định mức lương cơ bản đóng bảo hiểm **không được thấp hơn** mức cơ sở là **3.450.000** VNĐ.
 
-Theo [quy định](https://thuvienphapluat.vn/phap-luat/ho-tro-phap-luat/cach-tinh-muc-luong-dong-bhxh-tu-01-7-2024-khi-tang-luong-toi-thieu-vung-cong-thuc-tinh-luong-dong--163276.html)
-thì từ **01/07/2024**, mức đóng BH tối đa sẽ là **46.800.000 VNĐ**.
+Theo [quy định](https://thuvienphapluat.vn/phap-luat/ho-tro-phap-luat/cach-tinh-muc-luong-dong-bhxh-tu-01-7-2024-khi-tang-luong-toi-thieu-vung-cong-thuc-tinh-luong-dong--163276.html) thì từ **01/07/2024**, mức đóng BH tối đa sẽ là **46.800.000 VNĐ**.
 
 ## Giảm Trừ Gia Cảnh
 
-Theo Nghị quyết số [**954/2020/UBTVQH14
-**](https://thuvienphapluat.vn/van-ban/Thue-Phi-Le-Phi/Nghi-quyet-954-2020-UBTVQH14-dieu-chinh-muc-giam-tru-gia-canh-cua-thue-thu-nhap-ca-nhan-444106.aspx),
-ban hành ngày **02/06/20200**, áp dụng từ ngày **01/07/2020**, điều chỉnh mức giảm trừ gia cảnh quy định tại [**khoản 1
-Điều 19 của Luật Thuế thu nhập cá nhân số 04/2007/QH12
-**](https://luatvietnam.vn/thue/luat-thue-thu-nhap-ca-nhan-2007-33914-d1.html) như sau:
+Theo Nghị quyết số [**954/2020/UBTVQH14**](https://thuvienphapluat.vn/van-ban/Thue-Phi-Le-Phi/Nghi-quyet-954-2020-UBTVQH14-dieu-chinh-muc-giam-tru-gia-canh-cua-thue-thu-nhap-ca-nhan-444106.aspx), ban hành ngày **02/06/20200**, áp dụng từ ngày **01/07/2020**, điều chỉnh mức giảm trừ gia cảnh quy định tại [**khoản 1 Điều 19 của Luật Thuế thu nhập cá nhân số 04/2007/QH12**](https://luatvietnam.vn/thue/luat-thue-thu-nhap-ca-nhan-2007-33914-d1.html) như sau:
 
 * Mức giảm trừ đối với đối tượng nộp thuế là **11.000.000 VNĐ** (**132.000.000** VNĐ/năm)
 
@@ -103,9 +90,7 @@ ban hành ngày **02/06/20200**, áp dụng từ ngày **01/07/2020**, điều c
 
 ## Mức Đóng Bảo Hiểm
 
-Hiện tại, mức đóng bảo hiểm của người lao động (có hợp đồng chính thức)
-được [quy định ngắn gọn](https://thuvienphapluat.vn/phap-luat/ho-tro-phap-luat/ty-le-dong-bhxh-bat-buoc-bhyt-bhtn-tu-ngay-0172025-chi-tiet-the-nao-ty-le-dong-bhxh-tu-1-7-2025-co--218917.html)
-như sau:
+Hiện tại, mức đóng bảo hiểm của người lao động (có hợp đồng chính thức) được [quy định ngắn gọn](https://thuvienphapluat.vn/phap-luat/ho-tro-phap-luat/ty-le-dong-bhxh-bat-buoc-bhyt-bhtn-tu-ngay-0172025-chi-tiet-the-nao-ty-le-dong-bhxh-tu-1-7-2025-co--218917.html) như sau:
 
 * Mức đóng BHXH: **8%**
 
@@ -115,16 +100,13 @@ như sau:
 
 * Tổng cộng: **10.5%**
 
-Mức đóng bảo hiểm của người lao động sẽ được tính dựa trên mức lương đóng bảo hiểm đã được thỏa thuận trong hợp đồng lao
-động (HĐLĐ), chứ không phải tổng thu nhập trước thuế.
+Mức đóng bảo hiểm của người lao động sẽ được tính dựa trên mức lương đóng bảo hiểm đã được thỏa thuận trong hợp đồng lao động (HĐLĐ), chứ không phải tổng thu nhập trước thuế.
 
 ### Ví dụ
 
 :::tip[Ví Dụ]
 
-Bạn ký HĐLĐ với công ty A, trong đó lương cơ bản là **7.500.000 VNĐ** và phụ cấp là **22.500.000 VNĐ** (tổng lương là *
-*30.000.000 VNĐ**). Khi đó, khoản tiền bảo hiểm bạn phải đóng hàng tháng sẽ được tính trên mức lương cơ bản là *
-*7.500.000 VNĐ**, cụ thể như sau:
+Bạn ký HĐLĐ với công ty A, trong đó lương cơ bản là **7.500.000 VNĐ** và phụ cấp là **22.500.000 VNĐ** (tổng lương là **30.000.000 VNĐ**). Khi đó, khoản tiền bảo hiểm bạn phải đóng hàng tháng sẽ được tính trên mức lương cơ bản là **7.500.000 VNĐ**, cụ thể như sau:
 
 * Bảo hiểm xã hội (BHXH): **600.000 VNĐ**
 
@@ -158,8 +140,7 @@ Sau đó xác định bậc thuế lũy tiến của bạn, xem bảng sau:
 
 <summary>Ví dụ tính thuế TNCN cho HĐLĐ chính thức</summary>
 
-Lấy ví dụ ở phần [mức đóng bảo hiểm](#ví-dụ) ở trên, cộng thêm với có 1 người phụ thuộc (ví dụ bạn có con dưới 18 tuổi),
-ta có thu nhập chịu thuế của bạn là:
+Lấy ví dụ ở phần [mức đóng bảo hiểm](#ví-dụ) ở trên, cộng thêm với có 1 người phụ thuộc (ví dụ bạn có con dưới 18 tuổi), ta có thu nhập chịu thuế của bạn là:
 
 ```
 30000000 - 787500 - 11000000 - 1 * 4400000 = 13812500 (VNĐ)
@@ -227,15 +208,13 @@ Bạn có thể xem ảnh sau:
 
 <TabItem value="java" label="Java">
 
-Bạn có thể tham khảo chương trình mẫu viết bằng Java để tính thuế TNCN
-tại [đây](https://github.com/vulinh64/spring-base/tree/main/src/main/java/com/vulinh/service/taxcalculator)
+Bạn có thể tham khảo chương trình mẫu viết bằng Java để tính thuế TNCN tại [đây](https://github.com/vulinh64/spring-base/tree/main/src/main/java/com/vulinh/service/taxcalculator)
 
 </TabItem>
 
 <TabItem value="javascript" label="JavaScript">
 
-Hoặc bạn có thể xem source code tính thuế TNCN bằng JavaScript của blog này
-tại [đây](https://github.com/vulinh64/vulinh64.github.io) (source code của website này)
+Hoặc bạn có thể xem source code tính thuế TNCN bằng JavaScript của blog này tại [đây](https://github.com/vulinh64/vulinh64.github.io) (source code của website này)
 
 </TabItem>
 
