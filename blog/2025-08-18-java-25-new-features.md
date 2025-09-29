@@ -11,6 +11,7 @@ image: ./thumbnails/2025-08-18-java-25-new-features.png
 import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import GoBackToTldrButton from '@site/src/components/GoBackToTldrButton';
 
 Java 25 drops on September 25 this year (as of August 18, when I'm writing this). Will enterprises immediately jump on the Java 25 hype train? LOL, nope. They'll probably stick with Java 8 until the heat death of the universe (there are tons of breaking changes from Java 21 to Java 25, so without a solid migration plan, your services will explode spectacularly), but hey, we can still have some fun exploring what's new!
 
@@ -22,37 +23,43 @@ Java 25 drops on September 25 this year (as of August 18, when I'm writing this)
 
 Too lazy to read? I've got you covered:
 
-<details>
+<Tabs>
 
-<summary>What we will be getting:</summary>
+<TabItem value="jdk22" label="JDK 22">
 
-* JDK 22:
+* [Foreign Function & Memory API](#foreign-function--memory-api-jep-454)
 
-  * [Foreign Function & Memory API](#foreign-function--memory-api-jep-454)
+* [Unnamed Variables & Patterns](#unnamed-variables--patterns-jep-456)
 
-  * [Unnamed Variables & Patterns](#unnamed-variables--patterns-jep-456)
+</TabItem>
 
-* JDK 23:
+<TabItem value="jdk23" label="JDK 23">
 
-  * [Markdown JavaDocs](#markdown-javadocs-jep-467)
+* [Markdown JavaDocs](#markdown-javadocs-jep-467)
 
-* JDK 24:
+</TabItem>
 
-  * [Stream Gatherers](#stream-gatherers-jep-485)
+<TabItem value="jdk24" label="JDK 24">
 
-  * [Synchronize Virtual Threads without Pinning](#synchronize-virtual-threads-without-pinning-jep-491)
+* [Stream Gatherers](#stream-gatherers-jep-485)
 
-  * [Prepare for Quantum Apocalypse](#preparing-for-our-quantum-overlords-jep-496-and-jep-497)
+* [Synchronize Virtual Threads without Pinning](#synchronize-virtual-threads-without-pinning-jep-491)
 
-* JDK 25:
+* [Prepare for Quantum Apocalypse](#preparing-for-our-quantum-overlords-jep-496-and-jep-497)
 
-  * [Compact Source Files and Instance Main Method](#compact-source-files-and-instance-main-methods-jep-512)
+</TabItem>
 
-  * [Module Import Declarations](#module-import-declarations-jep-511)
+<TabItem value="jdk25" label="JDK 25">
 
-  * [Flexible Constructor Bodies](#flexible-constructor-bodies-jep-513)
+* [Compact Source Files and Instance Main Method](#compact-source-files-and-instance-main-methods-jep-512)
 
-</details>
+* [Module Import Declarations](#module-import-declarations-jep-511)
+
+* [Flexible Constructor Bodies](#flexible-constructor-bodies-jep-513)
+
+</TabItem>
+
+</Tabs>
 
 ~~Still need to read, but less verbose now.~~
 
@@ -66,11 +73,15 @@ List of JEPs: https://openjdk.org/projects/jdk/22
 
 ### Foreign Function & Memory API ([JEP 454](https://openjdk.org/jeps/454))
 
+<GoBackToTldrButton></GoBackToTldrButton>
+
 Current status: **Finalized in JDK 22.**
 
 This JEP is basically Java's way of saying "*JNI, it's not you, it's me... actually, no, it IS you.*" It introduces a shiny new way to talk to code and data outside the Java bubble, replacing the ancient and frankly terrifying JNI. Most of us won't need to touch this beautiful monster, but if you're into that whole "I want blazing performance and I'm not afraid of segfaults" vibe, then buckle up, buttercup!
 
 ### Unnamed Variables & Patterns ([JEP 456](https://openjdk.org/jeps/456))
+
+<GoBackToTldrButton></GoBackToTldrButton>
 
 Current status: **Finalized in JDK 22.**
 
@@ -113,6 +124,8 @@ List of JEPs: https://openjdk.org/projects/jdk/23
 
 ### Markdown JavaDocs ([JEP 467](https://openjdk.org/jeps/467))
 
+<GoBackToTldrButton></GoBackToTldrButton>
+
 Current status: **Finalized in JDK 23.**
 
 Writing JavaDocs is painful? Well, now you can write them in Markdown! Still painful, but at least you're suffering in *style*! It's like getting a root canal, but with prettier formatting.
@@ -147,6 +160,8 @@ Your old JavaDocs aren't magically transforming into Markdown (sorry, no fairy g
 List of JEPs: https://openjdk.org/projects/jdk/25
 
 ### Stream Gatherers ([JEP 485](https://openjdk.org/jeps/485))
+
+<GoBackToTldrButton></GoBackToTldrButton>
 
 Current status: **Finalized in JDK 24.**
 
@@ -249,6 +264,8 @@ You can dig into JEP 485 for the nerdy details, or just download JDK 24 and expl
 
 ### Synchronize Virtual Threads without Pinning ([JEP 491](https://openjdk.org/jeps/491))
 
+<GoBackToTldrButton></GoBackToTldrButton>
+
 Current status: **Finalized in JDK 24.**
 
 The dreaded pinning drama with the `synchronized` keyword has been squashed when using Virtual Threads. It only took them... *checks calendar* ...two entire years! Better late than never, right?
@@ -271,6 +288,8 @@ Pro tip: JNI calls will still pin your threads like it's 1999, so keep that perf
 
 ### Preparing for Our Quantum Overlords: [JEP 496](https://openjdk.org/jeps/496) and [JEP 497](https://openjdk.org/jeps/497)
 
+<GoBackToTldrButton></GoBackToTldrButton>
+
 **TL;DR**: These JEPs are Java's insurance policy against the day quantum computers decide to crack all our encryption like it's a piñata at a toddler's birthday party. Java is future-proofing itself so we don't all panic when quantum computers show up and make RSA weep.
 
 <details>
@@ -291,9 +310,13 @@ JDK 25 blesses us with these shiny new features (check the dedicated OpenJDK pag
 
 ### Compact Source Files and Instance Main Methods ([JEP 512](https://openjdk.org/jeps/512))
 
+<GoBackToTldrButton></GoBackToTldrButton>
+
 Say goodbye to the ancient incantation "public static void main string args". Read this [dedicated article](2025-08-10-java-main-method-evolution.md) for the full history journey.
 
 ### Module Import Declarations ([JEP 511](https://openjdk.org/jeps/511))
+
+<GoBackToTldrButton></GoBackToTldrButton>
 
 Tired of managing seventeen million `import` statements like you're collecting Pokemon cards?
 
@@ -310,6 +333,8 @@ Additionally, in compact source files, the `java.base` module is automatically i
 The complete list of packages bundled within `java.base` can be seen [here](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/module-summary.html).
 
 ### Flexible Constructor Bodies ([JEP 513](https://openjdk.org/jeps/513))
+
+<GoBackToTldrButton></GoBackToTldrButton>
 
 Tired of this obnoxious error message?
 
