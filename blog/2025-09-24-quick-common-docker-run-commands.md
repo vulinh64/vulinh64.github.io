@@ -423,7 +423,7 @@ Create a local instance of Keycloak, using the `quay.io/keycloak/keycloak:latest
   
   * Admin password: `123456`
 
-  - Visit `localhost:8080` and use `admin`/`123456` as username and password to log in
+  * Visit `localhost:8080` and use `admin`/`123456` as username and password to log in
 
 - Exposed ports: `8080` and `9000` (for health check and metrics)
 
