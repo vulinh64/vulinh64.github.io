@@ -1,114 +1,119 @@
 design-patterns:
-  label: "design patterns"
+  label: "Design Patterns"
   description: "Reusable solutions to common software design problems."
   permalink: /design-patterns
 
 docker:
-  label: "docker"
+  label: "Docker"
   description: "A platform for containerizing and running applications."
   permalink: /docker
 
 hashmap:
-  label: "hashmap"
+  label: "Hashmap"
   description: "A Java collection for storing key-value pairs with fast lookup."
   permalink: /hashmap
 
 java:
-  label: "java"
+  label: "Java"
   description: "A versatile, object-oriented programming language for building applications."
   permalink: /java
 
 'java date time':
-  label: "java date time"
+  label: "Java Date-time"
   description: "Java's modern `java.time` API introduced since JDK 8"
   permalink: /java-date-time
 
 jdk8:
-  label: "jdk8"
+  label: "JDK 8"
   description: "Java Development Kit version 8, widely used and stable release."
   permalink: /jdk8
 
 jdk11:
-  label: "jdk11"
+  label: "JDK 11"
   description: "Java Development Kit version 11, a long-term support (LTS) release."
   permalink: /jdk11
 
 jdk17:
-  label: "jdk17"
+  label: "JDK 17"
   description: "Java Development Kit version 17, a long-term support (LTS) release."
   permalink: /jdk17
 
 jdk21:
-  label: "jdk21"
-  description: "Java Development Kit version 21, the latest long-term support release."
+  label: "JDK 21"
+  description: "Java Development Kit version 21, the second latest long-term support release."
   permalink: /jdk21
 
 jdk25:
-  label: "jdk25"
-  description: "Future Java Development Kit release (upcoming version in September 2025)."
+  label: "JDK 21"
+  description: "Java Development Kit version 25, the latest long-term support release.."
   permalink: /jdk25
 
 keycloak:
-  label: "keycloak"
+  label: "KeyCloak"
   description: "An open-source identity and access management solution."
   permalink: /keycloak
 
 lombok:
-  label: "lombok"
+  label: "Lombok"
   description: "A Java library that reduces boilerplate code with annotations."
   permalink: /lombok
 
 oauth2:
-  label: "oauth2"
+  label: "OAuth2"
   description: "An open standard for secure authorization and access delegation."
   permalink: /oauth2
 
 openfeign:
-  label: "openfeign"
-  description: "A Java HTTP client for building declarative REST clients."
+  label: "OpenFeign"
+  description: "A popular open-source repository, mainly known by its prominent OpenFeign Client project"
   permalink: /openfeign
 
 optional:
-  label: "optional"
+  label: "Java Optional"
   description: "A Java container object used to avoid null checks and represent optional values."
   permalink: /optional
 
+postgresql:
+  label: "PostgreSQL"
+  description: "A popular free and open source relational database management system"
+  permalink: /postgresql
+
 querydsl:
-  label: "querydsl"
+  label: "QueryDSL"
   description: "A Java framework for constructing type-safe database queries."
   permalink: /querydsl
 
 rant:
-  label: "rant"
+  label: "Rant"
   description: "Something I want to vent out"
   permalink: /rant
 
 singleton:
-  label: "singleton"
+  label: "Singleton Design Pattern"
   description: "A design pattern ensuring a class has only one instance."
   permalink: /singleton
 
 sorting:
-  label: "sorting"
+  label: "Sorting"
   description: "The act of arranging items in a collection in a certain order"
   permalink: /sorting
 
 'spring boot':
-  label: "spring boot"
+  label: "Spring Boot"
   description: "A framework for building production-ready Spring applications quickly."
   permalink: /spring-boot
 
 'spring security':
-  label: "spring security"
+  label: "Spring Security"
   description: "A Java framework providing authentication and access control for applications."
   permalink: /spring-security
 
 string:
-  label: "string"
+  label: "String"
   description: "A Java class representing sequences of characters."
   permalink: /string
 
 thread-safety:
-  label: "thread safety"
+  label: "Thread Safety"
   description: "A property of code that ensures correct behavior when accessed by multiple threads."
   permalink: /thread-safety

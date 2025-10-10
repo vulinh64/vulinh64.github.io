@@ -214,6 +214,10 @@ h2 {
     color: var(--token-class-color) !important;
 }
 
+.token.prolog {
+    color: rgb(156, 220, 254) !important;
+}
+
 .avatar {
     padding-bottom: 2em;
 }
