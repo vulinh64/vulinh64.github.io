@@ -266,34 +266,6 @@ It's like discovering that the cure for your daily headache was always just taki
 
 So yes, I'm mildly complaining about the timing, but I'm also celebrating the outcome. Java is finally growing up, and it's better late than never!
 
-## Bonus Round: Even Spring Boot Gets a Makeover!
-
-To lighten the mood, I have a bonus for you:
-
-Remember Spring Boot applications with their intimidating startup ceremonies? Well, they now can make use of this simplification treatment too:
-
-<details>
-
-```java
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-// Spring Boot app still needs a class to be annotated
-// with @SpringBootApplication
-// It still needs String[] args for additional command line arguments
-@SpringBootApplication
-class SpringBootMain {
-    
-  void main(String[] args) {
-    SpringApplication.run(getClass(), args);
-  }
-}
-```
-
-</details>
-
-Look at that! No more `public static` everywhere. Sure, Spring Boot still needs its `@SpringBootApplication` annotation and some others (some things never change), and you'll still want those `String[] args` for command-line shenanigans, but hey, progress is progress! Even enterprise Java is learning to chill out a little.
-
 ## The End of an Era
 
 ~~*And the Beginning of a Better One*~~
