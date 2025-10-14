@@ -521,4 +521,57 @@ docker run \
 
 You can see this [demo repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for better usage of Keycloak with external PostgreSQL.
 
+## MinIO
+
+> https://hub.docker.com/r/minio/minio
+
+Create a local instance of MinIO, using the `quay.io/minio/minio:latest` image, with the following information:
+
+<details>
+
+* Container name: `minio`
+
+* Exposed port: `9000` (API) and `9001` (Console)
+
+* The uploaded files are stored at:
+
+    * On Windows: `C:\minio` folder (accessed via `mnt/host/c/minio` path in WSL 2)
+
+    * On Linux: `mnt/minio`
+
+    * You can specify your own custom path if you wish
+
+* Credentials: `admin`/`12345678` (access the console at `localhost:9001`)
+
+</details>
+
+<Tabs>
+
+<TabItem value="windows" label="Windows (WSL 2)">
+
+```shell
+docker run --name minio --detach -p 9000:9000 -p 9001:9001 -v /mnt/host/c/minio:/data -e "MINIO_ROOT_USER=admin" -e "MINIO_ROOT_PASSWORD=12345678" quay.io/minio/minio:latest server /data --console-address ":9001"
+```
+
+</TabItem>
+
+<TabItem value="not-windows" label="Linux">
+
+```shell
+docker run \
+  --name minio \
+  --detach \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -v /mnt/host/c/minio:/data \
+  -e "MINIO_ROOT_USER=admin" \
+  -e "MINIO_ROOT_PASSWORD=12345678" \
+  quay.io/minio/minio:latest \
+  server /data --console-address ":9001"
+```
+
+</TabItem>
+
+</Tabs>
+
 (to be updated)
