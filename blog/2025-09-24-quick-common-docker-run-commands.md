@@ -574,4 +574,81 @@ docker run \
 
 </Tabs>
 
+## Elasticsearch
+
+> https://www.elastic.co/docs/deploy-manage/deploy/self-managed/install-elasticsearch-docker-basic
+
+Create a local instance of Elasticsearch, using the `docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.1.5` image, with the following information:
+
+<details>
+
+* Container name: `elasticsearch`
+
+* Exposed ports: `9200` and `9300`
+
+* Volume: `elasticsearc-volume`
+
+* Credentials: either no credentials, or `elastic`/`123456` (see the command line below)
+
+* Limiting memory usage to 2 GB
+
+</details>
+
+<Tabs>
+
+<TabItem value="windows" label="Windows">
+
+#### With credentials:
+
+```shell
+docker run --name elasticsearch --detach -e "xpack.security.enabled=true" -e "discovery.type=single-node" -e "ELASTIC_PASSWORD=123456" -p 9200:9200 -p 9300:9300 -m 2GB -v elasticsearch-volume:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.1.5
+```
+
+#### Without credentials:
+
+
+```shell
+docker run --name elasticsearch --detach -e "xpack.security.enabled=false" -e "discovery.type=single-node" -p 9200:9200 -p 9300:9300 -m 2GB -v elasticsearch-volume:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.1.5
+```
+
+</TabItem>
+
+<TabItem value="not-windows" label="Linux/MacOS">
+
+#### With credentials:
+
+```shell
+docker run \
+  --name elasticsearch \
+  --detach \
+  -e "xpack.security.enabled=true" \
+  -e "discovery.type=single-node" \
+  -e "ELASTIC_PASSWORD=123456" \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -m 2GB \
+  -v elasticsearch-volume:/usr/share/elasticsearch/data \
+  docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.1.5
+```
+
+#### Without credentials:
+
+
+```shell
+docker run \
+  --name elasticsearch \
+  --detach \
+  -e "xpack.security.enabled=false" \
+  -e "discovery.type=single-node" \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -m 2GB \
+  -v elasticsearch-volume:/usr/share/elasticsearch/data \
+  docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.1.5
+```
+
+</TabItem>
+
+</Tabs>
+
 (to be updated)
