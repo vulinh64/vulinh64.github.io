@@ -84,9 +84,17 @@ Theo [quy định](https://thuvienphapluat.vn/phap-luat/ho-tro-phap-luat/cach-ti
 
 Theo Nghị quyết số [**954/2020/UBTVQH14**](https://thuvienphapluat.vn/van-ban/Thue-Phi-Le-Phi/Nghi-quyet-954-2020-UBTVQH14-dieu-chinh-muc-giam-tru-gia-canh-cua-thue-thu-nhap-ca-nhan-444106.aspx), ban hành ngày **02/06/20200**, áp dụng từ ngày **01/07/2020**, điều chỉnh mức giảm trừ gia cảnh quy định tại [**khoản 1 Điều 19 của Luật Thuế thu nhập cá nhân số 04/2007/QH12**](https://luatvietnam.vn/thue/luat-thue-thu-nhap-ca-nhan-2007-33914-d1.html) như sau:
 
-* Mức giảm trừ đối với đối tượng nộp thuế là **11.000.000 VNĐ** (**132.000.000** VNĐ/năm)
+* Mức giảm trừ đối với đối tượng nộp thuế là:
+  
+  * Trước năm 2026: **11.000.000 VNĐ** (**132.000.000** VNĐ/năm)
 
-* Mức giảm trừ đối với mỗi nguời phụ thuộc là **4.400.000 VNĐ**/người
+  * Từ năm 2026: **15.500.000 VNĐ** (**186.000.000** VNĐ/năm) 
+
+* Mức giảm trừ đối với mỗi nguời phụ thuộc là:
+
+  * Trước năm 2026: **4.400.000 VNĐ**/người
+
+  * Từ năm 2026: **6.200.000 VNĐ**/người
 
 ## Mức Đóng Bảo Hiểm
 
@@ -134,7 +142,11 @@ Sau đó xác định bậc thuế lũy tiến của bạn, xem bảng sau:
 |    6     | từ **52.000.000 VNĐ** đến **80.000.000 VNĐ** |    30%    |
 |    7     |        từ **80.000.000 VNĐ** trở lên         |    35%    |
 
-### Ví dụ HĐLĐ Chính thức
+### Ví dụ HĐLĐ Chính thức (Trước 2026)
+
+<Tabs>
+
+<TabItem value="pre-2026" label="Trước năm 2026">
 
 <details>
 
@@ -169,6 +181,16 @@ Bạn có thể xem tính toán:
 | *Bạn có thể tự trải nghiệm việc tính thuế TNCN ở đường [link](/tax-calculator) đầu bài viết* |
 
 </details>
+
+</TabItem>
+
+<TabItem value="2026" label="Từ 2026">
+
+Đang cập nhật...
+
+</TabItem>
+
+</Tabs>
 
 ### Ví dụ Thử việc
 

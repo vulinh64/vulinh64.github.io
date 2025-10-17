@@ -174,11 +174,12 @@
 
 .resultValue {
     text-align: right;
-    font-weight: bold;
+    font-family: var(--code-font-family);
 }
 
 .netSalary {
-    color: #22c55e;
+    color: var(--ifm-color-primary);
     text-align: right;
     font-weight: bold;
+    font-family: var(--code-font-family);
 }
