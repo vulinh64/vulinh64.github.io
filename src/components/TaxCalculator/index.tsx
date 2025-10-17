@@ -1,8 +1,13 @@
-import React, {useState, useEffect, ChangeEvent, JSX} from "react";
+import React, {ChangeEvent, JSX, useEffect, useState} from "react";
 import clsx from "clsx";
 import styles from "./TaxCalculator.module.css";
 import Link from "@docusaurus/Link";
-import {calculateVietnamTax, TaxCalculationResult} from "./TaxUtils";
+import {
+    calculateVietnamTax,
+    MAX_PROBATION_PERCENTAGE,
+    MIN_PROBATION_PERCENTAGE,
+    TaxCalculationResult
+} from "./TaxUtils";
 
 interface FormData {
     basicSalary: number;
@@ -10,6 +15,7 @@ interface FormData {
     dependants: number;
     onProbation: boolean;
     probationPercentage: number;
+    isNewTaxPeriod: boolean;
 }
 
 interface Errors {
@@ -30,20 +36,19 @@ export default function TaxCalculator(): JSX.Element {
         grossSalary: 0,
         dependants: 0,
         onProbation: false,
-        probationPercentage: 85,
+        probationPercentage: MIN_PROBATION_PERCENTAGE,
+        isNewTaxPeriod: true,
     });
     const [errors, setErrors] = useState<Errors>({});
     const [warnings, setWarnings] = useState<Warnings>({});
     const [result, setResult] = useState<TaxCalculationResult | null>(null);
 
-    const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement>
-    ): void => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
         const {name, value, type, checked} = e.target;
 
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : type === "radio" ? value === "true" : value,
         }));
 
         if (errors[name]) {
@@ -56,7 +61,7 @@ export default function TaxCalculator(): JSX.Element {
 
     useEffect(() => {
         setResult(null);
-    }, [formData.onProbation]);
+    }, [formData.onProbation, formData.isNewTaxPeriod]);
 
     const validateForm = (): boolean => {
         const newErrors: Errors = {};
@@ -100,10 +105,7 @@ export default function TaxCalculator(): JSX.Element {
                 newErrors.probationPercentage = "Hãy nhập số hợp lệ";
             } else {
                 const percentage = parseFloat(formData.probationPercentage);
-                if (
-                    percentage < 85 ||
-                    percentage > 100
-                ) {
+                if (percentage < MIN_PROBATION_PERCENTAGE || percentage > MAX_PROBATION_PERCENTAGE) {
                     newErrors.probationPercentage = `Mức % lương thử việc là từ 85% đến 100%`;
                 }
             }
@@ -124,7 +126,8 @@ export default function TaxCalculator(): JSX.Element {
                 parseFloat(formData.grossSalary),
                 parseInt(String(formData.dependants)) || 0,
                 formData.onProbation,
-                formData.onProbation ? parseFloat(formData.probationPercentage) : 100
+                formData.onProbation ? parseFloat(formData.probationPercentage) : MAX_PROBATION_PERCENTAGE,
+                formData.isNewTaxPeriod
             );
             setResult(result);
         }
@@ -239,6 +242,36 @@ export default function TaxCalculator(): JSX.Element {
                         )}
                     </div>
                 )}
+
+                <div className={clsx(styles.inputWrapper, "margin-top--md", "margin-bottom--md")}>
+                    <fieldset className={styles.formGroup}>
+                        <legend className={styles.legend}>Kỳ tính thuế</legend>
+                        <div className={styles.radioWrapper}>
+                            <label className={styles.radioLabel}>
+                                <input
+                                    type="radio"
+                                    name="isNewTaxPeriod"
+                                    value="false"
+                                    checked={!formData.isNewTaxPeriod}
+                                    onChange={handleInputChange}
+                                    className={styles.radio}
+                                />
+                                Trước 2026
+                            </label>
+                            <label className={styles.radioLabel}>
+                                <input
+                                    type="radio"
+                                    name="isNewTaxPeriod"
+                                    value="true"
+                                    checked={formData.isNewTaxPeriod}
+                                    onChange={handleInputChange}
+                                    className={styles.radio}
+                                />
+                                Từ 2026
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
 
                 <button
                     type="submit"
