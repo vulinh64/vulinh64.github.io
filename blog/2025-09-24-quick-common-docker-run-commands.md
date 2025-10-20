@@ -521,6 +521,82 @@ docker run \
 
 You can see this [demo repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for better usage of Keycloak with external PostgreSQL.
 
+### Docker Compose for Quick-Start Testing
+
+If you want to create a Keycloak composition bundled with an external PostgreSQL database as the datasource (with persistent volume), consider creating a `docker-compose.yaml` file like this:
+
+<details>
+
+```yaml
+services:
+  postgresql:
+    container_name: postgresql
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: keycloak
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - keycloak-network
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: 123456
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgresql
+      KC_DB_URL_PORT: 5432
+      KC_DB_DATABASE: keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: 123456
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - keycloak-network
+volumes:
+  postgresql-volume:
+networks:
+  keycloak-network:
+    driver: bridge
+```
+
+This configuration starts a composition of two containers: one for Keycloak and another for the PostgreSQL instance. It includes a health check for PostgreSQL to ensure that Keycloak only starts when the database is fully operational.
+
+Connection info (the same as ones defined in the section above):
+
+* Container name: `keycloak`
+
+* Credentials:
+
+  * Admin username: `admin`
+
+  * Admin password: `123456`
+
+* Exposed ports: `8080` `and` 9000 (for health check and metrics)
+
+* Visit `localhost:8080` and use `admin`/`123456` as username and password to log in
+
+</details>
+
+You can check this [sample repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for a complete guide on how to start a Keycloak container bundled with a support PostgreSQL instance.
+
 ## MinIO
 
 > https://hub.docker.com/r/minio/minio
