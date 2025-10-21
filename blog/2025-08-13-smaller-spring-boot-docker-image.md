@@ -23,10 +23,6 @@ Alright, alright! I see you scrolling down looking for the goods. Here's the com
 
 <TabItem value="jdk21" label="JDK 21">
 
-<details>
-
-<summary>In JDK 21</summary>
-
 ```dockerfile
 #
 # Multi-stage Dockerfile for Java Spring Boot application
@@ -111,15 +107,9 @@ USER springuser
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-XX:MaxMetaspaceSize=512m", "-XX:+UseG1GC", "-jar", "app.jar"]
 ```
 
-</details>
-
 </TabItem>
 
 <TabItem value="jdk25" label="JDK 25">
-
-<details>
-
-<summary>In JDK 25</summary>
 
 ```dockerfile
 #
@@ -204,8 +194,6 @@ USER springuser
 ENTRYPOINT ["java", "-XX:+UseCompactObjectHeaders", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-XX:MaxMetaspaceSize=512m", "-XX:+UseG1GC", "-jar", "app.jar"]
 ```
 
-</details>
-
 </TabItem>
 
 <TabItem value="additional-info" label="Additional Info">
@@ -224,9 +212,9 @@ This ensures the generated JAR file is always named `app.jar`, instead of someth
 
 </Tabs>
 
-A word for those who are still stuck with JDK 8 and below:
+Still, a heads-up:
 
-:::warning[No Party for JDK 8 and Below]
+:::warning
 
 Sorry folks, this party is JDK 9+ only! If you're still on JDK 8, maybe it's time to have that awkward conversation with your tech lead about upgrading to JDK 17. I know, I know. They'll probably give you the classic "no resources, no time, no budget" triple threat. But hey, at least you tried!
 
