@@ -268,63 +268,7 @@ public enum Gender {
 
 #### DTOs
 
-Nothing fancy here, just some good old-fashioned Java records doing their thing.
-
-<Tabs>
-
-<TabItem value="EmployeeIdResponse" label="EmployeeIdResponse">
-
-```java
-package com.vulinh.dto;
-
-import java.util.UUID;
-
-public record EmployeeIdResponse(UUID id) {}
-```
-
-</TabItem>
-
-<TabItem value="EmployeePageResponse" label="EmployeePageResponse">
-
-```java
-package com.vulinh.dto;
-
-import module java.base;
-
-public record EmployeePageResponse(UUID id, String name) {}
-```
-
-</TabItem>
-
-<TabItem value="EmployeeRequest" label="EmployeeRequest">
-
-```java
-package com.vulinh.dto;
-
-import module java.base;
-
-import com.vulinh.data.Gender;
-
-public record EmployeeRequest(String name, LocalDate birthDate, Gender gender) {}
-```
-
-</TabItem>
-
-<TabItem value="EmployeeResponse" label="EmployeeResponse">
-
-```java
-package com.vulinh.dto;
-
-import module java.base;
-
-import com.vulinh.data.Gender;
-
-public record EmployeeResponse(UUID id, String name, LocalDate birthDate, Gender gender) {}
-```
-
-</TabItem>
-
-</Tabs>
+See [here](https://github.com/vulinh64/spring-boot-p6spy-demo/tree/main/src/main/java/com/vulinh/dto) (there are a lot of classes, and it would be too long to list them all here).
 
 #### Mapper
 
@@ -375,25 +319,7 @@ Because things go wrong, and we need to handle that gracefully (or at least pret
 
 <TabItem value="exceptions" label="Exceptions">
 
-```java
-public class EmployeeNotFoundException extends RuntimeException {
-
-  @Serial private static final long serialVersionUID = -3660291849879050821L;
-
-  public EmployeeNotFoundException(UUID id) {
-    super("Employee with id [%s] not found".formatted(id));
-  }
-}
-
-public class EmployeeUnchangedException extends RuntimeException {
-
-  @Serial private static final long serialVersionUID = -5371661974850849202L;
-
-  public EmployeeUnchangedException(UUID id) {
-    super("Data for employee with id [%s] is unchanged".formatted(id));
-  }
-}
-```
+See [here](https://github.com/vulinh64/spring-boot-p6spy-demo/tree/main/src/main/java/com/vulinh/exception) (yes, I am lazy, and I even edited the blog post).
 
 </TabItem>
 
@@ -617,15 +543,21 @@ values ('1994-11-09', 'MALE', 'John', '4d4cc49b-6507-4b0b-8ef9-8b7cdcc9cbd5'::uu
 
 </Tabs>
 
+Put those files inside `resources/db/changelog` directory (or folder, whatever). See [here](https://github.com/vulinh64/spring-boot-p6spy-demo/tree/main/src/main/resources/db/changelog).
+
 And with that, our application is ready to run! Time to see if all this actually works or if we're about to spend the next hour debugging `ClassNotFoundException`.
 
 ## Test Run
 
-Fire up the program, then visit `http://localhost:8080/swagger-ui.html` to test our API calls for CRUD operations. It's like playing with a toy car, but nerdier.
+Fire up the program, then visit `http://localhost:8080/swagger-ui.html` to test our API calls for our CRUD operations. It's like playing with a toy car, but nerdier.
 
 ### Find All Employees
 
 Hit that GET endpoint and watch the magic happen. The logged SQL statements will look as follows:
+
+<details>
+
+<summary>P6Spy Log</summary>
 
 ```text
 2025-10-10T13:44:02.747+07:00  INFO 1116 --- [nio-8080-exec-2] p6spy                                    : #1760078642747 | took 2ms | statement | connection 4| url jdbc:postgresql://localhost:5432/mydatabase
@@ -640,9 +572,15 @@ select count(e1_0.id) from employee e1_0;
 
 ```
 
+</details>
+
 ### Find a Specific Employee
 
 Let's get specific and look up John. Poor guy has no idea he's being used as demo data.
+
+<details>
+
+<summary>P6Spy Log</summary>
 
 ```text
 2025-10-10T13:45:04.651+07:00  INFO 1116 --- [nio-8080-exec-5] p6spy                                    : #1760078704651 | took 3ms | statement | connection 5| url jdbc:postgresql://localhost:5432/mydatabase
@@ -654,9 +592,15 @@ select e1_0.id,e1_0.birth_date,e1_0.gender,e1_0.name from employee e1_0 where e1
 
 ```
 
+</details>
+
 ### Create an Employee
 
 Time to add someone to the database. Welcome to the team, whoever you are!
+
+<details>
+
+<summary>P6Spy Log</summary>
 
 ```text
 2025-10-10T13:46:02.540+07:00  INFO 1116 --- [nio-8080-exec-3] p6spy                                    : #1760078762540 | took 2ms | statement | connection 6| url jdbc:postgresql://localhost:5432/mydatabase
@@ -668,9 +612,15 @@ insert into employee (birth_date,gender,name,id) values ('1993-04-06T00:00:00.00
 
 ```
 
+</details>
+
 ### Update an Existing Employee
 
 Oops, typo in the name. Let's fix that real quick.
+
+<details>
+
+<summary>P6Spy Log</summary>
 
 ```text
 2025-10-10T13:46:50.030+07:00  INFO 1116 --- [nio-8080-exec-6] p6spy                                    : #1760078810030 | took 3ms | statement | connection 7| url jdbc:postgresql://localhost:5432/mydatabase
@@ -688,9 +638,15 @@ update employee set birth_date='1993-04-06T00:00:00.000+0700',gender='MALE',name
 
 ```
 
+</details>
+
 ### Delete an Existing Employee
 
 Sorry buddy, you've been terminated. Not in the Schwarzenegger way, just in the database way.
+
+<details>
+
+<summary>P6Spy Log</summary>
 
 ```text
 2025-10-10T13:47:25.675+07:00  INFO 1116 --- [nio-8080-exec-7] p6spy                                    : #1760078845675 | took 4ms | statement | connection 8| url jdbc:postgresql://localhost:5432/mydatabase
@@ -708,6 +664,8 @@ delete from employee where id='d96080db-3cbe-4fb4-87e6-af920016b3fa';
 
 ```
 
+</details>
+
 You can see the result already! No need for additional binding TRACE logging, just a simple library and you are good to go! It's like putting on glasses and suddenly being able to read the restaurant menu.
 
 ## Customize the Generated Statements
@@ -716,7 +674,9 @@ If you think that the generated statements are quite bloated and ugly (and let's
 
 In this example, we will display the statement with bound values only, because who needs all that extra fluff?
 
-### Define Custom Logging
+<Tabs>
+
+<TabItem value="application.yaml" label="application.yaml">
 
 Add these lines into your `application.yaml` file:
 
@@ -725,6 +685,10 @@ decorator.datasource.p6spy:
   custom-appender-class: com.vulinh.MyP6SpyLogging
   logging: custom
 ```
+
+</TabItem>
+
+<TabItem value="custom-appender" label="Custom Appender">
 
 Then create our custom logging class. Don't worry, it's not as scary as it looks:
 
@@ -801,6 +765,10 @@ public class MyP6SpyLogging extends Slf4JLogger {
 ```
 
 </details>
+
+</TabItem>
+
+</Tabs>
 
 Now, our log will look like this (much better, right?):
 
