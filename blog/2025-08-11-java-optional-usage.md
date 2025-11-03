@@ -143,8 +143,6 @@ It's the programming equivalent of asking "Are you sure? Are you really sure? Ar
 
 - **`ifPresentOrElse`** (JDK 9): Finally! Do this if we have something, do that if we don't.
 
-- **`stream()`** (JDK 9): "Hey Stream API, hold my beer while I join your party".
-
 - **`isEmpty`** (JDK 11): Because `!isPresent()` made everyone's brain hurt.
 
 ### Specialized Types of `Optional`:
@@ -190,21 +188,6 @@ It's like having your cake and eating it too, but for control flow.
 </TabItem>
 
 </Tabs>
-
-### Stream Integration: The Ultimate Team-Up
-
-Want to see something cool? `Optional` and Stream had a baby, and it's beautiful:
-
-```java
-// Turn Optionals into Streams like a magician
-var emails = users.stream()
-    .map(this::findUser)
-    .flatMap(Optional::stream)  // Poof! Empty Optionals disappear
-    .map(User::getEmail)
-    .toList();
-```
-
-It's like having a filter that automatically removes all the "nope, nothing here" results. Magic!
 
 ### `isEmpty`: Finally, Logic That Makes Sense
 

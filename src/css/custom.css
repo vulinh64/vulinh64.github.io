@@ -50,6 +50,7 @@
     --ifm-font-family-base: "Noto Sans", "Open Sans", "Noto Color Emoji", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     --admonition-margin-vertical: 2em;
     --border-very-thin: 0.001em;
+    --ifm-container-width-xl: 1450px;
 }
 
 p, li {
