@@ -304,13 +304,31 @@ Now, before you go deleting every `OffsetDateTime` and `ZonedDateTime` from your
 
 * `ZonedDateTime` steps up when you're building business apps that actually need to handle the messy reality of timezone politics. Appointment scheduling across timezones? Financial trading systems that must respect market hours in specific regions? Date math that needs to survive DST transitions without breaking? This is `ZonedDateTime`'s moment to shine.
 
-:::tip[Example]
+The trick is knowing when you actually need these capabilities versus when you're just adding complexity because it feels "more complete" or "future-proof." Spoiler alert: most of the time, you don't need them.
+
+<details>
+
+<summary>⚠️ A Word of Caution Regarding `ZonedDateTime` Support</summary>
+
+However, if you're using JPA for persistence, here's the plot twist: `ZonedDateTime` is NOT officially supported by the JPA specification (including JPA 2.2, 3.0, and 3.1). The spec only includes `LocalDate`, `LocalDateTime`, `LocalTime`, `OffsetTime`, and `OffsetDateTime` as standard temporal types.
+
+While Hibernate (the most popular JPA implementation) does provide proprietary support for `ZonedDateTime`, it comes with a significant gotcha: it loses the timezone information when saving to the database, converting the `ZonedDateTime` to your JVM's local timezone and storing it as a plain `TIMESTAMP`. This means that beautiful timezone context you carefully preserved? Gone. Vanished. Sacrificed on the altar of database compatibility.
+
+The pragmatic approach: Use `ZonedDateTime` freely in your request/response DTOs and business logic where it makes sense, but convert to `Instant` or `OffsetDateTime` (which IS in the JPA spec) for your JPA entities. This requires a bit of manual conversion in your service layer, but it beats the alternative of silently losing timezone data or discovering your code doesn't work with other JPA implementations.
+
+If you're on Hibernate 6+, you can use the `@TimeZoneStorage` annotation to control timezone handling, but remember this is a Hibernate-specific extension that won't work if you ever switch JPA providers.
+
+References:
+
+* [How To Map The Date And Time API with JPA 2.2](https://thorben-janssen.com/map-date-time-api-jpa-2-2/)
+
+* [What’s new in JPA 2.2 – Java 8 Date and Time Types](https://vladmihalcea.com/whats-new-in-jpa-2-2-java-8-date-and-time-types/)
+
+</details>
+
+#### Example
 
 Your manager decides that some critical event absolutely must happen at 3 PM in Germany on October 5th (Oktoberfest), "because reasons." In this case, `ZonedDateTime` will be way more convenient than trying to figure out what absolute `Instant` corresponds to "*3 PM German time on that specific date with all the DST nonsense factored in.*" Sometimes business requirements are tied to local human time, not cosmic absolute time.
-
-:::
-
-The trick is knowing when you actually need these capabilities versus when you're just adding complexity because it feels "more complete" or "future-proof." Spoiler alert: most of the time, you don't need them.
 
 ### The Bottom Line
 
