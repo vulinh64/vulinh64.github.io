@@ -2,12 +2,8 @@ import React, {ChangeEvent, JSX, useEffect, useState} from "react";
 import clsx from "clsx";
 import styles from "./TaxCalculator.module.css";
 import Link from "@docusaurus/Link";
-import {
-    calculateVietnamTax,
-    MAX_PROBATION_PERCENTAGE,
-    MIN_PROBATION_PERCENTAGE,
-    TaxCalculationResult
-} from "./TaxUtils";
+import {calculateVietnamTax} from "./TaxUtils";
+import {MAX_PROBATION_PERCENTAGE, MIN_PROBATION_PERCENTAGE, TaxCalculationResult} from "./TaxSupport";
 
 interface FormData {
     basicSalary: number;
@@ -37,7 +33,7 @@ export default function TaxCalculator(): JSX.Element {
         dependants: 0,
         onProbation: false,
         probationPercentage: MIN_PROBATION_PERCENTAGE,
-        isNewTaxPeriod: true,
+        isNewTaxPeriod: new Date().getFullYear() >= 2026,
     });
     const [errors, setErrors] = useState<Errors>({});
     const [warnings, setWarnings] = useState<Warnings>({});

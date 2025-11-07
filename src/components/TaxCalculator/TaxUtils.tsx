@@ -1,59 +1,16 @@
-interface InsuranceRates {
-    social: number;
-    health: number;
-    unemployment: number;
-}
-
-interface TaxLevel {
-    threshold: number;
-    rate: number;
-}
-
-export interface TaxCalculationResult {
-    insuranceAmount: number;
-    taxedAmount: number;
-    netSalary: number;
-    isProbation: boolean;
-    probationSalary?: number;
-    cappedBaseSalary: number;
-}
-
-// Constants
-export const INSURANCE_RATES: InsuranceRates = {
-    social: 0.08,
-    health: 0.015,
-    unemployment: 0.01,
-};
-
-export const NON_TAXABLE_INCOME_DEDUCTION = {
-    false: 11000000,
-    true: 15500000,
-};
-
-export const DEDUCTION_PER_DEPENDANT = {
-    false: 4400000,
-    true: 6200000,
-};
-
-export const PROBATION_TAX_RATE: number = 0.1;
-export const MINIMUM_BASIC_SALARY: number = 3450000;
-export const MAXIMUM_BASIC_SALARY: number = 46800000;
-export const MINIMUM_PROBATION_PERCENTAGE: number = 85;
-export const MAXIMUM_PROBATION_PERCENTAGE: number = 100;
-
-export const MIN_PROBATION_PERCENTAGE = 85;
-export const MAX_PROBATION_PERCENTAGE = 100;
-
-export const TAX_LEVELS: TaxLevel[] = [
-    { threshold: 0, rate: 0.0 },
-    { threshold: 5_000_000, rate: 0.05 },
-    { threshold: 10_000_000, rate: 0.10 },
-    { threshold: 18_000_000, rate: 0.15 },
-    { threshold: 32_000_000, rate: 0.20 },
-    { threshold: 52_000_000, rate: 0.25 },
-    { threshold: 80_000_000, rate: 0.30 },
-    { threshold: Number.MAX_VALUE, rate: 0.35 },
-];
+import {
+    DEDUCTION_PER_DEPENDANT,
+    INSURANCE_RATES,
+    MAXIMUM_BASIC_SALARY,
+    MAXIMUM_PROBATION_PERCENTAGE,
+    MINIMUM_BASIC_SALARY,
+    MINIMUM_PROBATION_PERCENTAGE,
+    NON_TAXABLE_INCOME_DEDUCTION,
+    PROBATION_TAX_RATE,
+    TAX_LEVELS,
+    TaxCalculationResult,
+    TaxLevel
+} from "./TaxSupport";
 
 // Tax calculation function
 export const calculateVietnamTax = (
@@ -79,6 +36,8 @@ export const calculateVietnamTax = (
 
     if (isProbation) {
         const probationSalary: number = grossSalary * (probationPercentage / 100);
+
+        // @ts-ignore
         const taxedAmount: number = probationSalary < NON_TAXABLE_INCOME_DEDUCTION[isNewTaxPeriod]
             ? 0
             : Math.round(probationSalary * PROBATION_TAX_RATE);
@@ -101,10 +60,12 @@ export const calculateVietnamTax = (
         socialInsurance + healthInsurance + unemploymentInsurance;
 
     const pretaxSalary: number = grossSalary - insuranceAmount;
+
+    // @ts-ignore
     const dependantDeduction: number = numberOfDependants * DEDUCTION_PER_DEPENDANT[isNewTaxPeriod];
 
-    let taxableIncome: number =
-        pretaxSalary - NON_TAXABLE_INCOME_DEDUCTION[isNewTaxPeriod] - dependantDeduction;
+    // @ts-ignore
+    let taxableIncome: number = pretaxSalary - NON_TAXABLE_INCOME_DEDUCTION[isNewTaxPeriod] - dependantDeduction;
 
     if (taxableIncome < 0) {
         taxableIncome = 0;
@@ -113,9 +74,12 @@ export const calculateVietnamTax = (
     let taxAmount: number = 0;
     let taxLevelOrdinal: number = 0;
 
-    while (taxLevelOrdinal < TAX_LEVELS.length - 1) {
-        const currentLevel: TaxLevel = TAX_LEVELS[taxLevelOrdinal];
-        const nextLevel: TaxLevel = TAX_LEVELS[taxLevelOrdinal + 1];
+    // @ts-ignore
+    const progressiveTax = TAX_LEVELS[isNewTaxPeriod];
+
+    while (taxLevelOrdinal < progressiveTax.length - 1) {
+        const currentLevel: TaxLevel = progressiveTax[taxLevelOrdinal];
+        const nextLevel: TaxLevel = progressiveTax[taxLevelOrdinal + 1];
         const deltaToNextLevel: number = taxableIncome - currentLevel.threshold;
 
         if (deltaToNextLevel <= 0) {
