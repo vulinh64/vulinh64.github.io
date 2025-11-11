@@ -366,6 +366,82 @@ Notice something? You need a timezone to provide the time context: either to con
 
 The tip was so long that I got a dedicated article [here](2025-09-19-null-safe-comparisons.md).
 
+## Remember the Lazy Evaluation, Too!
+
+Let's take this simple null-coalescing example:
+
+```java
+var object = object == null 
+    ? getDefaultObject() 
+    : object;
+```
+
+A simple but elegant solution when you want to assign a default value to a variable if the object is `null`. It's like a safety net for your variables, minus the circus.
+
+Then, you get fancy and create a helper method to adhere to the DRY principle:
+
+```java
+// Sweet, sweet juicy usage of generics
+// that would make Joshua Bloch shed a single tear of pride
+<T> T getOrDefault(T object, T defaultValue) {
+  return object == null
+    ? defaultValue
+    : object;
+}
+```
+
+Also, FYI:
+
+> DRY principle stands for Don't Repeat Yourself (ironically, I just repeated that)
+
+And then, riding high on your DRY-fueled motivation, you refactor your entire code base like a caffeinated code warrior. You feel invincible. You feel productive. You feel... oh so proud of yourself.
+
+Hold your horses, cowboy!
+
+Before your brain drowns in dopamine, and you start updating your LinkedIn with "Refactoring Ninja" as a skill, let me burst your bubble with a question:
+
+**What do you think will happen in this code snippet?**
+
+```java
+var object = getOrDefault(object, expensiveComputation());
+```
+
+Plot twist: The `expensiveComputation()` will *ALWAYS* execute, regardless of whether our lovely `object` is `null` or not. Surprise!
+
+The consequences? Could range from wasting precious CPU cycles (your laptop fan is already judging you) to the dreaded "*oh no, I've accidentally launched the nuclear missile twice*" scenario. That's programmer speak for "your non-idempotent operations fired twice and caused chaos that should've only happened once, but here we are, with two charges on the customer's credit card and an angry email in your inbox."
+
+The fix? Use lazy evaluation. Or in layman's terms, use `Supplier<T>`. Think of it as saying "I'll tell you the answer... but only when you actually need it."
+
+Specifically, don't delete your current helper method yet (we're collectors, not destroyers). We'll add an overloaded one:
+
+```java
+// Are you ready to get your OCP certificate?
+// This is the bliss of Generics Usage (chef's kiss)
+<T> T getOrDefault(T object, Supplier<? extends T> defaultValueSupplier) {
+  return object == null
+    ? defaultValueSupplier.get()
+    : object;
+}
+```
+
+And then, modify the expensive method call like this:
+
+```java
+var object = getOrDefault(object, () -> expensiveComputation());
+```
+
+You can now rest easy knowing that `expensiveComputation()` will only be called if your shiny `object` is null. Otherwise? It stays asleep. Lazy. Unbothered. Living its best life.
+
+And to think that the humble ternary operator above could masterfully handle both eager and lazy evaluation. Truly a *How do you do, fellow kids* moment for the ages.
+
+But wait, don't delete the original helper method! (Yes, I know I already said this, but some of you are trigger-happy with that delete key.) It's still useful. Let's talk about when to use which:
+
+* The eager evaluation version is perfect for already computed values (simple getters, defined constants, that sort of thing). It's like having fast food: already prepared, ready to go, no waiting.
+
+* The lazy evaluation one is suitable when the default value requires invoking some rather expensive computations. But here's the kicker: using lazy evaluation on already computed values is wasteful. You're creating a `Supplier<T>` wrapper just to contain a value that's already sitting right there. It's like gift-wrapping a gift that's already unwrapped. Inefficient and slightly ridiculous.
+
+Choose your approach carefully! Know what you need to do, and know which method to use (both versions are lovingly supported by Apache Commons Lang 3 libraries, bless their hearts). Our null-coalescing task is just a simple one, but the same principle can also be applied to other stuff, for example: hit the database only if the cache does not contain our desired value.
+
 ---
 
 Leave a comment below, and tell me some of the tips and tricks you've been using to great successes!
