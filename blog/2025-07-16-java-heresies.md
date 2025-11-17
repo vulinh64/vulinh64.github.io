@@ -2,7 +2,7 @@
 slug: java-heresies
 title: "Java's Little Heresies"
 authors: [vulinh64]
-tags: [java]
+tags: [ java ]
 description: Some of Java's strangest and weird quirks
 ---
 

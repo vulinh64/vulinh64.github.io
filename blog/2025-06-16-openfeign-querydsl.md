@@ -2,7 +2,7 @@
 slug: openfeign-querydsl
 title: OpenFeign's QueryDSL
 authors: [vulinh64]
-tags: [java, querydsl, openfeign]
+tags: [ java, querydsl ]
 description: How to use new OpenFeign's QueryDSL
 ---
 

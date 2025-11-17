@@ -2,7 +2,7 @@
 slug: java-thread-safety
 title: Java's Journey to Thread Safety
 authors: [vulinh64]
-tags: [java, thread-safety]
+tags: [ java ]
 description: Everything you need to know about creating singleton objects in Java - from the disasters to the victories
 ---
 

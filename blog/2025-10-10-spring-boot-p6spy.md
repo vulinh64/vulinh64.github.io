@@ -2,7 +2,7 @@
 slug: spring-boot-p6spy
 title: Spring Boot + P6Spy for SQL Debugging
 authors: [ vulinh64 ]
-tags: [ spring boot, docker, postgresql ]
+tags: [ java, spring boot, docker, postgresql ]
 description: An alternative way to inspect generated SQL statements
 thumbnail: 2025-10-10-spring-boot-p6spy.png
 image: ./thumbnails/2025-10-10-spring-boot-p6spy.png

@@ -2,7 +2,7 @@
 slug: java-25-new-features
 title: What Features Can We Use in Java 25?
 authors: [ vulinh64 ]
-tags: [ java, jdk25 ]
+tags: [ java, jdk21, jdk25 ]
 description: Still need 14 billion years before enterprises encourage migration!
 thumbnail: 2025-08-18-java-25-new-features.png
 image: ./thumbnails/2025-08-18-java-25-new-features.png

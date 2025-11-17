@@ -2,7 +2,7 @@
 slug: swap-two-numbers
 title: Swap Two Numbers Intricate
 authors: [vulinh64]
-tags: [java]
+tags: [ java ]
 description: Swapping two numbers in Java and its intricate.
 ---
 

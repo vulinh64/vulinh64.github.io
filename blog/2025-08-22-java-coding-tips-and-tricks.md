@@ -2,7 +2,7 @@
 slug: java-coding-tips-and-tricks
 title: Java's Coding Tips and Tricks
 authors: [vulinh64]
-tags: [java, java date time]
+tags: [java ]
 description: Don't shoot yourself in the foot (or your teammates)!
 image: ./thumbnails/2025-08-22-java-coding-tips-and-tricks.png
 thumbnail: 2025-08-22-java-coding-tips-and-tricks.png

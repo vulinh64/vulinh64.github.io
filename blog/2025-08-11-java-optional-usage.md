@@ -2,7 +2,7 @@
 slug: java-optional-usage
 title: The Underrated Power Behind java.util.Optional
 authors: [ vulinh64 ]
-tags: [ java, optional ]
+tags: [ java ]
 description: Use Optional optionally!
 thumbnail: 2025-08-11-java-optional-usage.png
 image: ./thumbnails/2025-08-11-java-optional-usage.png

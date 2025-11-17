@@ -2,7 +2,7 @@
 slug: java-singleton
 title: "Java Singleton: How To (Without Losing Your Sanity)"
 authors: [vulinh64]
-tags: [java, singleton, design-patterns]
+tags: [ java ]
 description: Everything you need to know about creating singleton objects in Java - from the disasters to the victories
 ---
 
