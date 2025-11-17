@@ -142,6 +142,11 @@ const config = {
                         ]
                     },
                     {
+                        label: 'All Tags',
+                        position: 'left',
+                        to: '/blog/tags/',
+                    },
+                    {
                         href: 'https://linkedin.com/in/vulinh64',
                         label: 'LinkedIn',
                         position: 'right',
