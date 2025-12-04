@@ -99,6 +99,49 @@ You can actually use Java Records to be your configuration properties since Spri
 
 Want the full tutorial with all the bells and whistles? Check out this excellent [Baeldung article](https://www.baeldung.com/configuration-properties-in-spring-boot) where they explain everything with the patience of a saint.
 
+## Prefer Constructor Injection Over Setter or Field Injection
+
+This advice appears in many blog posts, so I'll keep it brief: use constructor injection everywhere. If your class has more than 255 dependencies (the hard limit number of parameters a method can have before Java refuses to compile), consider whether your class violates the Single Responsibility Principle, or reconsider your career choices.
+
+One thing I'd like to add: if you're using Lombok in your project (which is likely), use this:
+
+```java
+@Service
+@RequiredArgsConstructor
+public class MyCoolService {
+
+  private final MyCoolRepository myCoolRepository;
+}
+```
+
+instead of the manually written all-args constructor like this:
+
+```java
+@Service
+public class MyCoolService {
+
+  private final MyCoolRepository myCoolRepository;
+  
+  public MyCoolService(MyCoolRepository myCoolRepository) {
+    this.myCoolRepository = myCoolRepository;
+  }
+}
+```
+
+There are cases where you need to use a manual constructor, for example, if the beans have their own `@Qualifier` (though you'd be better off restructuring your bean configuration than manually using the `@Qualifier` annotation), or when writing integration tests (where you'll have to use `@Autowired` because there are no other options). But for most purposes, `@RequiredArgsConstructor` is sufficient to keep your classes clean, neat, and beautiful.
+
+### Benefits
+
+* You cannot accidentally reassign dependencies because you can use `final` fields.
+
+* The app will fail-fast instead of blowing up in the middle of an important transaction due to a nasty `NullPointerException`. Constructor injection ensures that you cannot start the app if even one required bean is configured incorrectly.
+
+* Along the same lines, it helps detect circular dependencies.
+
+* You'll have an easier time mocking (assuming you use Mockito): add `@Mock` to your dependencies, then `@InjectMocks` to the class you want to test. It's the easiest way to write unit tests.
+
+* Using Lombok can hide the SonarQube warning about having more than 7 constructor parameters, but seriously, if that is the case, then that's a good sign that your class is becoming overburdened and refactoring should be done to adhere to the Single Responsibility Principle.
+
 ---
 
 Leave a comment below, and tell me some of the tips and tricks you've been using to great successes!
