@@ -132,6 +132,24 @@ Lấy thu nhập của bạn trừ đi mức đóng BHXH và giảm trừ gia c�
 
 Sau đó xác định bậc thuế lũy tiến của bạn, xem bảng sau:
 
+<Tabs>
+
+<TabItem value="post-2026-7" label="Từ 7/2026">
+
+Nguồn: [Báo Lao động](https://laodong.vn/thoi-su/quoc-hoi-chot-phuong-an-ap-thue-35-voi-thu-nhap-tren-100-trieu-dongthang-1622972.ldo)
+
+| Bậc thuế |              Thu nhập chịu thuế               | Thuế suất |
+|:--------:|:---------------------------------------------:|:---------:|
+|    1     |            đến **10.000.000 VNĐ**             |    5%     |
+|    2     | từ **10.000.000 VNĐ** đến **30.000.000 VNĐ**  |    10%    |
+|    3     | từ **30.000.000 VNĐ** đến **60.000.000 VNĐ**  |    20%    |
+|    4     | từ **60.000.000 VNĐ** đến **100.000.000 VNĐ** |    30%    |
+|    5     |        từ **100.000.000 VNĐ** trở lên         |    35%    |
+
+</TabItem>
+
+<TabItem value="pre-2026-7" label="Trước 7/2026">
+
 | Bậc thuế |              Thu nhập chịu thuế              | Thuế suất |
 |:--------:|:--------------------------------------------:|:---------:|
 |    1     |            đến **5.000.000 VNĐ**             |    5%     |
@@ -142,87 +160,9 @@ Sau đó xác định bậc thuế lũy tiến của bạn, xem bảng sau:
 |    6     | từ **52.000.000 VNĐ** đến **80.000.000 VNĐ** |    30%    |
 |    7     |        từ **80.000.000 VNĐ** trở lên         |    35%    |
 
-### Ví dụ HĐLĐ Chính thức (Trước 2026)
-
-<Tabs>
-
-<TabItem value="pre-2026" label="Trước năm 2026">
-
-<details>
-
-<summary>Ví dụ tính thuế TNCN cho HĐLĐ chính thức</summary>
-
-Lấy ví dụ ở phần [mức đóng bảo hiểm](#ví-dụ) ở trên, cộng thêm với có 1 người phụ thuộc (ví dụ bạn có con dưới 18 tuổi), ta có thu nhập chịu thuế của bạn là:
-
-```
-30000000 - 787500 - 11000000 - 1 * 4400000 = 13812500 (VNĐ)
-```
-
-Như vậy, thu nhập chịu thuế của bạn sẽ là **13.812.500 VNĐ**.
-
-Như vậy, thu nhập của bạn thuộc vào **bậc 3** (từ **10.000.000 VNĐ** đến **18.000.000 VNĐ**)
-
-Tổng cộng số tiền thuế bạn phải nộp là:
-
-```text
-5000000 * 5 / 100 + 5000000 * 10 / 100 + (13812500 - 10000000) * 15 / 100 = 1321875 (VNĐ)
-```
-
-Như vậy, thực lãnh của bạn sẽ là:
-
-```text
-30000000 - 787500 - 1321875 = 27890625 (VNĐ)
-```
-
-Bạn có thể xem tính toán:
-
-|     ![tax-calculator](img/vietnam-tax-calculation-0001.png "Tính thuế HĐLĐ chính thức")      |
-|:--------------------------------------------------------------------------------------------:|
-| *Bạn có thể tự trải nghiệm việc tính thuế TNCN ở đường [link](/tax-calculator) đầu bài viết* |
-
-</details>
-
-</TabItem>
-
-<TabItem value="2026" label="Từ 2026">
-
-Đang cập nhật...
-
 </TabItem>
 
 </Tabs>
-
-### Ví dụ Thử việc
-
-<details>
-
-<summary>Tính toán cho HĐ thử việc</summary>
-
-Nhưng nếu bạn đang thử việc với % lương thử việc là 85% thì sao?
-
-Lương thử việc trước thuế sẽ là:
-
-```text
-30000000 * 85 / 100 = 25500000 (VNĐ)
-```
-
-Bạn phải nộp 10% vào thuế TNCN, do vậy, bạn sẽ phải nộp:
-
-```text
-25500000 * 10 / 100 = 2550000 (VNĐ)
-```
-
-Và thực lãnh của bạn sẽ là:
-
-```text
-25500000 - 2550000 = 22950000 (VNĐ)
-```
-
-Bạn có thể xem ảnh sau:
-
-![tax-calculator-probation](img/vietnam-tax-calculation-0002.png "Tính thuế HĐ thử việc")
-
-</details>
 
 ## Bonus Chương Trình Tính Thuế TNCN
 
@@ -237,286 +177,6 @@ Bạn có thể tham khảo chương trình mẫu viết bằng Java để tính
 <TabItem value="javascript" label="JavaScript">
 
 Hoặc bạn có thể xem source code tính thuế TNCN bằng JavaScript của blog này tại [đây](https://github.com/vulinh64/vulinh64.github.io) (source code của website này)
-
-</TabItem>
-
-<TabItem value="python" label="Python">
-
-Tặng bạn chương trình viết bằng Python (dù mình không giỏi Python lắm) 😁
-
-```python
-# Constants for tax calculation
-INSURANCE_RATES = {
-    "social": 0.08,
-    "health": 0.015,
-    "unemployment": 0.01,
-}
-
-NON_TAXABLE_INCOME_DEDUCTION = 11_000_000
-DEDUCTION_PER_DEPENDANT = 4_400_000
-PROBATION_TAX_RATE = 0.1
-MINIMUM_BASIC_SALARY = 3_450_000
-MAXIMUM_BASIC_SALARY = 46_800_000
-MINIMUM_PROBATION_PERCENTAGE = 85
-MAXIMUM_PROBATION_PERCENTAGE = 100
-
-TAX_LEVELS = [
-    {"threshold": 0, "rate": 0.0},
-    {"threshold": 5_000_000, "rate": 0.05},
-    {"threshold": 10_000_000, "rate": 0.10},
-    {"threshold": 18_000_000, "rate": 0.15},
-    {"threshold": 32_000_000, "rate": 0.20},
-    {"threshold": 52_000_000, "rate": 0.25},
-    {"threshold": 80_000_000, "rate": 0.30},
-    {"threshold": float('inf'), "rate": 0.35}
-]
-
-
-def calculate_vietnam_tax(base_salary, gross_salary, number_of_dependants, 
-                         is_probation=False, probation_percentage=100):
-    """
-    Calculate Vietnam tax based on salary and personal information.
-    
-    Args:
-        base_salary (float): Basic salary amount
-        gross_salary (float): Gross salary amount
-        number_of_dependants (int): Number of dependants
-        is_probation (bool): Whether employee is on probation
-        probation_percentage (float): Percentage of salary during probation
-        
-    Returns:
-        dict: Dictionary containing tax calculation results
-    """
-    # Cap basic salary at MAXIMUM_BASIC_SALARY for calculations
-    capped_base_salary = min(base_salary, MAXIMUM_BASIC_SALARY)
-
-    if is_probation:
-        probation_salary = gross_salary * (probation_percentage / 100)
-        taxed_amount = (0 if probation_salary < 11_000_000.0 
-                       else round(probation_salary * PROBATION_TAX_RATE))
-        net_salary = probation_salary - taxed_amount
-
-        return {
-            "insurance_amount": 0,
-            "taxed_amount": taxed_amount,
-            "net_salary": round(net_salary),
-            "is_probation": True,
-            "probation_salary": round(probation_salary),
-            "capped_base_salary": round(capped_base_salary),
-        }
-
-    # Calculate insurance amounts
-    social_insurance = capped_base_salary * INSURANCE_RATES["social"]
-    health_insurance = capped_base_salary * INSURANCE_RATES["health"]
-    unemployment_insurance = capped_base_salary * INSURANCE_RATES["unemployment"]
-    insurance_amount = social_insurance + health_insurance + unemployment_insurance
-
-    # Calculate pre-tax salary and deductions
-    pretax_salary = gross_salary - insurance_amount
-    dependant_deduction = number_of_dependants * DEDUCTION_PER_DEPENDANT
-
-    taxable_income = pretax_salary - NON_TAXABLE_INCOME_DEDUCTION - dependant_deduction
-
-    if taxable_income < 0:
-        taxable_income = 0
-
-    # Calculate progressive tax
-    tax_amount = 0
-    tax_level_ordinal = 0
-
-    while tax_level_ordinal < len(TAX_LEVELS) - 1:
-        current_level = TAX_LEVELS[tax_level_ordinal]
-        next_level = TAX_LEVELS[tax_level_ordinal + 1]
-        delta_to_next_level = taxable_income - current_level["threshold"]
-
-        if delta_to_next_level <= 0:
-            break
-
-        delta = (delta_to_next_level if taxable_income < next_level["threshold"] 
-                else next_level["threshold"] - current_level["threshold"])
-
-        if delta > 0:
-            tax_amount += delta * next_level["rate"]
-
-        tax_level_ordinal += 1
-
-    net_salary = gross_salary - insurance_amount - tax_amount
-
-    return {
-        "insurance_amount": round(insurance_amount),
-        "taxed_amount": round(tax_amount),
-        "net_salary": round(net_salary),
-        "is_probation": False,
-        "capped_base_salary": round(capped_base_salary),
-    }
-
-
-class TaxCalculator:
-    """
-    A class to handle tax calculations with form-like state management.
-    """
-    
-    def __init__(self):
-        self.form_data = {
-            "basic_salary": "",
-            "gross_salary": "",
-            "dependants": 0,
-            "on_probation": False,
-            "probation_percentage": "",
-        }
-        self.errors = {}
-        self.warnings = {}
-        self.result = None
-    
-    def set_form_data(self, **kwargs):
-        """Update form data with provided keyword arguments."""
-        for key, value in kwargs.items():
-            if key in self.form_data:
-                self.form_data[key] = value
-    
-    def calculate(self):
-        """Calculate tax based on current form data."""
-        try:
-            basic_salary = float(self.form_data["basic_salary"]) if self.form_data["basic_salary"] else 0
-            gross_salary = float(self.form_data["gross_salary"]) if self.form_data["gross_salary"] else 0
-            dependants = int(self.form_data["dependants"])
-            on_probation = self.form_data["on_probation"]
-            probation_percentage = (float(self.form_data["probation_percentage"]) 
-                                  if self.form_data["probation_percentage"] else 100)
-            
-            self.result = calculate_vietnam_tax(
-                basic_salary, gross_salary, dependants, on_probation, probation_percentage
-            )
-            return self.result
-            
-        except ValueError as e:
-            self.errors["calculation"] = f"Invalid input: {e}"
-            return None
-
-
-def get_user_input():
-    """Get tax calculation inputs from user via keyboard."""
-    print("=== Vietnam Tax Calculator ===")
-    print("Enter your salary information:")
-    
-    try:
-        # Get basic salary
-        while True:
-            basic_salary_str = input("Basic salary (VND): ").strip().replace(",", "").replace(".", "")
-            if basic_salary_str.isdigit():
-                basic_salary = float(basic_salary_str)
-                break
-            print("Please enter a valid number for basic salary.")
-        
-        # Get gross salary
-        while True:
-            gross_salary_str = input("Gross salary (VND): ").strip().replace(",", "").replace(".", "")
-            if gross_salary_str.isdigit():
-                gross_salary = float(gross_salary_str)
-                break
-            print("Please enter a valid number for gross salary.")
-        
-        # Get number of dependants
-        while True:
-            dependants_str = input("Number of dependants (0 if none): ").strip()
-            if dependants_str.isdigit():
-                dependants = int(dependants_str)
-                break
-            print("Please enter a valid number for dependants.")
-        
-        # Ask if on probation
-        while True:
-            probation_input = input("Are you on probation? (y/n): ").strip().lower()
-            if probation_input in ['y', 'yes']:
-                on_probation = True
-                break
-            elif probation_input in ['n', 'no']:
-                on_probation = False
-                break
-            print("Please enter 'y' for yes or 'n' for no.")
-        
-        # Get probation percentage if on probation
-        probation_percentage = 100
-        if on_probation:
-            while True:
-                prob_perc_str = input("Probation percentage (85-100%): ").strip()
-                try:
-                    probation_percentage = float(prob_perc_str)
-                    if MINIMUM_PROBATION_PERCENTAGE <= probation_percentage <= MAXIMUM_PROBATION_PERCENTAGE:
-                        break
-                    else:
-                        print(f"Please enter a percentage between {MINIMUM_PROBATION_PERCENTAGE}% and {MAXIMUM_PROBATION_PERCENTAGE}%.")
-                except ValueError:
-                    print("Please enter a valid number for probation percentage.")
-        
-        return basic_salary, gross_salary, dependants, on_probation, probation_percentage
-    
-    except KeyboardInterrupt:
-        print("\n\nCalculation cancelled by user.")
-        return None
-
-
-def display_results(result):
-    """Display the tax calculation results in a formatted way."""
-    print("\n" + "="*50)
-    print("TAX CALCULATION RESULTS")
-    print("="*50)
-    
-    if result["is_probation"]:
-        print(f"Status: On Probation")
-        print(f"Probation Salary: {result['probation_salary']:,} VND")
-        print(f"Insurance Amount: {result['insurance_amount']:,} VND")
-        print(f"Tax Amount: {result['taxed_amount']:,} VND")
-        print(f"Net Salary: {result['net_salary']:,} VND")
-    else:
-        print(f"Status: Regular Employee")
-        print(f"Capped Base Salary: {result['capped_base_salary']:,} VND")
-        print(f"Insurance Amount: {result['insurance_amount']:,} VND")
-        print(f"Tax Amount: {result['taxed_amount']:,} VND")
-        print(f"Net Salary: {result['net_salary']:,} VND")
-    
-    print("="*50)
-
-
-def main():
-    """Main function to run the interactive tax calculator."""
-    while True:
-        user_input = get_user_input()
-        
-        if user_input is None:  # User cancelled
-            break
-            
-        basic_salary, gross_salary, dependants, on_probation, probation_percentage = user_input
-        
-        # Calculate tax
-        result = calculate_vietnam_tax(
-            base_salary=basic_salary,
-            gross_salary=gross_salary,
-            number_of_dependants=dependants,
-            is_probation=on_probation,
-            probation_percentage=probation_percentage
-        )
-        
-        # Display results
-        display_results(result)
-        
-        # Ask if user wants to calculate again
-        while True:
-            again = input("\nWould you like to calculate for another person? (y/n): ").strip().lower()
-            if again in ['y', 'yes']:
-                print("\n" + "-"*50 + "\n")
-                break
-            elif again in ['n', 'no']:
-                print("Thank you for using Vietnam Tax Calculator!")
-                return
-            print("Please enter 'y' for yes or 'n' for no.")
-
-
-# Example usage:
-if __name__ == "__main__":
-    # Run the interactive calculator
-    main()
-```
 
 </TabItem>
 

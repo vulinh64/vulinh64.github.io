@@ -19,8 +19,8 @@ export const calculateVietnamTax = (
     numberOfDependants: number,
     isProbation: boolean = false,
     probationPercentage: number = 100,
-    isNewTaxPeriod: boolean = true
-): TaxCalculationResult => {
+    isNewTaxPeriod: boolean = true,
+    isNewTaxPeriodProgressiveLevel: boolean = true): TaxCalculationResult => {
     // Validation: Check if baseSalary meets minimum requirement
     if (baseSalary < MINIMUM_BASIC_SALARY) {
         throw new Error(`Base salary must be at least ${MINIMUM_BASIC_SALARY.toLocaleString()} VND`);
@@ -75,7 +75,7 @@ export const calculateVietnamTax = (
     let taxLevelOrdinal: number = 0;
 
     // @ts-ignore
-    const progressiveTax = TAX_LEVELS[isNewTaxPeriod];
+    const progressiveTax = TAX_LEVELS[isNewTaxPeriodProgressiveLevel];
 
     while (taxLevelOrdinal < progressiveTax.length - 1) {
         const currentLevel: TaxLevel = progressiveTax[taxLevelOrdinal];
