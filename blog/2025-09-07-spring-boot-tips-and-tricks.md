@@ -142,6 +142,8 @@ There are cases where you need to use a manual constructor, for example, if the 
 
 * Using Lombok can hide the SonarQube warning about having more than 7 constructor parameters, but seriously, if that is the case, then that's a good sign that your class is becoming overburdened and refactoring should be done to adhere to the Single Responsibility Principle.
 
----
+## Handle Exceptions for Request in Spring Boot
 
-Leave a comment below, and tell me some of the tips and tricks you've been using to great successes!
+See the [full article](./2025-12-22-spring-boot-exception-handler.md) for some sweet juice!
+
+Come back and tell me how you feel!
