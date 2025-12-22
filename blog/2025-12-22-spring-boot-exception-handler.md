@@ -249,6 +249,10 @@ public ResponseObject<Object> handleIdenticalException(IdenticalException ex) {
 
   return fromErrorCode(ErrorCode.M001);
 }
+
+private static void showExceptionMessage(Throwable ex) {
+  log.info("Error: {}", ex.getMessage());
+}
 ```
 
 </TabItem>
@@ -259,16 +263,19 @@ The "I want full control" way (for when you're feeling extra fancy):
 
 ```java
 @ExceptionHandler(NotFound404Exception.class)
-public ResponseEntity<Void> handleNotFound404Exception(NotFound404Exception ex) {
+public ResponseEntity<Object> handleNotFound401Exception(NotFound404Exception ex) {
   showExceptionMessage(ex);
 
   // Another way to return HttpStatus without @ResponseStatus
-  // Because sometimes we like to do things the hard way
   return ResponseEntity
 // highlight-start
     .status(HttpStatus.NOT_FOUND)
 // highlight-end
-    .build();
+    .body(fromErrorCode(ErrorCode.M404));
+}
+
+private static void showExceptionMessage(Throwable ex) {
+  log.info("Error: {}", ex.getMessage());
 }
 ```
 
