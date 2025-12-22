@@ -227,7 +227,7 @@ Now for the fun part - handling our custom exceptions! In our tiny demo, we've g
 
 * `IdenticalException`: Thrown when someone tries to add the same thing twice. It's like trying to add your ex on Facebook again - just... no.
 
-* `NotFound401Exception`: When you're looking for something that doesn't exist. Like my motivation on Monday mornings.
+* `NotFound404Exception`: When you're looking for something that doesn't exist. Like my motivation on Monday mornings.
 
 * `IllegalArgumentException`: For when someone passes us garbage Base64 data. We're not a recycling center, folks. This is a Java's built-in exception.
 
@@ -258,8 +258,8 @@ public ResponseObject<Object> handleIdenticalException(IdenticalException ex) {
 The "I want full control" way (for when you're feeling extra fancy):
 
 ```java
-@ExceptionHandler(NotFound401Exception.class)
-public ResponseEntity<Void> handleNotFound401Exception(NotFound401Exception ex) {
+@ExceptionHandler(NotFound404Exception.class)
+public ResponseEntity<Void> handleNotFound404Exception(NotFound404Exception ex) {
   showExceptionMessage(ex);
 
   // Another way to return HttpStatus without @ResponseStatus
@@ -302,6 +302,8 @@ curl --location 'localhost:8080/create' \
 
 #### Response
 
+HTTP Status: `500 Internal Server Error`
+
 ```JSON
 {
   "errorCode": "M999",
@@ -333,6 +335,8 @@ curl --location 'localhost:8080/create' \
 
 #### Response
 
+HTTP Status: `409 Conflict`
+
 ```json
 {
   "errorCode": "M001",
@@ -357,6 +361,8 @@ curl --location 'localhost:8080/get?name=assa324320023--231415'
 ```
 
 #### Response
+
+HTTP Status: `400 Bad Request`
 
 ```json
 {
