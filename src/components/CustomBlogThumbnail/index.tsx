@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './styles.module.css';
+import {getThumbnailSrc} from "../commons/utils";
 
 interface CustomBlogThumbnailProps {
     filename?: string;
@@ -17,14 +18,4 @@ export default function CustomBlogThumbnail({ filename }: CustomBlogThumbnailPro
             <img src={imageUrl} alt="thumbnail" className={styles.thumbnail} />
         </div>
     );
-}
-
-function getThumbnailSrc(filename?: string): string | null {
-    if (!filename) return null;
-
-    try {
-        return require(`@site/blog/thumbnails/${filename}`).default as string;
-    } catch {
-        return null; // File not found -> no thumbnail
-    }
 }

@@ -1,12 +1,8 @@
 import React, {useState, useRef, useCallback} from 'react';
 import styles from './styles.module.css';
 import clsx from "clsx";
-
-interface FeatureArticle {
-    title: string;
-    excerpt: string;
-    slug: string;
-}
+import {FeatureArticle} from "./feature-articles";
+import {getThumbnailSrc} from "../commons/utils";
 
 interface FeatureArticlesProps {
     articles: FeatureArticle[];
@@ -15,7 +11,6 @@ interface FeatureArticlesProps {
 type Direction = 'left' | 'right';
 type InteractionType = 'swipe' | 'dot';
 
-// Custom hook to manage carousel state and transitions
 const useCarousel = (articles: FeatureArticle[], animationDuration: number = 300) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState<Direction | null>(null);
@@ -24,7 +19,6 @@ const useCarousel = (articles: FeatureArticle[], animationDuration: number = 300
     const touchStartX = useRef<number | null>(null);
     const touchEndX = useRef<number | null>(null);
 
-    // Handle navigation (dot click or swipe)
     const navigateTo = useCallback(
         (newIndex: number, type: InteractionType, navDirection: Direction) => {
             if (newIndex !== currentIndex && !isAnimating && newIndex >= 0 && newIndex < articles.length) {
@@ -41,7 +35,6 @@ const useCarousel = (articles: FeatureArticle[], animationDuration: number = 300
         [currentIndex, isAnimating, articles.length, animationDuration]
     );
 
-    // Handle dot click
     const handleDotClick = useCallback(
         (index: number) => {
             const direction = index > currentIndex ? 'right' : 'left';
@@ -50,12 +43,10 @@ const useCarousel = (articles: FeatureArticle[], animationDuration: number = 300
         [currentIndex, navigateTo]
     );
 
-    // Handle touch start
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
     }, []);
 
-    // Handle touch end and swipe
     const handleTouchEnd = useCallback(
         (e: React.TouchEvent) => {
             touchEndX.current = e.changedTouches[0].clientX;
@@ -64,10 +55,8 @@ const useCarousel = (articles: FeatureArticle[], animationDuration: number = 300
 
             if (Math.abs(deltaX) > swipeThreshold && !isAnimating) {
                 if (deltaX > 0 && currentIndex > 0) {
-                    // Right swipe: previous article, text flies right
                     navigateTo(currentIndex - 1, 'swipe', 'right');
                 } else if (deltaX < 0 && currentIndex < articles.length - 1) {
-                    // Left swipe: next article, text flies left
                     navigateTo(currentIndex + 1, 'swipe', 'left');
                 }
             }
@@ -102,7 +91,14 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
 
     const currentArticle = articles[currentIndex];
 
-    // Determine animation class based on interaction type and direction
+    // Construct thumbnail filename: ${date}-${slug}
+    const thumbnailFilename = `${currentArticle.date}-${currentArticle.slug}.png`;
+    const withFallBack = getThumbnailSrc(thumbnailFilename);
+
+    const backgroundSrc = withFallBack ? withFallBack : "/img/feature-article.png";
+
+    const backgroundStyle = backgroundSrc ? { backgroundImage: `url(${backgroundSrc})` } : {};
+
     const getAnimationClass = (): string => {
         if (!isAnimating) return styles.fadeIn;
         if (interactionType === 'swipe') {
@@ -113,6 +109,7 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
 
     return (
         <section className={clsx(styles.featureArticles, "margin-bottom-lg")}>
+            <div className={styles.background} style={backgroundStyle} />
             <div className="container">
                 <div
                     className={`${styles.articleContent} ${getAnimationClass()}`}
@@ -120,7 +117,8 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
                 >
-                    <h2 className={clsx(styles.articleTitle, "margin-bottom--lg")}>{currentArticle.title}</h2>
+                    <h2 className={clsx(styles.articleTitle, "margin-top--md", "margin-bottom--md")}>{currentArticle.title}</h2>
+                    <p className={clsx(styles.articleSubtitle)}>Published on {Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(currentArticle.date))}</p>
                     <p className={clsx(styles.articleExcerpt, "margin-top--lg margin-bottom--lg")}>{currentArticle.excerpt}</p>
                 </div>
                 <a href={`/blog/${currentArticle.slug}`} className={styles.readMoreBtn}>
