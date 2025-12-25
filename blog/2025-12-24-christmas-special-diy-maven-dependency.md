@@ -12,13 +12,29 @@ Or how I learned from my silly mistakes when creating myself a common Maven depe
 
 ## The Pain Begins
 
-So there you are, working on your adorable toy project. You know, the one that's supposed to "reinforce your knowledge" but somehow ended up as three different services pretending to be microservices. You're copying and pasting the same Java files between projects like it's 2005, and every time you make a change, you have to remember to sync it across all your services. It's a nightmare, honestly.
+So there you are, working on your adorable toy project. You know, the one that's supposed to "*reinforce your knowledge*" but somehow ended up as three different services pretending to be microservices. You're copying and pasting the same Java files between projects like it's 2005, and every time you make a change, you have to remember to sync it across all your services. It's a nightmare, honestly.
 
 Theoretically, you're at square 1 or maybe 2 when it comes to microservices, but whatever. No one's gonna judge your project anyway. It's your learning playground, and that's perfectly fine!
 
 ## The Lightbulb Moment
 
-Then it hits you: "*Hey, why don't I just extract this into a common library?*" Brilliant! You're basically a software architect now.
+Then it hits you: "*Hey, why don't I just extract this into a common library?*" Amazing! You're basically a software architect now.
+
+Except... writing a common library means you're now imposing a lot of restrictions on yourself:
+
+* No Lombok, or you get a weird mismatch between decompiled bytecodes vs. the actual source code (and you don't like magic).
+
+* Interfaces everywhere, because enterprise, duh? Just joking, please read [this article](./2025-08-25-rant-single-interface-single-impl.md). 
+
+* Builder and wither patterns without Lombok's magic (oops, the pain is real).
+
+* JDK 17 instead of the shiny new JDK 25 with all its cool features. You know, backward compatibility and stuff?
+
+* And actual dependency management skills!
+
+But you know what? You didn't mind. This is pure Java at its finest, baby! No magic annotations, just good old-fashioned verbose code that makes you appreciate why Lombok exists in the first place.
+
+## The Maven Dreams
 
 Your next thought? "*I should publish this to Maven Central!*" Look at you, thinking big!
 
@@ -26,11 +42,11 @@ Your next thought? "*I should publish this to Maven Central!*" Look at you, thin
 
 But then reality slaps you in the face harder than a `NullPointerException` at 3 AM. Maven Central isn't something you can just throw your nonsense at and get away with it. The whole pain train of getting the required certificates, signing your artifacts, proving you own a domain... it's like applying for a mortgage just to share some code.
 
-Being a reasonable person (and unlike those lovely folks who fill npm with packages that score a perfect 10/10 on the CVE scale), you decide to be decent and NOT inflict your questionable code on the entire Java community. Good call.
+Being a reasonable person, you decide to be decent and NOT put your questionable code into Maven Central. Unlike those people who target npm with packages that somehow [earn 10/10 score CVEs](https://react2shell.com/) (looking at you, silly Node Package Manager). Or that legendary `left-pad` guy in March 2016 who somehow [took down half of the internet when pulling their dependency out of the commission](https://en.wikipedia.org/wiki/Npm_left-pad_incident), because apparently the compilers somehow refused to compile without a function that pads strings to the left. Peak dependency management right there.
 
 ## The DIY Solution
 
-So you get creative. Time to host one yourself! Enter the hero of our story: `mvn clean install`.
+So you get creative. Time to host one yourself! Enter the hero of our story:
 
 ```shell
 mvn clean install
@@ -76,7 +92,7 @@ One day, you realize you need to update your library. Time for versioning! So yo
 
 We've all been there. No judgment.
 
-You update the version in your pom.xml and create a git tag:
+You update the version in your `pom.xml` and create a git tag:
 
 ```shell
 git tag 1.0.0.Final
@@ -93,13 +109,13 @@ Enter the `--branch` flag!
 git clone --branch 1.1.9 https://github.com/yourname/common-library.git
 ```
 
-This works like magic. Service A uses the shiny `2.0.0`, Service B chills with `1.1.9`. Two versions living independently in your `.m2` folder like civilized neighbors. When you finally create `2.0.0-FIX`, you just rebuild and update the version tags in each service's pom.xml accordingly.
+This works like magic. Service A uses the shiny `2.0.0`, Service B chills with `1.1.9`. Two versions living independently in your `.m2` folder like civilized neighbors. When you finally create `2.0.0-FIX`, you just rebuild and update the version tags in each service's `pom.xml` accordingly.
 
 ## Optimization Time
 
-As your project grows, you start noticing something annoying. Every time you clone from GitHub, you're downloading the entire commit history. You don't need to know that you fixed a typo in a comment 47 commits ago!
+As your project grows, you start noticing something annoying. Every time you clone from GitHub, you're downloading the entire commit history. You don't need to know that you fixed a typo in a comment 500 commits ago!
 
-Enter `--depth 1` for shallow cloning:
+Enter shallow cloning:
 
 ```shell
 git clone --branch 1.1.9 --depth 1 https://github.com/yourname/common-library.git
@@ -111,7 +127,7 @@ Just the essentials. Clean. Efficient. Beautiful.
 
 Then you realize this combo of `--branch` and `--depth` is absolutely perfect for Docker caching! You pat yourself on the back because you're basically a professional now.
 
-In your Dockerfile:
+In your `Dockerfile`:
 
 ```dockerfile
 # Look convincing, right?
