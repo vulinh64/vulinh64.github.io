@@ -158,7 +158,7 @@ git clone --branch %VERSION% --depth 1 https://github.com/yourname/common-librar
 cd common-library
 mvn clean install
 cd ..
-docker-compose up --build
+docker compose up --detach
 ```
 
 Or a shell script for Linux:
@@ -170,7 +170,7 @@ git clone --branch $VERSION --depth 1 https://github.com/yourname/common-library
 cd common-library
 mvn clean install
 cd ..
-docker-compose up --build
+docker compose up --detach
 ```
 
 One lazy `chmod +x build.sh` (if your Linux is feeling particular), a quick `./build.sh`, and BAM! Everything's ready. For debugging, of course. Or maybe for publishing to AWS or Render if you've got some extra cash burning a hole in your pocket.
