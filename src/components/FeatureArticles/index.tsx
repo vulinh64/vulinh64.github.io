@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import styles from './styles.module.css';
 import clsx from "clsx";
 import {FeatureArticle} from "./feature-articles";
@@ -92,12 +92,11 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
     const currentArticle = articles[currentIndex];
 
     // Construct thumbnail filename: ${date}-${slug}
-    const thumbnailFilename = `${currentArticle.date}-${currentArticle.slug}.png`;
-    const withFallBack = getThumbnailSrc(thumbnailFilename);
+    const backgroundImage = getThumbnailSrc(`${currentArticle.date}-${currentArticle.slug}.png`) ?? "/img/feature-article.png";
 
-    const backgroundSrc = withFallBack ? withFallBack : "/img/feature-article.png";
-
-    const backgroundStyle = backgroundSrc ? { backgroundImage: `url(${backgroundSrc})` } : {};
+    const backgroundStyle = backgroundImage
+        ? {backgroundImage: `url(${backgroundImage})`}
+        : {};
 
     const getAnimationClass = (): string => {
         if (!isAnimating) return styles.fadeIn;
@@ -109,7 +108,7 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
 
     return (
         <section className={clsx(styles.featureArticles, "margin-bottom-lg")}>
-            <div className={styles.background} style={backgroundStyle} />
+            <div className={styles.background} style={backgroundStyle}/>
             <div className="container">
                 <div
                     className={`${styles.articleContent} ${getAnimationClass()}`}
@@ -118,7 +117,11 @@ const FeatureArticles: React.FC<FeatureArticlesProps> = ({articles}) => {
                     onTouchEnd={handleTouchEnd}
                 >
                     <h2 className={clsx(styles.articleTitle, "margin-top--md", "margin-bottom--md")}>{currentArticle.title}</h2>
-                    <p className={clsx(styles.articleSubtitle)}>Published on {Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(currentArticle.date))}</p>
+                    <p className={clsx(styles.articleSubtitle)}>Published on {Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }).format(new Date(currentArticle.date))}</p>
                     <p className={clsx(styles.articleExcerpt, "margin-top--lg margin-bottom--lg")}>{currentArticle.excerpt}</p>
                 </div>
                 <a href={`/blog/${currentArticle.slug}`} className={styles.readMoreBtn}>

@@ -7,11 +7,7 @@ interface CustomBlogThumbnailProps {
 }
 
 export default function CustomBlogThumbnail({ filename }: CustomBlogThumbnailProps) {
-    const imageUrl = getThumbnailSrc(filename);
-
-    if (!imageUrl) {
-        return null;
-    }
+    const imageUrl = getThumbnailSrc(filename) ?? "/img/no-thumbnail.png";
 
     return (
         <div className={styles.thumbnailContainer}>
