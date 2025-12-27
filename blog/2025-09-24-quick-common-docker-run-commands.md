@@ -25,25 +25,7 @@ You will need to adjust the values of container names, environment variables, an
 
 ### MySQL
 
-> https://hub.docker.com/_/mysql
-
-Create a local instance of MySQL, using the `mysql:latest` image with the following information:
-
-<details>
-
-* Container name: `mysql`
-
-* Root user: `root`
-
-* Password: `123456`
-
-* Initial database: `mydatabase`
-
-* Exposed port: `3306`
-
-* Volume: `mysql-volume`
-
-</details>
+Create a local instance of MySQL, using the `mysql:latest` image:
 
 <Tabs>
 
@@ -70,17 +52,9 @@ docker run \
 
 </TabItem>
 
-</Tabs>
+<TabItem value="connection-info" label="Connection Info">
 
-### MariaDB
-
-> https://hub.docker.com/_/mariadb
-
-Create a local instance of MariaDB, using the `mariadb:lts` image, with the following information:
-
-<details>
-
-* Container name: `mariadb`
+* Container name: `mysql`
 
 * Root user: `root`
 
@@ -90,9 +64,21 @@ Create a local instance of MariaDB, using the `mariadb:lts` image, with the foll
 
 * Exposed port: `3306`
 
-* Volume: `mariadb-volume`
+* Volume: `mysql-volume`
 
-</details>
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/_/mysql
+
+</TabItem>
+
+</Tabs>
+
+### MariaDB
+
+Create a local instance of MariaDB, using the `mariadb:lts` image:
 
 <Tabs>
 
@@ -119,31 +105,33 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `mariadb`
+
+* Root user: `root`
+
+* Password: `123456`
+
+* Initial database: `mydatabase`
+
+* Exposed port: `3306`
+
+* Volume: `mariadb-volume`
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/_/mariadb
+
+</TabItem>
+
 </Tabs>
 
 ### SQL Server
 
-> https://hub.docker.com/r/microsoft/windows-server
-
-Create a local instance of Microsoft SQL Server, using the `mcr.microsoft.com/mssql/server:2025-latest` image, with the following information:
-
-<details>
-
-SQL Server requires complex password usage, so we cannot use the simple `123456` as our default SA password.
-
-* Container name: `sqlserver`
-
-* Root user: `sa`
-
-* Password: `123456Aa@`
-
-* Initial database: `master`
-
-* Exposed port: `1433`
-
-* Volume: `sqlserver-volume`
-
-</details>
+Create a local instance of Microsoft SQL Server, using the `mcr.microsoft.com/mssql/server:2025-latest` image:
 
 <Tabs>
 
@@ -172,29 +160,35 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+SQL Server requires complex password usage, so we cannot use the simple `123456` as our default SA password.
+
+* Container name: `sqlserver`
+
+* Root user: `sa`
+
+* Password: `123456Aa@`
+
+* Initial database: `master`
+
+* Exposed port: `1433`
+
+* Volume: `sqlserver-volume`
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/r/microsoft/windows-server
+
+</TabItem>
+
 </Tabs>
 
 ### PostgreSQL
 
-> https://hub.docker.com/_/postgres
-
-Create a local instance of PostgreSQL, using the `postgres:alpine` image, with the following information:
-
-<details>
-
-* Container name: `postgresql`
-
-* Root user: `postgres`
-
-* Password: `123456`
-
-* Initial database: `mydatabase`
-
-* Exposed port: `5432`
-
-* Volume: `postgresql-volume`
-
-</details>
+Create a local instance of PostgreSQL, using the `postgres:alpine` image:
 
 <Tabs>
 
@@ -222,29 +216,33 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `postgresql`
+
+* Root user: `postgres`
+
+* Password: `123456`
+
+* Initial database: `mydatabase`
+
+* Exposed port: `5432`
+
+* Volume: `postgresql-volume`
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/_/postgres
+
+</TabItem>
+
 </Tabs>
 
 ### Oracle Database
 
-> https://hub.docker.com/r/gvenzl/oracle-free
-
-Create a local instance of Oracle Database, using the `gvenzl/oracle-free:slim-faststart` image, with the following information:
-
-<details>
-
-* Container name: `oracledb`
-
-* Root user: `SYSTEM`
-
-* Password: `123456`
-
-* Default schema: `FREE`
-
-* Exposed port: `1521`
-
-* Volume: `oracledb-volume`
-
-</details>
+Create a local instance of Oracle Database, using the `gvenzl/oracle-free:slim-faststart` image:
 
 <Tabs>
 
@@ -270,23 +268,35 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `oracledb`
+
+* Root user: `SYSTEM`
+
+* Password: `123456`
+
+* Default schema: `FREE`
+
+* Exposed port: `1521`
+
+* Volume: `oracledb-volume`
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/r/gvenzl/oracle-free
+
+</TabItem>
+
 </Tabs>
 
 ## Message Queues/Brokers
 
 ### Apache Kafka (Without Zookeeper)
 
-> https://hub.docker.com/r/bashj79/kafka-kraft
-
-Create a local instance of Apache Kafka, using the `bashj79/kafka-kraft:latest` image, with the following information:
-
-<details>
-
-* Container name: `kafka`
-
-* Exposed port: `9092`
-
-</details>
+Create a local instance of Apache Kafka, using the `bashj79/kafka-kraft:latest` image:
 
 <Tabs>
 
@@ -310,27 +320,25 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `kafka`
+
+* Exposed port: `9092`
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/r/bashj79/kafka-kraft
+
+</TabItem>
+
 </Tabs>
 
 ### RabbitMQ
 
-> https://hub.docker.com/_/rabbitmq
-
-Create a local instance of RabbitMQ, using the `rabbitmq:alpine` image, with the following information:
-
-<details>
-
-* Container name: `rabbitmq`
-
-* Host name: `rabbitmq-host`
-
-* Username: `rabbitmq`
-
-* Password: `123456`
-
-* Exposed ports: `5672` and `15672` (bind to `8080`)
-
-</details>
+Create a local instance of RabbitMQ, using the `rabbitmq:alpine` image:
 
 <Tabs>
 
@@ -359,25 +367,31 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `rabbitmq`
+
+* Host name: `rabbitmq-host`
+
+* Username: `rabbitmq`
+
+* Password: `123456`
+
+* Exposed ports: `5672` and `15672` (bind to `8080`)
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/_/rabbitmq
+
+</TabItem>
+
 </Tabs>
 
 ## Redis
 
-> https://hub.docker.com/_/redis
-
-Create a local instance of Redis, using the `redis:alpine` image, with the following information:
-
-<details>
-
-* Container name: `redis`
-
-* Exposed port: `6379`
-
-* Password: `123456` (use `redis-cli` and type `auth 123456` to access Redis on the command line interface)
-
-* Volume: `redis-volume`
-
-</details>
+Create a local instance of Redis, using the `redis:alpine` image:
 
 <Tabs>
 
@@ -403,31 +417,35 @@ docker run \
 
 </TabItem>
 
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `redis`
+
+* Exposed port: `6379`
+
+* Password: `123456` (use `redis-cli` and type `auth 123456` to access Redis on the command line interface)
+
+* Volume: `redis-volume`
+
+</TabItem>
+
+<TabItem value="image-reference" label="Image reference">
+
+> https://hub.docker.com/_/redis
+
+</TabItem>
+
 </Tabs>
 
 ## Keycloak
 
-> https://quay.io/repository/keycloak/keycloak
+### Image Reference
+
+https://quay.io/repository/keycloak/keycloak
 
 ### Without External Database
 
-Create a local instance of Keycloak, using the `quay.io/keycloak/keycloak:latest` image, with the following information:
-
-<details>
-
-* Container name: `keycloak`
-
-* Credentials:
-
-  * Admin username: `admin`
-  
-  * Admin password: `123456`
-
-  * Visit `localhost:8080` and use `admin`/`123456` as username and password to log in
-
-- Exposed ports: `8080` and `9000` (for health check and metrics)
-
-</details>
+Create a local instance of Keycloak, using the `quay.io/keycloak/keycloak:latest` image:
 
 <Tabs>
 
@@ -454,6 +472,22 @@ docker run \
   quay.io/keycloak/keycloak:latest \
   start-dev
 ```
+
+</TabItem>
+
+<TabItem value="connection-info" label="Connection Info">
+
+* Container name: `keycloak`
+
+* Credentials:
+
+  * Admin username: `admin`
+
+  * Admin password: `123456`
+
+  * Visit `localhost:8080` and use `admin`/`123456` as username and password to log in
+
+- Exposed ports: `8080` and `9000` (for health check and metrics)
 
 </TabItem>
 
@@ -597,15 +631,17 @@ Connection info (the same as ones defined in the section above):
 
 You can check this [sample repository](https://github.com/vulinh64/spring-boot-3-keycloak-integration) for a complete guide on how to start a Keycloak container bundled with a support PostgreSQL instance.
 
-## MinIO
+## ~~MinIO~~
 
-MinIO is now [source distributed only](https://github.com/minio/minio/issues/21647#issuecomment-3418675115) (meaning no more Docker image update).
+~~MinIO is now [source distributed only](https://github.com/minio/minio/issues/21647#issuecomment-3418675115) (meaning no more Docker image update).~~
 
-I will be working on alternative options for MinIO as S3-compatible object storage services.
+~~I will be working on alternative options for MinIO as S3-compatible object storage services.~~
 
 ## Elasticsearch
 
-> https://www.elastic.co/docs/deploy-manage/deploy/self-managed/install-elasticsearch-docker-basic
+### Image Reference
+
+https://www.elastic.co/docs/deploy-manage/deploy/self-managed/install-elasticsearch-docker-basic
 
 Create a local instance of Elasticsearch, using the `docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.1.5` image, with the following information:
 
