@@ -4,6 +4,8 @@ title: (A Christmas Special Story) How to DIY for Maven Dependency?
 authors: [ vulinh64 ]
 tags: [ java, spring boot, docker ]
 description: Embrace Zen spirit!
+thumbnail: 2025-12-24-christmas-special-diy-maven-dependency.png
+image: ./thumbnails/2025-12-24-christmas-special-diy-maven-dependency.png
 ---
 
 Or how I learned from my silly mistakes when creating myself a common Maven dependency.
