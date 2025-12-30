@@ -4,6 +4,8 @@ title: (A New Year Special Story) Java Is Pass-by-Value, No Exceptions
 authors: [ vulinh64 ]
 tags: [ java ]
 description: No other way around!
+thumbnail: 2026-01-01-new-year-special-java-pass-by-value.png
+image: ./thumbnails/2026-01-01-new-year-special-java-pass-by-value.png
 ---
 
 import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
