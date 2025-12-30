@@ -2,8 +2,8 @@
 slug: new-year-special-java-pass-by-value
 title: (A New Year Special Story) Java Is Pass-by-Value, No Exceptions
 authors: [ vulinh64 ]
-tags: [ java, spring boot, docker ]
-description: Embrace Zen spirit!
+tags: [ java ]
+description: No other way around!
 ---
 
 import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
@@ -14,7 +14,7 @@ Look, I'm just going to say it: Java is always pass-by-value. No exception. Peri
 
 Oracle said it.
 
-Sun said it.
+Sun said it, even before they got nom-nom'ed by the Oracle.`
 
 The Java creators said it.
 
@@ -22,9 +22,11 @@ José Paumard said it (check out his video below). They've said it numerous time
 
 <YoutubePlayer videoId="Qeb4UQUlINI"></YoutubePlayer>
 
-But hey, people love to say *"doubt is a part of integrity"*, so fine, let's be skeptics. We're not living in the medieval era where questioning the established doctrine gets you branded as a heretic and thrown into a dungeon (or worse, maybe forcing you to use any JDK below 8).
+But hey, people love to say *"doubt is a part of integrity"*, so fine, let's be skeptics. We're not living in the medieval era where questioning the established doctrine gets you branded as a heretic and thrown into a dungeon (or worse, maybe forcing you to use any JDK version below 8).
 
-If you don't like my tone and think I'm committing some sort of *"fallacy by appealing to authority"*, that's cool. We'll do the test ourselves. No need to take anyone's word for it.
+If you don't like my tone and think I'm committing some sort of *"fallacy by appealing to authority"* heresy, that's fine, I don't mind.
+
+We'll do the test ourselves. No need to take anyone's word for it.
 
 ## The Classic Swap Test
 
@@ -60,7 +62,7 @@ void main() {
 
 ## The Object Test
 
-Fine, here's your kitchen sink solution:
+Well, let's test with actual objects this time:
 
 ```java
 public void increaseAge(Cat cat) {
@@ -74,7 +76,9 @@ void main() {
 }
 ```
 
-You think your `cat` you passed in will age up, but nope. Your cat will still be one year earlier than your intended behavior. Sorry, not sorry.
+You think your `cat` you passed in will age up, but nope. Your cat will still be one year earlier than your intended behavior.
+
+Hashtag `#SorryNotSorry`, oops!
 
 ## So What Are "Values" in Java?
 
@@ -106,15 +110,15 @@ Yes, this is also one source of confusion.
 
 This is like saying *"execute order #123 (increase age) at the address `0x12345678`"*. Yes, we are working with the same reference. Of course, what we issue to said reference will be reflected back to the cat object in heap too.
 
-Or in short: this is called internal state mutation. Same reference, same object. Java doesn't allow you to change the reference (in this case, our VALUE) by reassignment in a method, but it sure as heck lets you mutate what that reference points to.
+Or in short: this is called ***internal state mutation***. Same reference, same object. Java doesn't allow you to change the reference (in this case, our VALUE) by reassignment in a method, but it sure as heck lets you mutate what that reference points to.
 
 ## The Naming Problem
 
-And yes, the name *"reference"* is confusing. The correct term could have been *"managed pointer"* or *"reference-as-value"*, or anything else that makes more sense than *"reference"*. Well, I'm no expert in naming things (and naming is hard, we all know that).
+And yes, the name *"reference"* is confusing. The correct term could have been *"managed pointer"* or *"reference-as-value"*, or anything else that makes more sense than *"reference"*. Well, I'm no expert in naming things (and naming is hard, we all know that). Still, think of this problem like a shorthand marketing campaign by Java Team or so, back then in 1995, I have no idea. 😅
 
 ## TL;DR
 
-Java is strictly passed by value. If you can believe the Java ~~God~~ creators who literally set the rules of the language, then who else would you believe?
+Java is strictly passed by value. If you can't believe the Java ~~Gods~~ creators who literally set the rules of the language, then who else would you believe? Some angry comments on a random StackOverflow post, from self-proclaimed "experts", claiming otherwise?
 
 Just know that Java has made everything so much simpler by not using C/C++ pointers, and this pass-by-value design is also a blessing (because sometimes your code works without you even knowing why and how, and that's okay).
 
