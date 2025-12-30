@@ -16,9 +16,9 @@ Look, I'm just going to say it: Java is always pass-by-value. No exception. Peri
 
 Oracle said it.
 
-Sun said it, even before they got nom-nom'ed by the Oracle.`
+Sun said it, even before they got *nom-nom'ed* by the Oracle.
 
-The Java creators said it.
+The Java creators said it themselves.
 
 José Paumard said it (check out his video below). They've said it numerous times, in fact.
 
