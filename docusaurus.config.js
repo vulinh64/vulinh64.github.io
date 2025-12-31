@@ -98,7 +98,7 @@ const config = {
             },
             blog: {
                 sidebar: {
-                    groupByYear: false
+                    groupByYear: true
                 }
             },
             announcementBar: {
