@@ -4,6 +4,8 @@ title: What Is Synchronized In Java?
 authors: [ vulinh64 ]
 tags: [ java ]
 description: Fast or slow?
+image: ./thumbnails/2026-01-02-what-is-synchronized.png
+thumbnail: 2026-01-02-what-is-synchronized.png
 ---
 
 import Tabs from '@theme/Tabs';
@@ -62,6 +64,8 @@ public class ExclusiveClub {
   }
 }
 ```
+
+![Bouncers engage!](./img/2026-01-02-img-0001.png "Bouncers engage!")
 
 ## Funny Times!
 
