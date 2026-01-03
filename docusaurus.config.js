@@ -115,12 +115,12 @@ const config = {
                 name: 'keywords',
                 content: 'java, blog, programming, tech, spring boot'
             }],
-            image: 'https://avatars.githubusercontent.com/u/35946488',
+            image: 'img/icon.png',
             navbar: {
                 title: 'Vu Linh Java',
                 logo: {
                     alt: 'corrupted-sekiro',
-                    src: 'https://avatars.githubusercontent.com/u/35946488',
+                    src: 'img/icon.png',
                 },
                 items: [
                     {
