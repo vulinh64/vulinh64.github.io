@@ -29,9 +29,6 @@
     opacity: 1;
     transform: translateX(0);
     position: relative;
-    user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
 }
 
 .slideLeft {
