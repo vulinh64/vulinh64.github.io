@@ -7,21 +7,7 @@ import FeatureArticles from "../components/FeatureArticles";
 import styles from "./index.module.css";
 import {JSX} from "react";
 import {currentFeatureArticles} from "../components/FeatureArticles/feature-articles";
-
-interface SiteConfig {
-    title: string;
-    tagline: string;
-}
-
-interface DocusaurusContext {
-    siteConfig: SiteConfig;
-}
-
-interface FeatureArticle {
-    title: string;
-    excerpt: string;
-    slug: string;
-}
+import {DocusaurusContext} from "@docusaurus/types";
 
 function HomepageHeader(): JSX.Element {
     const {siteConfig}: DocusaurusContext = useDocusaurusContext();
