@@ -264,71 +264,7 @@ Remember:
 
 ## Favor Unambiguous Date Time Units
 
-Speaking of consistency:
-
-:::tip[TL;DR]
-
-Let your backend use a single unambiguous time unit, and let clients decide how to parse them in their timezone. It's time for the frontend to at least share some burden to earn their keeps.
-
-:::
-
-When designing a distributed system with multiple services that need to handle time, you'll quickly discover that date time is the software equivalent of that one friend who seems simple on the surface but turns into an absolute nightmare after a few drinks.
-
-The good news? You can avoid most of this drama by embracing a beautifully simple philosophy: stick to unambiguous datetime units and stop overthinking it.
-
-For 99% of applications, you only need two datetime types in your arsenal: `LocalDateTime` and `Instant`. That's it. Forget about the bewildering zoo of timezone-aware classes that promise "flexibility" but actually deliver the coding equivalent of a root canal.
-
-### `LocalDateTime`, The Chill Option
-
-`LocalDateTime` is like that reliable friend who shows up on time and doesn't cause drama. It represents date and time without any timezone baggage: no political opinions, no geographical tantrums, just pure temporal bliss.
-
-If you're building a system for users who mostly live in the same general area (and your servers aren't running on some cursed timezone configuration that makes no sense), `LocalDateTime` is probably all you need. It's straightforward, predictable, and won't wake you up at 3 AM because someone in Germany decided they don't believe in daylight saving time.
-
-Think about it: if your users are all hanging out in roughly the same timezone and your business logic doesn't need to coordinate a UN summit across continents, why add complexity that'll make future you want to travel back in time and slap current you?
-
-### `Instant`, The Absolute Unit
-
-When you need to go global and deal with the beautiful chaos of international timezones, `Instant` becomes your new best friend. This thing represents an absolute point in time at UTC +0, and it gives exactly zero damns about political shenanigans or geographical weirdness. 
-
-No more dealing with daylight saving time transitions that somehow manage to create duplicate hours or black holes in your timeline. No more navigating brilliant policies like China's "*let's make a continent-sized country use one timezone because why not?*" decision. `Instant` doesn't care if some politician wakes up tomorrow and decides to shift their country's clocks by 37 minutes just to mess with developers. An absolute instant remains the undisputed champion of "*I don't have time for your nonsense.*" 
-
-~~Seriously, whoever thought of DST just to save a few hours of sunlight should be sent to the North Pole in summer, or the South Pole in winter, to enjoy uninterruptible light for 6 months. It's reasonable to not make timezone boundaries align perfectly in parallel lines to match geographical realities, but it's absolute heresy to mess with time itself just because the Earth tilts.~~
-
-When you store everything as `Instant`, you're working with an immutable point of truth that stays rock-solid regardless of human stupidity, seasonal mood swings, or regional preferences. Think of it this way: `LocalDateTime` is your local objective reality, and `Instant` is the world's objective reality. Hell, it could even represent the entire universe from a fixed point. Objective realities don't care whether you believe in them or not. Save the timezone conversions for the presentation layer, and let the frontend deal with making things pretty for users.
-
-### When You Shouldn't Ignore the Underrated Weirdos
-
-Now, before you go deleting every `OffsetDateTime` and `ZonedDateTime` from your codebase in a fit of minimalist rage, let me save you from some future pain. There are actually times when these more complex types earn their keep.
-
-* `OffsetDateTime` is surprisingly useful when you're dealing with database storage that needs to preserve exact offset information, or when you're building network protocols where precision matters. It's also your friend when you need to do date arithmetic while keeping track of the original offset context, something `Instant` can't help you with since it only knows about epoch seconds and couldn't care less about your need to add three hours and twenty-seven minutes.
-
-* `ZonedDateTime` steps up when you're building business apps that actually need to handle the messy reality of timezone politics. Appointment scheduling across timezones? Financial trading systems that must respect market hours in specific regions? Date math that needs to survive DST transitions without breaking? This is `ZonedDateTime`'s moment to shine.
-
-The trick is knowing when you actually need these capabilities versus when you're just adding complexity because it feels "more complete" or "future-proof." Spoiler alert: most of the time, you don't need them.
-
-<details>
-
-<summary>⚠️ A Word of Caution Regarding `ZonedDateTime` Support</summary>
-
-However, if you're using JPA for persistence, here's the plot twist: `ZonedDateTime` is NOT officially supported by the JPA specification (including JPA 2.2, 3.0, and 3.1). The spec only includes `LocalDate`, `LocalDateTime`, `LocalTime`, `OffsetTime`, and `OffsetDateTime` as standard temporal types.
-
-While Hibernate (the most popular JPA implementation) does provide proprietary support for `ZonedDateTime`, it comes with a significant gotcha: it loses the timezone information when saving to the database, converting the `ZonedDateTime` to your JVM's local timezone and storing it as a plain `TIMESTAMP`. This means that beautiful timezone context you carefully preserved? Gone. Vanished. Sacrificed on the altar of database compatibility.
-
-The pragmatic approach: Use `ZonedDateTime` freely in your request/response DTOs and business logic where it makes sense, but convert to `Instant` or `OffsetDateTime` (which IS in the JPA spec) for your JPA entities. This requires a bit of manual conversion in your service layer, but it beats the alternative of silently losing timezone data or discovering your code doesn't work with other JPA implementations.
-
-If you're on Hibernate 6+, you can use the `@TimeZoneStorage` annotation to control timezone handling, but remember this is a Hibernate-specific extension that won't work if you ever switch JPA providers.
-
-References:
-
-* [How To Map The Date And Time API with JPA 2.2](https://thorben-janssen.com/map-date-time-api-jpa-2-2/)
-
-* [What’s new in JPA 2.2 – Java 8 Date and Time Types](https://vladmihalcea.com/whats-new-in-jpa-2-2-java-8-date-and-time-types/)
-
-</details>
-
-#### Example
-
-Your manager decides that some critical event absolutely must happen at 3 PM in Germany on October 5th (Oktoberfest), "because reasons." In this case, `ZonedDateTime` will be way more convenient than trying to figure out what absolute `Instant` corresponds to "*3 PM German time on that specific date with all the DST nonsense factored in.*" Sometimes business requirements are tied to local human time, not cosmic absolute time.
+The full article is [here](./2026-02-17-no-time-for-ambiguity.md), you can take a look, then return back.
 
 ### The Bottom Line
 
