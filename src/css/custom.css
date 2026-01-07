@@ -38,9 +38,7 @@
     --ifm-color-primary-lightest: #3cad6e;
     --ifm-code-font-size: 90%;
     --docusaurus-highlighted-code-line-bg: rgba(192, 192, 192, 0.1);
-    --admonition-alpha-intensity: 10%;
-    --admonition-alpha-less-intensity: 20%;
-    --details-border-color: rgb(76, 179, 212);
+    --details-border-color: var(--ifm-toc-border-color);
     --token-interface-color: #3D8F7F;
     --token-class-color: #39C8B0;
     --token-keyword-color: #499CD5;
@@ -48,7 +46,7 @@
     --token-punctuation-color: #D4D4D4;
     --code-font-family: 'JetBrains Mono', Consolas, 'SF Mono', 'Liberation Mono', 'Courier New', 'serif';
     --ifm-font-family-base: "Noto Sans", "Open Sans", "Noto Color Emoji", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    --admonition-margin-vertical: 2em;
+    --admonition-margin-vertical: 1em;
     --border-very-thin: 0.001em;
     --ifm-container-width-xl: 1500px;
 }
@@ -74,10 +72,15 @@ pre code {
 }
 
 blockquote {
-    border-left: 0.5em solid var(--ifm-color-primary-darkest);
-    padding: 1em 1em 1em 1.5em;
-    margin: 1em 0;
-    background-color: rgba(100, 100, 100, 0.1);
+    border-left: 0.5em solid var(--ifm-color-primary-darker);
+    border-top: var(--border-very-thin) solid var(--ifm-toc-border-color);
+    border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color);
+    border-right: var(--border-very-thin) solid var(--ifm-toc-border-color);
+    padding: 1em 1em 1em 1.2em;
+}
+
+blockquote:hover {
+    border-color: var(--ifm-color-primary-darker);
 }
 
 [data-theme='dark'] {
@@ -95,31 +98,31 @@ article details {
 }
 
 .alert--secondary {
-    background-color: rgba(47, 47, 47, var(--admonition-alpha-intensity));
+    background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--warning {
-    background-color: rgba(45, 30, 0, var(--admonition-alpha-intensity));
+    background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--info {
-    background-color: rgba(19, 60, 71, var(--admonition-alpha-intensity));
+    background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--danger {
-    background-color: rgba(75, 17, 21, var(--admonition-alpha-less-intensity));
+    background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--success {
-    background-color: rgba(0, 49, 0, var(--admonition-alpha-intensity));
+    background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
