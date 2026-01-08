@@ -4,6 +4,8 @@ title: 'No "Time" for Ambiguity'
 authors: [ vulinh64 ]
 tags: [ java ]
 description: DST madness incoming!
+image: ./thumbnails/2026-02-17-no-time-for-ambiguity.png
+thumbnail: 2026-02-17-no-time-for-ambiguity.png
 ---
 
 Listen, I'm just going to say it: dealing with date and time in programming is [***one of the circles of hell Dante forgot to mention***](https://en.wikipedia.org/wiki/Inferno_(Dante)). It's right there between "*people who talk in movie theaters*" and "*folks who don't use version control.*"
