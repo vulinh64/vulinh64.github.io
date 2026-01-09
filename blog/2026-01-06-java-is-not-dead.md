@@ -4,6 +4,8 @@ title: Java Is Not Dead!
 authors: [ vulinh64 ]
 tags: [ java ]
 description: Undead
+image: ./thumbnails/2026-01-06-java-is-not-dead.png
+thumbnail: 2026-01-06-java-is-not-dead.png
 ---
 
 So, Java is dead. Again. For the 4996th time this year, apparently.
