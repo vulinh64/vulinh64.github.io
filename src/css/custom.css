@@ -49,6 +49,7 @@
     --admonition-margin-vertical: 1em;
     --border-very-thin: 0.001em;
     --ifm-container-width-xl: 1500px;
+    --border-hover-transition: border-color 1s ease;
 }
 
 p, li {
@@ -77,6 +78,7 @@ blockquote {
     border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color);
     border-right: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding: 1em 1em 1em 1.2em;
+    transition: var(--border-hover-transition);
 }
 
 blockquote:hover {
@@ -98,39 +100,60 @@ article details {
 }
 
 .alert--secondary {
+    color: var(--ifm-font-color-base);
     background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--warning {
+    color: var(--ifm-font-color-base);
     background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--info {
+    color: var(--ifm-font-color-base);
     background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--danger {
+    color: var(--ifm-font-color-base);
     background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
 }
 
 .alert--success {
+    color: var(--ifm-font-color-base);
     background-color: transparent;
     margin-top: var(--admonition-margin-vertical);
     margin-bottom: var(--admonition-margin-vertical);
+}
+
+[class*="alert--"] {
+    transition: var(--border-hover-transition);
+}
+
+[class*="alert--"]:hover {
+    border-top-color: var(--ifm-alert-border-color);
+    border-right-color: var(--ifm-alert-border-color);
+    border-bottom-color: var(--ifm-alert-border-color);
+}
+
+.theme-admonition:hover [class*="admonitionHeading"] {
+    border-bottom-color: var(--ifm-alert-border-color);
+    transition: var(--border-hover-transition);
 }
 
 [class*="admonitionHeading"] {
     padding-bottom: 0.5em;
     border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color);
     margin-bottom: 1.2em;
+    transition: var(--border-hover-transition);
 }
 
 [class*="admonitionIcon"] {
@@ -221,15 +244,6 @@ h2 {
     padding-bottom: 2em;
 }
 
-details {
-    border: var(--border-very-thin) solid var(--ifm-toc-border-color);
-    background-color: transparent !important;
-}
-
-details [class*="collapsibleContent"] {
-    border-top: var(--border-very-thin) solid var(--ifm-toc-border-color);
-}
-
 .theme-admonition {
     border-top: var(--border-very-thin) solid var(--ifm-toc-border-color);
     border-right: var(--border-very-thin) solid var(--ifm-toc-border-color);
@@ -244,8 +258,38 @@ details [class*="collapsibleContent"] {
 
 .tabs-container:hover {
     border: var(--border-very-thin) solid var(--ifm-color-primary-darkest);
+    transition: var(--border-hover-transition);
 }
 
 .tabs-container details {
     border: 0;
+}
+
+details {
+    color: var(--ifm-font-color-base);
+    border: var(--border-very-thin) solid var(--ifm-toc-border-color);
+    background-color: transparent !important;
+}
+
+details [class*="collapsibleContent"] {
+    border-top: var(--border-very-thin) solid var(--ifm-toc-border-color);
+    transition: var(--border-hover-transition);
+}
+
+details:hover {
+    border-color: var(--ifm-color-primary-darkest) !important;
+}
+
+details:hover [class*="collapsibleContent"] {
+    border-top-color: var(--ifm-color-primary-darkest) !important;
+    transition: var(--border-hover-transition);
+}
+
+details a {
+    color: var(--ifm-color-primary);
+    text-decoration: none;
+}
+
+details a:hover {
+    text-decoration: underline;
 }
