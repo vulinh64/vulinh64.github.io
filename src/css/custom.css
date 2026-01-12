@@ -203,6 +203,11 @@ h3 a[target='_blank']:before {
 h2 {
     border-bottom: var(--border-very-thin) solid var(--ifm-toc-border-color);
     padding-bottom: 0.5em;
+    transition: var(--border-hover-transition);
+}
+
+h2:hover {
+    border-bottom-color: var(--ifm-color-primary-darkest);
 }
 
 /* Stupid hack */
