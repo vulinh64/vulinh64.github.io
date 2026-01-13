@@ -448,9 +448,9 @@ So you're sitting there, proud of yourself, thinking *"I'll use varargs to make 
 
 ```java
 public void processItems(String... items) {
-    for (String item : items) {
-        System.out.println("Processing: " + item);
-    }
+  for (String item : items) {
+    System.out.println("Processing: " + item);
+  }
 }
 ```
 
@@ -466,13 +466,13 @@ Here's the trick: craft another overload with just one parameter.
 
 ```java
 public void processItems(String item) {
-    System.out.println("Processing: " + item);
+  System.out.println("Processing: " + item);
 }
 
 public void processItems(String... items) {
-    for (String item : items) {
-        System.out.println("Processing: " + item);
-    }
+  for (String item : items) {
+    System.out.println("Processing: " + item);
+  }
 }
 ```
 
@@ -485,6 +485,264 @@ Sure, the JVM, with all its magical optimizations and runtime wizardry, might sa
 This becomes especially important if you're building something reusable. Maybe you have these cute little toy services pretending to work like microservices (we've all been there). When that one method gets called thousands of times per second, those tiny array allocations start adding up like pennies in a piggy bank, except way less fun.
 
 So yeah, add that single-parameter overload. Your future self, staring at performance metrics at 2 AM, will thank you.
+
+## Defensive to the Rescue!
+
+### Wild ~~West~~ Collections Era
+
+The era of using Stream API made people forget an era that we lived mostly with `ArrayList`, `LinkedList`, `HashSet`, `TreeMap`... you know, the classics. The good old days when we manually looped through everything like cavemen discovering fire.
+
+What does those collections and maps have in common?
+
+They are **mutable**, yep.
+
+You could poke them, prod them, add stuff, remove stuff. Total chaos, but in a fun way.
+
+### The Stream API Made Us Soft
+
+Stream operations produced mostly immutable collections, so we often didn't hear about defensive copy anymore. We got comfortable. Too comfortable. We thought we were safe.
+
+:::danger[TRAPS ALERT!!!]
+
+There are some gotchas about using collections that you need to pay attention to:
+
+<details>
+
+<summary>Differences between `.toList()` and `.collect(Collectors.toList())`</summary>
+
+`Collectors.toList()` actually returns an `ArrayList`! Dangerous if you expected this to not be modified! It's like ordering a locked safe and receiving a cardboard box instead. Use `.toList()` since Java 16, or use `Collectors.toUnmodifiableList()` instead.
+
+```java
+// The trap (brought to you by Java's commitment to backwards compatibility)
+var names = stream.collect(Collectors.toList()); 
+// Oh no, someone can do names.add("chaos")!
+
+// The safe way (Java 16+)
+var names = stream.toList(); // Actually immutable! Finally!
+
+// The verbose but safe way (for when you're still stuck in Java 8 land)
+var names = stream.collect(Collectors.toUnmodifiableList());
+```
+
+</details>
+
+<details>
+
+<summary>The Trollish `Arrays.asList` Shenanigan</summary>
+
+`Arrays.asList` is a convenient method for wrapping around an array, but that fake "ArrayList" (same name, but different FQCN) allowed modification, and it reflects back the backing array. Yikes! It's like looking in a mirror that punches you back.
+
+```java
+var arr = new String[] {"Java", "Python", "Go"};
+var list = Arrays.asList(arr); // Looks innocent enough...
+list.set(0, "Kotlin"); // This changes arr too! Surprise!
+System.out.println(arr[0]); // Prints "Kotlin" 😱
+
+// Use List.of instead (the adult in the room)
+var safeList = List.of(arr); // Truly immutable, no tricks
+```
+
+</details>
+
+<details>
+
+<summary>`Collectors.groupingBy`, The Gift That Keeps On Giving (Mutability)</summary>
+
+Even some methods like `Collectors.groupingBy`, by default, don't return immutable maps. The worst of the worst: a `HashMap` of a key and an `ArrayList` value! Doubly mutable! Heresy!
+
+Also:
+
+```java
+// The backing map is still a HashMap! Got you again!
+Collectors.groupingBy(
+    keyMapper, 
+    Collectors.toUnmodifiableList());
+    
+// Collectors.toUnmodifiableMap() is still susceptible 
+// to value mutation, if the value mapper does not 
+// give an immutable collection
+// It's turtles all the way down, folks
+```
+
+</details>
+
+:::
+
+### When You Need to Go Commando with Mutable Collections
+
+But if you need to work "nakedly" with the lowest implementation of collections, like mutable `ArrayList` or rebellious `HashMap`? Defensive copy comes to the rescue!
+
+### The Problem: Shallow Immutability
+
+In Java, `final` fields are "shallowly" immutable, which means their references stay fixed, but nothing prevents some funny users to get the references and mess with the content.
+
+<Tabs>
+
+<TabItem value="raw-array" label="Raw Arrays">
+
+```java
+public class BadDataHolder {
+
+  // Being final here won't save your data from modification!
+  // It's like putting a "Do Not Touch" sign on a public buffet
+  private final String[] data;
+    
+  public BadDataHolder(String[] data) {
+    this.data = data;
+  }
+    
+  public String[] getData() {
+    // Uh oh, direct exposure! We're basically handing out the keys to the kingdom
+    return data;
+  }
+}
+
+// Meanwhile, in villain headquarters...
+var secretData = new String[] {"password123", "admin", "secret"};
+var holder = new BadDataHolder(secretData);
+var exposed = holder.getData();
+
+// The original is now compromised! *evil laughter* 😈
+exposed[0] = "HACKED";
+// Your "secure" holder just became a security theater
+```
+
+From the code above, while you cannot specify a different array, you can freely mutate it as you wish. It's like having a vault with a door that can't be replaced, but the door is wide open.
+
+</TabItem>
+
+<TabItem value="mutable-collections" label="Mutable Collections">
+
+```java
+public class BadListHolder {
+
+  // Again, this is what we called "shallowly immutable"
+  // More like "immutable in name only"
+  private final List<String> items;
+    
+  public BadListHolder(List<String> items) {
+    this.items = items;
+  }
+    
+  public List<String> getItems() {
+    // Direct reference, danger zone! Not approved!
+    return items;
+  }
+}
+
+// The chaos ensues
+var myList = new ArrayList<>(List.of("A", "B", "C"));
+var holder = new BadListHolder(myList);
+var gotcha = holder.getItems(); // Gotcha indeed
+
+// Oops! Everything's gone! *poof*
+gotcha.clear();
+// Hope you weren't attached to that data
+```
+
+`ArrayList`, `HashMap`, `TreeSet`... they are especially vulnerable to external modification. This made sense for JPA entities (where you actually want that shared reference behavior), but for most of your operations, this is not acceptable.
+
+</TabItem>
+
+</Tabs>
+
+### The Solution: Copy Everything Like You're Being Paranoid
+
+Solution? Create a wrapper around the field you wish to return, also from the input, if you feel extra cautious.
+
+<Tabs>
+
+<TabItem value="defensive-arrays" label="Defensive Array Copy"> 
+
+```java
+public class GoodDataHolder {
+
+  private final String[] data;
+    
+  public GoodDataHolder(String[] data) {
+    // Defensive copy on input
+    // Trust no one, not even the constructor caller
+    this.data = new String[data.length];
+    System.arraycopy(data, 0, this.data, 0, data.length);
+  }
+    
+  public String[] getData() {
+    // Defensive copy on output
+    // Still trusting no one, good policy
+    var copy = new String[data.length];
+    
+    // Here's YOUR copy, go wild with it
+    System.arraycopy(data, 0, copy, 0, data.length);
+    return copy;
+  }
+}
+```
+
+</TabItem>
+
+<TabItem value="immutable-list" label="Immutable Lists">
+
+```java
+public class GoodListHolder {
+
+  private final List<String> items;
+    
+  public GoodListHolder(List<String> items) {
+    // Defensive copy on input
+    // Safe even with immutable inputs
+    // This is the "measure twice, cut once" of programming
+    this.items = List.copyOf(items);
+  }
+    
+  public List<String> getItems() {
+    // Already immutable, but you can do List.copyOf again if paranoid
+    // And hey, paranoia is just good planning in this case
+    return items;
+  }
+}
+```
+
+</TabItem>
+
+<TabItem value="set-map" label="Sets and Maps Examples">
+
+```java
+
+// For Sets and Maps (same protective energy)
+var safeSet = Set.copyOf(originalSet); // Untouchable!
+var safeMap = Map.copyOf(originalMap); // Also untouchable!
+```
+
+</TabItem>
+
+</Tabs>
+
+They can retrieve a copy of original content and do whatever they want with it, the original remained intact. Problem solved! You can sleep peacefully at night.
+
+:::tip
+
+However, you can relax this rule if you are passing parameters formed from immutable factory method itself. `List.of()`? Go with the flow. `Map.ofEntries()`? Go wild, never worry.
+
+Still, `List.copyOf` and others are very smart: they will return the immutable collection itself if you pass an immutable collection as parameter, so... safer than sorry, I guess?
+
+```java
+var immutable = List.of("A", "B", "C");
+var copy = List.copyOf(immutable); 
+// copy == immutable (same reference!), 
+// because it's already immutable
+// Java being smart for once! It won't waste time 
+// copying what's already safe, thank you Brian Goetz
+```
+
+:::
+
+### The Price of Safety
+
+This will indeed incur overheads, but perhaps this is a price to pay for data safety. Or better yet, favor immutable collection types in place of raw arrays if possible. Thanks to `List.copyOf` and its gang's smart decision, the overhead is minimal when you're already working with immutable collections.
+
+You traded some overhead (and maybe some oopsie `UnsupportedOperationException` when someone tries to modify your immutable collections). In return, you got data integrity, thread safety, better coding experience, and performance due to constant folding, and many more. Small price, big gain!
+
+Your data is worth more than a few nanoseconds of copying time. Probably. Maybe. Okay, it depends on your use case, but you get the idea!
 
 ## The End?
 
