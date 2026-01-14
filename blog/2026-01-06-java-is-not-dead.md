@@ -2,7 +2,7 @@
 slug: java-is-not-dead
 title: Java Is Not Dead!
 authors: [ vulinh64 ]
-tags: [ java ]
+tags: [ java, rant ]
 description: Undead
 image: ./thumbnails/2026-01-06-java-is-not-dead.png
 thumbnail: 2026-01-06-java-is-not-dead.png

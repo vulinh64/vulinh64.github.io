@@ -2,6 +2,7 @@ import React from 'react';
 import ReactPlayer from 'react-player';
 import styles from './styles.module.css';
 import clsx from "clsx";
+import Link from "@docusaurus/Link";
 
 // Add this to the beginning of MD file (below front matter) if you want to use this component:
 // import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
@@ -10,9 +11,10 @@ import clsx from "clsx";
 
 interface YoutubePlayerProps {
     videoId: string;
+    children?: React.ReactNode;   // ← add this
 }
 
-const YoutubePlayer: React.FC<YoutubePlayerProps> = ({videoId}) => {
+const YoutubePlayer: React.FC<YoutubePlayerProps> = ({videoId, children}) => {
     if (!videoId || typeof videoId !== 'string' || videoId.length !== 11) {
         return (
             <div className={clsx(styles.errorContainer, "margin-top--lg", "margin-bottom--lg")}>
@@ -22,7 +24,7 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = ({videoId}) => {
         );
     }
 
-    const youtubeUrl: string = `https://www.youtube.com/watch?v=${videoId}`;
+    const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
     return (
         <div className="margin-top--lg margin-bottom--lg">
@@ -35,6 +37,22 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = ({videoId}) => {
                 }}
                 src={youtubeUrl}
             />
+
+            {children && (
+                <Link
+                    to={youtubeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={clsx(
+                        styles.subtitle,
+                        "text--center",
+                        "text--italic",
+                        "noLinkDecoration" // optional class if you want to remove underline
+                    )}
+                >
+                    {children}
+                </Link>
+            )}
         </div>
     );
 };
