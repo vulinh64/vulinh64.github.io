@@ -3,3 +3,21 @@
     text-align: center;
     color: red;
 }
+
+.subtitle {
+    display: block;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--ifm-color-content);
+    cursor: pointer;
+    padding-top: 1rem;
+    text-decoration: none;
+    transition: color ease-in 0.2s;
+}
+
+/* Hover state */
+.subtitle:hover {
+    color: var(--ifm-color-primary);
+    text-decoration: none;
+    transition: color ease-out 0.2s;
+}
