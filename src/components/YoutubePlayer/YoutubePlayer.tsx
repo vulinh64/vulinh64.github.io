@@ -7,7 +7,9 @@ import Link from "@docusaurus/Link";
 // Add this to the beginning of MD file (below front matter) if you want to use this component:
 // import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 // Then add this line to the MD file wherever you want to show the youtube video:
-// <YoutubePlayer videoId="[[youtube-video-id]]"></YoutubePlayer>
+// <YoutubePlayer videoId="[[youtube-video-id]]">
+// Subtitles go here
+// </YoutubePlayer>
 
 interface YoutubePlayerProps {
     videoId: string;
