@@ -74,8 +74,8 @@ const config = {
                     onInlineAuthors: 'warn',
                     onUntruncatedBlogPosts: 'warn',
                     blogSidebarTitle: 'Recent Posts',
-                    blogSidebarCount: 12,
-                    postsPerPage: 6,
+                    blogSidebarCount: 10,
+                    postsPerPage: 10,
                 },
                 theme: {
                     customCss: './src/css/custom.css',
