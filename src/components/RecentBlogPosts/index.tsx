@@ -6,7 +6,7 @@ import CustomBlogThumbnail from "../CustomBlogThumbnail"
 
 const recentPosts = require("../../../.docusaurus/docusaurus-plugin-content-blog/default/blog-post-list-prop-default.json");
 
-const MAX_RECENT_POST: number = 6;
+const MAX_RECENT_POST: number = 10;
 
 function BlogPostItem({title, date, permalink}) {
     const formattedDate = date
@@ -61,10 +61,10 @@ export default function RecentBlogPosts() {
             </div>
             <div className="text--center margin-top--lg">
                 <Link
-                    to="/blog"
+                    to="/blog/page/2"
                     className="button button--outline button--primary button--lg"
                 >
-                    View All Posts
+                    View All Posts (Next Page)
                 </Link>
             </div>
         </section>
