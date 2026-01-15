@@ -4,6 +4,8 @@ title: Defensive Copy? What Defensive Copy?
 authors: [ vulinh64 ]
 tags: [ java ]
 description: Always be on guard!
+image: ./thumbnails/2026-01-14-defensive-copy-what-defensive-copy.png
+thumbnail: 2026-01-14-defensive-copy-what-defensive-copy.png
 ---
 
 import Tabs from '@theme/Tabs';
