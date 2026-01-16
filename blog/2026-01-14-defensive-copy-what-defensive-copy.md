@@ -126,6 +126,7 @@ public class BadDataHolder {
   private final String[] data;
     
   public BadDataHolder(String[] data) {
+    // Oops, mutations inside this class will reflect back at the source too!
     this.data = data;
   }
     
