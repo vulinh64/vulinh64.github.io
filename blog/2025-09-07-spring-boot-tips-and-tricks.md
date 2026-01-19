@@ -146,4 +146,116 @@ There are cases where you need to use a manual constructor, for example, if the 
 
 See the [full article](./2025-12-22-spring-boot-exception-handler.md) for some sweet juice!
 
-Come back and tell me how you feel!
+## Cute Annotations? Remember Where to Put It
+
+So you've started learning the magical world of Spring annotations like `@Transactional`, `@Async`, or the one that makes your cache dreams come true, `@Cacheable`? Awesome! You're living in the future now.
+
+### The Happy Path (When Everything Just Works)
+
+Under normal circumstances, you can use them like you've always done: slap together a `@Component` or `@Service` class, whip up a public method, and let other classes call it. Easy-peasy, lemon squeezy.
+
+```java
+@Service
+public class UserService {
+    
+  @Cacheable("users")
+  public User getUser(Long id) {
+    // Expensive database call here
+    // Happy database noise
+    return userRepository.findById(id);
+  }
+}
+```
+
+Life is good. Everything works. You feel like a coding wizard.
+
+### Then Reality Hits You Like a Truck
+
+But then one fateful day, you fall into one of those classic traps:
+
+* **Self-invocation** (calling the annotated method from within the same class)
+
+* Using a **private method** (because encapsulation matters, right?)
+
+* Not even putting it **in a bean** (rookie mistake)
+
+* Or committing all of them at once (absolute heresy!)
+
+Spring looks at you with disappointed eyes and says: **nope, no magic for you!**
+
+```java
+@Service
+public class OrderService {
+    
+  // This won't work! Self-invocation trap
+  public void processOrder(Order order) {
+    this.saveOrder(order); // Calling internally? No transaction!
+  }
+    
+  @Transactional
+  // Uh oh, private too? Double trouble!
+  private void saveOrder(Order order) {
+    // Angry database noise
+    orderRepository.save(order);
+  }
+}
+```
+
+### When Everything Burns
+
+Now your business logic fails spectacularly. 
+
+Your transactions don't roll back when they should. 
+
+Your cache never gets hit, turning your poor database into a punching bag with repeated calls hammering it relentlessly. 
+
+That third-party API you're calling? Yeah, you're basically DDoS-ing them now. 
+
+Your thread thinks `@Async` will save it from blocking work, but nope, it's stuck doing everything synchronously like it's 1999.
+
+Everything burns. Your throughput drops faster than you can say "throughput." Angry customer emails flood in. Your server fans spin up to jet engine levels. The cooling system maxes out. Your on-call phone starts buzzing at 2 AM. Beautiful chaos.
+
+### The Rules (Because Spring Has Standards)
+
+Those fancy annotations have specific requirements, and Spring is not messing around:
+
+* **Must be a Spring-managed bean** (obviously! And honestly, if it's not, be glad Spring Boot refuses to start instead of letting your code silently destroy the business)
+
+* **The method has to be public** (or as of Spring 6, anything that's NOT private). Otherwise, you need additional dark magic like AspectJ, and trust me, that's ugly
+
+* **If you're using interface-based proxies**, the method still needs to be public (private methods inside interfaces haven't worked since JDK 9 anyway)
+
+* **No internal invocation!** Seriously, call it from another bean or suffer
+
+```java
+// The RIGHT way
+@Service
+public class OrderService {
+    
+  private final OrderProcessor processor;
+    
+  public OrderService(OrderProcessor processor) {
+    this.processor = processor;
+  }
+    
+  public void processOrder(Order order) {
+    processor.saveOrder(order); // Call through another bean!
+  }
+}
+
+@Component
+public class OrderProcessor {
+    
+  @Transactional
+  public void saveOrder(Order order) {
+    // Happy proxy noise
+    orderRepository.save(order);
+  }
+}
+```
+
+### One Last Thing
+
+This applies to ANY custom annotations you might create using the power of AOP. Don't think you can outsmart the proxy gods. They're watching. They're always watching.
+
+Now go forth and annotate responsibly!
