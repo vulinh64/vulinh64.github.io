@@ -91,7 +91,7 @@ blockquote:hover,
 h2:hover,
 .tabs-container:hover,
 details:hover {
-    border-color: var(--ifm-color-primary-darkest);
+    border-color: var(--ifm-color-primary) !important;
 }
 
 [data-theme='dark'] {
@@ -250,7 +250,7 @@ details [class*="collapsibleContent"] {
 }
 
 details:hover [class*="collapsibleContent"] {
-    border-top-color: var(--ifm-color-primary-darkest) !important;
+    border-top-color: var(--ifm-color-primary) !important;
     transition: var(--border-hover-transition);
 }
 
