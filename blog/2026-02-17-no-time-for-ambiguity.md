@@ -8,9 +8,32 @@ image: ./thumbnails/2026-02-17-no-time-for-ambiguity.png
 thumbnail: 2026-02-17-no-time-for-ambiguity.png
 ---
 
+import { CJK } from '@site/src/components/CJK/cjk.tsx';
+import { XCJKB } from '@site/src/components/CJK/cjk-block.tsx';
+
 Listen, I'm just going to say it: dealing with date and time in programming is [***one of the circles of hell Dante forgot to mention***](https://en.wikipedia.org/wiki/Inferno_(Dante)). It's right there between "*people who talk in movie theaters*" and "*folks who don't use version control.*"
 
 <!-- truncate -->
+
+<details>
+
+<XCJKB>
+
+皆さん、こんばんは
+
+この一年、いかがお過ごしでしたか。
+
+多くの成果に恵まれた一年でしたか。それとも、困難と向き合う一年でしたか。
+
+どのような一年であったとしても、今この瞬間、旧年から新年へと移り変わるこの時に、ほんのひととき、悲しみや苦労を忘れましょう。
+
+グラスを掲げ、共に歌い、新年を祝いましょう。
+
+明けましておめでとうございます！
+
+</XCJKB>
+
+</details>
 
 ## The Earth Is Big
 
@@ -32,7 +55,7 @@ Then you have China, which geographically spans about 4 or 5 time zones but poli
 
 Oh, you thought we were done?
 
-We haven't even talked about the fact that [Thailand uses a Buddhist calendar](https://en.wikipedia.org/wiki/Thai_calendar); or [Japan has its Japanese era name system](https://en.wikipedia.org/wiki/Japanese_era_name) (nengō - 年号) tied to imperial reigns; or half of East Asia (Vietnam, China, Korea) runs [lunar calendars](https://en.wikipedia.org/wiki/Lunisolar_calendar) in parallel with the [Gregorian one we use every day](https://en.wikipedia.org/wiki/Gregorian_calendar).
+We haven't even talked about the fact that [Thailand uses a Buddhist calendar](https://en.wikipedia.org/wiki/Thai_calendar); or [Japan has its Japanese era name system](https://en.wikipedia.org/wiki/Japanese_era_name) (nengō - <CJK>年号</CJK>) tied to imperial reigns; or half of East Asia (Vietnam, China, Korea) runs [lunar calendars](https://en.wikipedia.org/wiki/Lunisolar_calendar) in parallel with the [Gregorian one we use every day](https://en.wikipedia.org/wiki/Gregorian_calendar).
 
 And even among countries using lunar calendars, there are subtle differences: Vietnam and China occasionally celebrate Lunar New Year on different dates due to time zone differences, with a notable example in 1985 when Vietnam celebrated a month before China.
 

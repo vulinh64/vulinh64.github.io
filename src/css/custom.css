@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 @font-face {
+    font-family: 'DFKai-SB';
+    src: url('/fonts/kaiu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
     font-family: 'JetBrains Mono';
     src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
     font-weight: 400;
