@@ -9,31 +9,10 @@ thumbnail: 2026-02-17-no-time-for-ambiguity.png
 ---
 
 import { CJK } from '@site/src/components/CJK/cjk.tsx';
-import { XCJKB } from '@site/src/components/CJK/cjk-block.tsx';
 
 Listen, I'm just going to say it: dealing with date and time in programming is [***one of the circles of hell Dante forgot to mention***](https://en.wikipedia.org/wiki/Inferno_(Dante)). It's right there between "*people who talk in movie theaters*" and "*folks who don't use version control.*"
 
 <!-- truncate -->
-
-<details>
-
-<XCJKB>
-
-皆さん、こんばんは
-
-この一年、いかがお過ごしでしたか。
-
-多くの成果に恵まれた一年でしたか。それとも、困難と向き合う一年でしたか。
-
-どのような一年であったとしても、今この瞬間、旧年から新年へと移り変わるこの時に、ほんのひととき、悲しみや苦労を忘れましょう。
-
-グラスを掲げ、共に歌い、新年を祝いましょう。
-
-明けましておめでとうございます！
-
-</XCJKB>
-
-</details>
 
 ## The Earth Is Big
 
@@ -67,19 +46,19 @@ And let's not forget that Russia used the old [Julian calendar](https://en.wikip
 
 <summary>When Controlling Time Meant Winning Wars</summary>
 
-Here's a fun historical tidbit about the power of calendar manipulation: Julius Caesar (the creator of the Julian calendar) wasn't just a military genius, he was also the [Pontifex Maximus (Chief High Priest)](https://en.wikipedia.org/wiki/Pontifex_maximus) of Rome, which meant he controlled time itself, ***literally***. The Pontifex Maximus had the power to decide when intercalary months would be added to the Roman calendar, and since these positions were often held by politicians, the calendar became a political tool: a Pontifex could lengthen a year when he or his allies were in office, or refuse to add days when opponents held power.
+Here's a fun historical tidbit about the power of calendar manipulation: Julius Caesar (yes, *the* Caesar) wasn't just a military genius—he was also the [Pontifex Maximus (Chief High Priest)](https://en.wikipedia.org/wiki/Pontifex_maximus) of Rome. Translation? He literally controlled time itself. Like, imagine if your DevOps lead could just arbitrarily add or remove days from the calendar when it suited them. The Pontifex Maximus could decide when intercalary months got added, and since politicians held these positions, the calendar became the ultimate cheat code: lengthen the year when your buddies are in power, skip days when your enemies are running things.
 
-By 50 BC, Caesar had been so [preoccupied with his campaigns in Gaul](https://en.wikipedia.org/wiki/Gallic_Wars) and then [the civil war he caused](https://en.wikipedia.org/wiki/Caesar%27s_civil_war) that there had been only one intercalation since he became proconsul. The calendar had drifted about three months ahead of the seasons at this point.
+By 50 BC, Caesar had been so busy [conquering Gaul](https://en.wikipedia.org/wiki/Gallic_Wars) and then [starting a civil war](https://en.wikipedia.org/wiki/Caesar%27s_civil_war) that he completely forgot about his calendar maintenance duties. There had been exactly ONE intercalation since he became proconsul. The calendar had drifted three whole months ahead of reality. Oops.
 
-Here's where it gets interesting: In January 48 BC, Caesar crossed the Adriatic Sea to Greece to pursue [Pompey](https://en.wikipedia.org/wiki/Pompey). But because the Roman calendar had drifted so badly, what the calendar called "January" was actually late autumn in reality. Everyone expected Caesar to wait until spring when weather and winds would be better for crossing, because crossing in winter was extremely lethal. They were shocked when Caesar showed up in January with seven legions, taking the Pompeians completely by surprise because nobody crosses the Adriatic in "winter," except when winter isn't really winter on the actual calendar.
+Here's where it gets spicy: In January 48 BC, Caesar crosses the Adriatic Sea to chase down [Pompey](https://en.wikipedia.org/wiki/Pompey). But plot twist—because the Roman calendar was hilariously broken, "January" was actually late autumn IRL. Everyone's thinking "no way Caesar crosses in winter, that's a death wish." Then Caesar rocks up with seven legions because surprise! It's not actually winter when winter isn't really winter on your busted calendar. The Pompeians had the same reaction as a dev checking production logs at 3 AM: *complete shock and horror*.
 
-You can win battles if you can literally control what day it is. Caesar used the calendar drift (which he himself had caused by neglecting his Pontifex Maximus duties) to his strategic advantage. By the time he reformed the calendar in 46 BC, creating the Julian calendar we still use today, he'd already leveraged that chaos to become dictator of Rome.
+So Caesar literally won battles by breaking time itself. He caused the calendar chaos, then weaponized it. *Chef's kiss.* By 46 BC, he finally fixed the mess, creating the Julian calendar we still use today—but only AFTER using that chaos to become dictator of Rome.
 
-Talk about the ultimate time zone hack: ignore your calendar duties for years, let the calendar drift into chaos, use that chaos to surprise your enemies, then fix the calendar and get credit for bringing order to Rome.
+Talk about the ultimate time zone hack: break your own calendar for years, let chaos reign, surprise your enemies by showing up when the seasons don't match the dates, [then "fix" it with a 445-day Year of Confusion, or ***annus confusionis***](https://en.wikipedia.org/wiki/46_BC), and get remembered as the guy who brought order to Rome.
 
 Absolute legend.
 
-Just thank Jupiter for not having programming back then!
+Just thank Jupiter we didn't have JavaScript back then—imagine the Date() bugs!
 
 </details>
 
@@ -183,7 +162,7 @@ var instantNow = Instant.now();
 System.out.println("Instant: " + instantNow);
 
 // ZonedDateTime: for when you need timezone info
-// Perfect for user facing times!
+// Perfect for user-facing times!
 var zonedNow = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
 System.out.println("Zoned (Vietnam): " + zonedNow);
 
