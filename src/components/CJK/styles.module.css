@@ -1,0 +1,15 @@
+:root {
+    --cjk-font-family: 'DFKai-SB', system-ui, sans-serif;
+}
+
+.cjk {
+    /*noinspection CssNoGenericFontName*/
+    font-family: var(--cjk-font-family);
+}
+
+.xcjk {
+    /*noinspection CssNoGenericFontName*/
+    font-family: var(--cjk-font-family);
+    font-size: 1.5rem;
+    line-height: 2;
+}
