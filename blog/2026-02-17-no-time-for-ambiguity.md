@@ -36,7 +36,7 @@ Oh, you thought we were done?
 
 We haven't even talked about the fact that [Thailand uses a Buddhist calendar](https://en.wikipedia.org/wiki/Thai_calendar); or [Japan has its Japanese era name system](https://en.wikipedia.org/wiki/Japanese_era_name) (nengō - <CJK>年号</CJK>) tied to imperial reigns; or half of East Asia (Vietnam, China, Korea) runs [lunar calendars](https://en.wikipedia.org/wiki/Lunisolar_calendar) in parallel with the [Gregorian one we use every day](https://en.wikipedia.org/wiki/Gregorian_calendar).
 
-And even among countries using lunar calendars, there are subtle differences: Vietnam and China occasionally celebrate Lunar New Year on different dates due to time zone differences, with a notable example in 1985 when Vietnam celebrated a month before China.
+And even among countries using lunar calendars, there are subtle differences: Vietnam and China occasionally celebrate Lunar New Year on different dates, due to different calculations, with a notable example in 1985 when Vietnam celebrated a month before China (The Chinese insisted it is call Chinese New Year, but for Vietnamese, it is *Tết*).
 
 Then the Islamic countries use the [Hijri calendar](https://en.wikipedia.org/wiki/Islamic_calendar), a purely lunar calendar comprising 12 lunar months in a year of 354 or 355 days, which is why Ramadan shifts through the seasons each year.
 
@@ -112,9 +112,9 @@ Read the Date-Time API. Handle the correct timestamps, for the temporal God's sa
 
 Want to see DST chaos in action? Look at the online gaming industry, particularly games with daily login rewards.
 
-Picture this: You've been logging into your favorite mobile game every single day for 200 days straight. You're maintaining that precious login streak, collecting those daily rewards. Then DST hits. Suddenly, the "day" boundary shifts by an hour. You log in at your usual time and... nothing. You've "missed" a day even though you logged in. Streak broken. Rewards gone. Players furious.
+Picture this: You've been logging into your favorite mobile game every single day for 200 days straight. You're maintaining that precious login streak, collecting those daily rewards. Then DST hits. Suddenly, the "day" boundary shifts by an hour. What could happen?
 
-On the other hand, you might receive daily login rewards TWICE (which might be a curse disguised as a blessing)! And that forced the desperate devs to do an emergency rollback!
+Either you don't receive your daily login (yet), or you receive them twice (which might be a curse disguised as a blessing)! And that forced the desperate devs to do an emergency rollback!
 
 One example is the mobile game **Azur Lane** (**Global Server**). Initially, the game used **Pacific Standard Time** (**PST**), which observes DST. Due to various bugs involving daily logins during the time change, it was decided that the server would instead run on **Mountain Standard Time** (UTC-7). Thank you, Arizona!
 
@@ -132,11 +132,13 @@ And don't even get me started on how time zone boundaries follow geographical an
 
 <summary>Geographical Lessons Time!</summary>
 
-The worst offender has to be North America, where [time zone boundaries couldn't even stay in straight lines](http://www.physicalgeography.net/fundamentals/2c.html). Thank you, various U.S. states, for imposing your own funny thinking about which time zone is superior. Picture that proud and superior backend engineer who stored everything in UTC, while frontend developers scrambled to display times that tried to make sense of which county in Indiana decided it was Eastern Time this week.
+Picture that proud and superior backend engineer who stored everything in UTC (either a string in ISO format, or just a number that is hard to make sense, but computer loves it), while frontend developers scrambled to display times that tried to make sense of which county in Indiana decided it was Eastern Time this week.
+
+See the picture for a more complete image (pun not intended):
 
 ![Timezone Madness engages!](img/2026-02-17-img-0001.png "Timezone Madness engages")
 
-Technically, China's time zone boundaries "hug" its national borders rather than following longitude lines, but whatever. Other countries didn't buy China's "one time zone for everyone" shenanigans and went with the geographically sensible approach instead.
+China's time zone boundaries "technically" hug its national borders rather than following longitude lines, but whatever. Other countries didn't buy China's "one time zone for everyone" shenanigans and went with the geographically sensible approach instead.
 
 </details>
 
@@ -190,7 +192,9 @@ Store everything in UTC (as `Instant`), do your business logic in time zone-inde
 
 ### Instant Is Too Cold and Emotionless?
 
-I get it. Sometimes `Instant` feels too abstract, too detached from reality. You want your API requests to feel more... human. More relatable. That's where `ZonedDateTime` comes in!
+I get it. Sometimes `Instant` feels too abstract, too detached from reality. It has absolutely no idea which day, month or year it is, and also no care about what the current time is. Why? Because, in the end, the class is just with two fields `seconds` and `nanos` that don't translate well into something readable by human. A fair price to pay, for a value independent of political shenanigans.
+
+You want your API requests to feel more... human. More relatable. That's where `ZonedDateTime` comes in!
 
 <details>
 
@@ -224,6 +228,22 @@ Here's the beautiful workflow:
 ### Still Hate DST But Want Fixed Offsets?
 
 Use `OffsetDateTime`! It gives you a fixed offset from UTC without any DST nonsense. You say UTC+7, you get UTC+7. No spring forward, no fall back. Just pure, unadulterated offset.
+
+<details>
+
+<summary>`OffsetDateTime` in Action!</summary>
+
+```java
+OffsetDateTime odt = OffsetDateTime.parse("2026-02-22T15:34:12.0+08:00");
+
+// To Instant for storage
+var instant = odt.toInstant();
+
+// Prints date time at whatever zone is used by the server
+var ldt = odt.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+```
+
+</details>
 
 **But here's the catch**: If you're in western China and you insist on using UTC+5 because that's where you geographically should be, well... the Chinese government would like a word. They'll have none of your UTC+5 fantasies and will firmly remind you that ALL of China is UTC+8. Because unity. Because politics. Because reasons.
 
