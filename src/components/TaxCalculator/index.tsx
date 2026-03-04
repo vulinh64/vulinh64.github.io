@@ -11,8 +11,7 @@ interface FormData {
     dependants: number;
     onProbation: boolean;
     probationPercentage: number;
-    isNewTaxPeriodDeduction: boolean;
-    isNewTaxPeriodProgressiveLevel: boolean;
+    isNewTaxPeriod: boolean;
 }
 
 interface Errors {
@@ -34,8 +33,7 @@ export default function TaxCalculator(): JSX.Element {
         dependants: 0,
         onProbation: false,
         probationPercentage: MIN_PROBATION_PERCENTAGE,
-        isNewTaxPeriodDeduction: new Date().getFullYear() >= 2026,
-        isNewTaxPeriodProgressiveLevel: new Date() >= new Date('2026-07-01'),
+        isNewTaxPeriod: new Date().getFullYear() >= 2026
     });
     const [errors, setErrors] = useState<Errors>({});
     const [warnings, setWarnings] = useState<Warnings>({});
@@ -59,7 +57,7 @@ export default function TaxCalculator(): JSX.Element {
 
     useEffect(() => {
         setResult(null);
-    }, [formData.onProbation, formData.isNewTaxPeriodDeduction, formData.isNewTaxPeriodProgressiveLevel]);
+    }, [formData.onProbation, formData.isNewTaxPeriod]);
 
     const validateForm = (): boolean => {
         const newErrors: Errors = {};
@@ -125,8 +123,7 @@ export default function TaxCalculator(): JSX.Element {
                 parseInt(String(formData.dependants)) || 0,
                 formData.onProbation,
                 formData.onProbation ? parseFloat(formData.probationPercentage) : MAX_PROBATION_PERCENTAGE,
-                formData.isNewTaxPeriodDeduction,
-                formData.isNewTaxPeriodProgressiveLevel
+                formData.isNewTaxPeriod
             );
             setResult(result);
         }
@@ -244,14 +241,14 @@ export default function TaxCalculator(): JSX.Element {
 
                 <div className={clsx(styles.inputWrapper, "margin-top--md", "margin-bottom--md")}>
                     <fieldset className={styles.formGroup}>
-                        <legend className={styles.legend}>Kỳ tính thuế giảm trừ gia cảnh</legend>
+                        <legend className={styles.legend}>Kỳ tính thuế</legend>
                         <div className={styles.radioWrapper}>
                             <label className={styles.radioLabel}>
                                 <input
                                     type="radio"
-                                    name="isNewTaxPeriodDeduction"
+                                    name="isNewTaxPeriod"
                                     value="false"
-                                    checked={!formData.isNewTaxPeriodDeduction}
+                                    checked={!formData.isNewTaxPeriod}
                                     onChange={handleInputChange}
                                     className={styles.radio}
                                 />
@@ -260,43 +257,13 @@ export default function TaxCalculator(): JSX.Element {
                             <label className={styles.radioLabel}>
                                 <input
                                     type="radio"
-                                    name="isNewTaxPeriodDeduction"
+                                    name="isNewTaxPeriod"
                                     value="true"
-                                    checked={formData.isNewTaxPeriodDeduction}
+                                    checked={formData.isNewTaxPeriod}
                                     onChange={handleInputChange}
                                     className={styles.radio}
                                 />
                                 Từ 2026
-                            </label>
-                        </div>
-                    </fieldset>
-                </div>
-
-                <div className={clsx(styles.inputWrapper, "margin-top--md", "margin-bottom--md")}>
-                    <fieldset className={styles.formGroup}>
-                        <legend className={styles.legend}>Kỳ tính bậc thuế lũy tiến</legend>
-                        <div className={styles.radioWrapper}>
-                            <label className={styles.radioLabel}>
-                                <input
-                                    type="radio"
-                                    name="isNewTaxPeriodProgressiveLevel"
-                                    value="false"
-                                    checked={!formData.isNewTaxPeriodProgressiveLevel}
-                                    onChange={handleInputChange}
-                                    className={styles.radio}
-                                />
-                                Trước 7/2026
-                            </label>
-                            <label className={styles.radioLabel}>
-                                <input
-                                    type="radio"
-                                    name="isNewTaxPeriodProgressiveLevel"
-                                    value="true"
-                                    checked={formData.isNewTaxPeriodProgressiveLevel}
-                                    onChange={handleInputChange}
-                                    className={styles.radio}
-                                />
-                                Từ 7/2026
                             </label>
                         </div>
                     </fieldset>

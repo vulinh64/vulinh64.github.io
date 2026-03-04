@@ -134,7 +134,7 @@ Sau đó xác định bậc thuế lũy tiến của bạn, xem bảng sau:
 
 <Tabs>
 
-<TabItem value="post-2026-7" label="Từ 7/2026">
+<TabItem value="post-2026-1" label="Từ 1/2026">
 
 Nguồn: [Báo Lao động](https://laodong.vn/thoi-su/quoc-hoi-chot-phuong-an-ap-thue-35-voi-thu-nhap-tren-100-trieu-dongthang-1622972.ldo)
 
@@ -148,7 +148,7 @@ Nguồn: [Báo Lao động](https://laodong.vn/thoi-su/quoc-hoi-chot-phuong-an-a
 
 </TabItem>
 
-<TabItem value="pre-2026-7" label="Trước 7/2026">
+<TabItem value="pre-2026-1" label="Trước 1/2026">
 
 | Bậc thuế |              Thu nhập chịu thuế              | Thuế suất |
 |:--------:|:--------------------------------------------:|:---------:|
