@@ -94,11 +94,11 @@ export const TAX_LEVELS: Record<boolean, TaxLevel> = {
         },
         {
             threshold: 30_000_000,
-            rate: 0.15
+            rate: 0.10
         },
         {
             threshold: 60_000_000,
-            rate: 0.25
+            rate: 0.20
         },
         {
             threshold: 100_000_000,
