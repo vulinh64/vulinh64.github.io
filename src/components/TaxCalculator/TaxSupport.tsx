@@ -36,12 +36,8 @@ export const DEDUCTION_PER_DEPENDANT = {
 };
 
 export const PROBATION_TAX_RATE: number = 0.1;
-// TODO: update new value when the laws are finalized
-export const MINIMUM_BASIC_SALARY: number = 3450000;
-
-// TODO: update new value when the laws are finalized
+export const MINIMUM_BASIC_SALARY: number = 3700000;
 export const MAXIMUM_BASIC_SALARY: number = 46800000;
-
 export const MINIMUM_PROBATION_PERCENTAGE: number = 85;
 export const MAXIMUM_PROBATION_PERCENTAGE: number = 100;
 export const MIN_PROBATION_PERCENTAGE = 85;

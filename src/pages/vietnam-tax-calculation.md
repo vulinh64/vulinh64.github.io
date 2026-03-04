@@ -67,14 +67,16 @@ Nếu bạn đã hoàn thành thử việc và ký HĐLĐ chính thức, bạn h
 
 ## Lương Tối Thiểu
 
-Theo Nghị định số [**74/2024/NĐ-CP**](https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Nghi-dinh-74-2024-ND-CP-muc-luong-toi-thieu-lao-dong-lam-viec-theo-hop-dong-603278.aspx) ban hành ngày **30/06/2024**, mức lương tối thiểu của người lao động được tính như sau:
+~~Theo Nghị định số [**74/2024/NĐ-CP**](https://thuvienphapluat.vn/van-ban/Lao-dong-Tien-luong/Nghi-dinh-74-2024-ND-CP-muc-luong-toi-thieu-lao-dong-lam-viec-theo-hop-dong-603278.aspx) ban hành ngày **30/06/2024**, mức lương tối thiểu của người lao động được tính như sau:~~
+
+Tham khảo: [Nghị định 293/2025/NĐ-CP](https://thuvienphapluat.vn/phap-luat-doanh-nghiep/bai-viet/muc-luong-toi-thieu-vung-2026-muc-luong-co-so-2026-va-mot-so-luu-y-quan-trong-18204.html):
 
 |   Vùng   | Mức lương tối thiểu/tháng | Quy đổi ra lương/giờ | Đơn vị |
 |:--------:|:-------------------------:|:--------------------:|-------:|
-|  Vùng I  |         4.960.000         |        23.800        |    VNĐ |
-| Vùng II  |         4.410.000         |        21.200        |    VNĐ |
-| Vùng III |         3.860.000         |        18.600        |    VNĐ |
-| Vùng IV  |         3.450.000         |        16.600        |    VNĐ |
+|  Vùng I  |         5.310.000         |        25.500        |    VNĐ |
+| Vùng II  |         4.730.000         |        22.700        |    VNĐ |
+| Vùng III |         4.140.000         |        20.000        |    VNĐ |
+| Vùng IV  |         3.700.000         |        17.800        |    VNĐ |
 
 Như vậy, để đơn giản, thì công cụ tính thuế TNCN sẽ mặc định mức lương cơ bản đóng bảo hiểm **không được thấp hơn** mức cơ sở là **3.450.000** VNĐ.
 

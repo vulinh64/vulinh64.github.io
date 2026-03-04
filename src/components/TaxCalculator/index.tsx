@@ -3,7 +3,13 @@ import clsx from "clsx";
 import styles from "./TaxCalculator.module.css";
 import Link from "@docusaurus/Link";
 import {calculateVietnamTax} from "./TaxUtils";
-import {MAX_PROBATION_PERCENTAGE, MIN_PROBATION_PERCENTAGE, TaxCalculationResult} from "./TaxSupport";
+import {
+    MAX_PROBATION_PERCENTAGE,
+    MAXIMUM_BASIC_SALARY,
+    MIN_PROBATION_PERCENTAGE,
+    MINIMUM_BASIC_SALARY,
+    TaxCalculationResult
+} from "./TaxSupport";
 
 interface FormData {
     basicSalary: number;
@@ -69,10 +75,10 @@ export default function TaxCalculator(): JSX.Element {
             formData.basicSalary === ""
         ) {
             newErrors.basicSalary = "Hãy nhập số hợp lệ";
-        } else if (parseFloat(formData.basicSalary) < 3450000) {
-            newErrors.basicSalary = `Lương đóng BHXH không được thấp hơn ${3450000..toLocaleString()}`;
-        } else if (parseFloat(formData.basicSalary) > 46800000) {
-            newWarnings.basicSalary = `Mức lương đóng BH tối đa là ${46800000..toLocaleString()} VNĐ`;
+        } else if (parseFloat(formData.basicSalary) < MINIMUM_BASIC_SALARY) {
+            newErrors.basicSalary = `Lương đóng BHXH không được thấp hơn ${MINIMUM_BASIC_SALARY.toLocaleString()} VNĐ`;
+        } else if (parseFloat(formData.basicSalary) > MAXIMUM_BASIC_SALARY) {
+            newWarnings.basicSalary = `Mức lương đóng BH tối đa là ${MAXIMUM_BASIC_SALARY.toLocaleString()} VNĐ`;
         }
 
         if (
@@ -102,7 +108,7 @@ export default function TaxCalculator(): JSX.Element {
             } else {
                 const percentage = parseFloat(formData.probationPercentage);
                 if (percentage < MIN_PROBATION_PERCENTAGE || percentage > MAX_PROBATION_PERCENTAGE) {
-                    newErrors.probationPercentage = `Mức % lương thử việc là từ 85% đến 100%`;
+                    newErrors.probationPercentage = `Mức % lương thử việc là từ ${MIN_PROBATION_PERCENTAGE}% đến ${MAX_PROBATION_PERCENTAGE}%`;
                 }
             }
         }
