@@ -35,13 +35,11 @@ export const DEDUCTION_PER_DEPENDANT = {
     true: 6200000,
 };
 
-export const PROBATION_TAX_RATE: number = 0.1;
-export const MINIMUM_BASIC_SALARY: number = 3700000;
-export const MAXIMUM_BASIC_SALARY: number = 46800000;
-export const MINIMUM_PROBATION_PERCENTAGE: number = 85;
-export const MAXIMUM_PROBATION_PERCENTAGE: number = 100;
-export const MIN_PROBATION_PERCENTAGE = 85;
-export const MAX_PROBATION_PERCENTAGE = 100;
+export const PROBATION_TAX_RATE = 0.1;
+export const MINIMUM_BASIC_SALARY = 3700000;
+export const MAXIMUM_BASIC_SALARY = 46800000;
+export const MINIMUM_PROBATION_PERCENTAGE = 85;
+export const MAXIMUM_PROBATION_PERCENTAGE = 100;
 
 // @ts-ignore
 export const TAX_LEVELS: Record<boolean, TaxLevel> = {

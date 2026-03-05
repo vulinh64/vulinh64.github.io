@@ -12,6 +12,48 @@ import {
     TaxLevel
 } from "./TaxSupport";
 
+// Validation helper functions
+export const validateRequiredNumber = (
+    value: any,
+    errorMessage: string = "Hãy nhập số hợp lệ"
+): string | null => {
+    return value !== "" && value !== null && value !== undefined && !isNaN(Number(value))
+        ? null :
+        errorMessage;
+};
+
+export const validateRange = (
+    value: number,
+    min?: number,
+    max?: number,
+    minMessage?: string,
+    maxMessage?: string
+): { error?: string; warning?: string } => {
+    const result: { error?: string; warning?: string } = {};
+
+    if (min !== undefined && value < min && minMessage) {
+        result.error = minMessage;
+    }
+    if (max !== undefined && value > max && maxMessage) {
+        result.warning = maxMessage;
+    }
+
+    return result;
+};
+
+export const validateNonNegative = (value: any): string | null => {
+    const numValue = parseFloat(String(value));
+    if (!isNaN(numValue) && numValue < 0) {
+        return "Hãy nhập số hợp lệ";
+    }
+    return null;
+};
+
+export const normalizeNumber = (value: any, defaultValue: number = 0, parser: (v: string) => number = parseFloat): number => {
+    const parsed = parser(String(value));
+    return isNaN(parsed) ? defaultValue : Math.max(0, parsed);
+};
+
 // Tax calculation function
 export const calculateVietnamTax = (
     baseSalary: number,
@@ -19,10 +61,18 @@ export const calculateVietnamTax = (
     numberOfDependants: number,
     isProbation: boolean = false,
     probationPercentage: number = 100,
-    isNewTaxPeriod: boolean = true): TaxCalculationResult => {
+    isNewTaxPeriod: boolean = true,
+    otherDeduction: number = 0): TaxCalculationResult => {
     // Validation: Check if baseSalary meets minimum requirement
     if (baseSalary < MINIMUM_BASIC_SALARY) {
         throw new Error(`Base salary must be at least ${MINIMUM_BASIC_SALARY.toLocaleString()} VND`);
+    }
+
+    // Cap basic salary at MAXIMUM_BASIC_SALARY for calculations
+    const cappedBaseSalary: number = Math.min(baseSalary, MAXIMUM_BASIC_SALARY);
+
+    if (grossSalary < cappedBaseSalary) {
+        throw new Error(`Gross salary must not be smaller than base salary of ${cappedBaseSalary} VND`);
     }
 
     // Validation: Check probation percentage range
@@ -30,41 +80,37 @@ export const calculateVietnamTax = (
         throw new Error(`Probation percentage must be between ${MINIMUM_PROBATION_PERCENTAGE}% and ${MAXIMUM_PROBATION_PERCENTAGE}%`);
     }
 
-    // Cap basic salary at MAXIMUM_BASIC_SALARY for calculations
-    const cappedBaseSalary: number = Math.min(baseSalary, MAXIMUM_BASIC_SALARY);
-
     if (isProbation) {
         const probationSalary: number = grossSalary * (probationPercentage / 100);
 
         // @ts-ignore
         const taxedAmount: number = probationSalary < NON_TAXABLE_INCOME_DEDUCTION[isNewTaxPeriod]
             ? 0
-            : Math.round(probationSalary * PROBATION_TAX_RATE);
+            : probationSalary * PROBATION_TAX_RATE;
+
         const netSalary: number = probationSalary - taxedAmount;
 
         return {
             insuranceAmount: 0,
-            taxedAmount,
-            netSalary: Math.round(netSalary),
+            taxedAmount: taxedAmount,
+            netSalary: netSalary,
             isProbation: true,
-            probationSalary: Math.round(probationSalary),
-            cappedBaseSalary: Math.round(cappedBaseSalary),
+            probationSalary: probationSalary,
+            cappedBaseSalary: cappedBaseSalary,
         };
     }
 
-    const socialInsurance: number = cappedBaseSalary * INSURANCE_RATES.social;
-    const healthInsurance: number = cappedBaseSalary * INSURANCE_RATES.health;
-    const unemploymentInsurance: number = cappedBaseSalary * INSURANCE_RATES.unemployment;
-    const insuranceAmount: number =
-        socialInsurance + healthInsurance + unemploymentInsurance;
-
-    const pretaxSalary: number = grossSalary - insuranceAmount;
+    const insuranceAmount: number = cappedBaseSalary * (INSURANCE_RATES.social + INSURANCE_RATES.health + INSURANCE_RATES.unemployment);
 
     // @ts-ignore
     const dependantDeduction: number = numberOfDependants * DEDUCTION_PER_DEPENDANT[isNewTaxPeriod];
 
-    // @ts-ignore
-    let taxableIncome: number = pretaxSalary - NON_TAXABLE_INCOME_DEDUCTION[isNewTaxPeriod] - dependantDeduction;
+    let taxableIncome: number = grossSalary
+        - insuranceAmount
+        // @ts-ignore
+        - NON_TAXABLE_INCOME_DEDUCTION[isNewTaxPeriod]
+        - dependantDeduction
+        - otherDeduction;
 
     if (taxableIncome < 0) {
         taxableIncome = 0;
@@ -100,10 +146,10 @@ export const calculateVietnamTax = (
     const netSalary: number = grossSalary - insuranceAmount - taxAmount;
 
     return {
-        insuranceAmount: Math.round(insuranceAmount),
-        taxedAmount: Math.round(taxAmount),
-        netSalary: Math.round(netSalary),
+        insuranceAmount: insuranceAmount,
+        taxedAmount: taxAmount,
+        netSalary: netSalary,
         isProbation: false,
-        cappedBaseSalary: Math.round(cappedBaseSalary),
+        cappedBaseSalary: cappedBaseSalary,
     };
 };

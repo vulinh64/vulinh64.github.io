@@ -37,6 +37,10 @@
     color: var(--ifm-color-content-secondary);
 }
 
+.legendGreen {
+    color: greenyellow;
+}
+
 .input {
     width: 100%;
     border: none;

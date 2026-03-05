@@ -2,12 +2,18 @@ import React, {ChangeEvent, JSX, useEffect, useState} from "react";
 import clsx from "clsx";
 import styles from "./TaxCalculator.module.css";
 import Link from "@docusaurus/Link";
-import {calculateVietnamTax} from "./TaxUtils";
 import {
-    MAX_PROBATION_PERCENTAGE,
+    calculateVietnamTax,
+    normalizeNumber,
+    validateNonNegative,
+    validateRange,
+    validateRequiredNumber
+} from "./TaxUtils";
+import {
     MAXIMUM_BASIC_SALARY,
-    MIN_PROBATION_PERCENTAGE,
+    MAXIMUM_PROBATION_PERCENTAGE,
     MINIMUM_BASIC_SALARY,
+    MINIMUM_PROBATION_PERCENTAGE,
     TaxCalculationResult
 } from "./TaxSupport";
 
@@ -18,6 +24,7 @@ interface FormData {
     onProbation: boolean;
     probationPercentage: number;
     isNewTaxPeriod: boolean;
+    otherDeduction: number;
 }
 
 interface Errors {
@@ -38,8 +45,9 @@ export default function TaxCalculator(): JSX.Element {
         grossSalary: 0,
         dependants: 0,
         onProbation: false,
-        probationPercentage: MIN_PROBATION_PERCENTAGE,
-        isNewTaxPeriod: new Date().getFullYear() >= 2026
+        probationPercentage: MINIMUM_PROBATION_PERCENTAGE,
+        isNewTaxPeriod: new Date().getFullYear() >= 2026,
+        otherDeduction: 0
     });
     const [errors, setErrors] = useState<Errors>({});
     const [warnings, setWarnings] = useState<Warnings>({});
@@ -69,48 +77,56 @@ export default function TaxCalculator(): JSX.Element {
         const newErrors: Errors = {};
         const newWarnings: Warnings = {};
 
-        if (
-            !formData.basicSalary ||
-            isNaN(Number(formData.basicSalary)) ||
-            formData.basicSalary === ""
-        ) {
-            newErrors.basicSalary = "Hãy nhập số hợp lệ";
-        } else if (parseFloat(formData.basicSalary) < MINIMUM_BASIC_SALARY) {
-            newErrors.basicSalary = `Lương đóng BHXH không được thấp hơn ${MINIMUM_BASIC_SALARY.toLocaleString()} VNĐ`;
-        } else if (parseFloat(formData.basicSalary) > MAXIMUM_BASIC_SALARY) {
-            newWarnings.basicSalary = `Mức lương đóng BH tối đa là ${MAXIMUM_BASIC_SALARY.toLocaleString()} VNĐ`;
+        const basicSalaryError = validateRequiredNumber(formData.basicSalary, "basicSalary");
+
+        if (basicSalaryError) {
+            newErrors.basicSalary = basicSalaryError;
+        } else {
+            const rangeValidation = validateRange(
+                parseFloat(String(formData.basicSalary)),
+                MINIMUM_BASIC_SALARY,
+                MAXIMUM_BASIC_SALARY,
+                `Lương đóng BHXH không được thấp hơn ${MINIMUM_BASIC_SALARY.toLocaleString()} VNĐ`,
+                `Mức lương đóng BH tối đa là ${MAXIMUM_BASIC_SALARY.toLocaleString()} VNĐ`
+            );
+            if (rangeValidation.error) {
+                newErrors.basicSalary = rangeValidation.error;
+            }
+
+            if (rangeValidation.warning) {
+                newWarnings.basicSalary = rangeValidation.warning;
+            }
         }
 
-        if (
-            !formData.grossSalary ||
-            isNaN(Number(formData.grossSalary)) ||
-            formData.grossSalary === ""
-        ) {
-            newErrors.grossSalary = "Hãy nhập số hợp lệ";
-        } else if (
-            parseFloat(formData.grossSalary) < parseFloat(formData.basicSalary || "0")
-        ) {
-            newErrors.grossSalary =
-                "Tổng thu nhập trước thuế phải lớn hơn lương đóng BH";
+        const grossSalaryError = validateRequiredNumber(formData.grossSalary, "grossSalary");
+        if (grossSalaryError) {
+            newErrors.grossSalary = grossSalaryError;
+        } else if (parseFloat(String(formData.grossSalary)) < parseFloat(String(formData.basicSalary))) {
+            newErrors.grossSalary = "Tổng thu nhập trước thuế phải lớn hơn lương đóng BH";
         }
 
-        if (formData.dependants && parseInt(String(formData.dependants)) < 0) {
+        const dependantsError = validateNonNegative(formData.dependants);
+
+        if (dependantsError) {
             newErrors.dependants = "Số người phụ thuộc không được nhỏ hơn 0";
         }
 
         if (formData.onProbation) {
-            if (
-                !formData.probationPercentage ||
-                isNaN(Number(formData.probationPercentage)) ||
-                formData.probationPercentage === ""
-            ) {
-                newErrors.probationPercentage = "Hãy nhập số hợp lệ";
+            const probationError = validateRequiredNumber(formData.probationPercentage, "probationPercentage");
+            if (probationError) {
+                newErrors.probationPercentage = probationError;
             } else {
-                const percentage = parseFloat(formData.probationPercentage);
-                if (percentage < MIN_PROBATION_PERCENTAGE || percentage > MAX_PROBATION_PERCENTAGE) {
-                    newErrors.probationPercentage = `Mức % lương thử việc là từ ${MIN_PROBATION_PERCENTAGE}% đến ${MAX_PROBATION_PERCENTAGE}%`;
+                const percentage = parseInt(String(formData.probationPercentage));
+                if (percentage < MINIMUM_PROBATION_PERCENTAGE || percentage > MAXIMUM_PROBATION_PERCENTAGE) {
+                    newErrors.probationPercentage = `Mức % lương thử việc là từ ${MINIMUM_PROBATION_PERCENTAGE}% đến ${MAXIMUM_PROBATION_PERCENTAGE}%`;
                 }
             }
+        }
+
+        const otherDeductionError = validateNonNegative(formData.otherDeduction);
+
+        if (otherDeductionError) {
+            newErrors.otherDeduction = otherDeductionError;
         }
 
         setErrors(newErrors);
@@ -124,12 +140,13 @@ export default function TaxCalculator(): JSX.Element {
 
         if (validateForm()) {
             const result = calculateVietnamTax(
-                parseFloat(formData.basicSalary),
-                parseFloat(formData.grossSalary),
-                parseInt(String(formData.dependants)) || 0,
+                parseFloat(String(formData.basicSalary)),
+                parseFloat(String(formData.grossSalary)),
+                normalizeNumber(formData.dependants, 0, parseInt),
                 formData.onProbation,
-                formData.onProbation ? parseFloat(formData.probationPercentage) : MAX_PROBATION_PERCENTAGE,
-                formData.isNewTaxPeriod
+                formData.onProbation ? parseFloat(String(formData.probationPercentage)) : MAXIMUM_PROBATION_PERCENTAGE,
+                formData.isNewTaxPeriod,
+                normalizeNumber(formData.otherDeduction)
             );
             setResult(result);
         }
@@ -183,6 +200,27 @@ export default function TaxCalculator(): JSX.Element {
                     </fieldset>
                     {errors.grossSalary && (
                         <p className={styles.error}>{errors.grossSalary}</p>
+                    )}
+                </div>
+
+                <div className={clsx(styles.inputWrapper, "margin-top--lg", "margin-bottom--lg")}>
+                    <fieldset
+                        className={clsx(
+                            styles.formGroup,
+                            errors.otherDeduction && styles.borderRed
+                        )}
+                    >
+                        <legend className={clsx(styles.legend, styles.legendGreen)}>Phụ cấp không tính thuế</legend>
+                        <input
+                            type="number"
+                            name="otherDeduction"
+                            value={formData.otherDeduction}
+                            onChange={handleInputChange}
+                            className={inputTopBottom()}
+                        />
+                    </fieldset>
+                    {errors.otherDeduction && (
+                        <p className={styles.error}>{errors.otherDeduction}</p>
                     )}
                 </div>
 
