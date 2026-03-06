@@ -1,4 +1,4 @@
-import React, {ChangeEvent, JSX, useEffect, useState} from "react";
+import React, {ChangeEvent, JSX, useEffect, useRef, useState} from "react";
 import clsx from "clsx";
 import styles from "./TaxCalculator.module.css";
 import Link from "@docusaurus/Link";
@@ -10,39 +10,49 @@ import {
     validateRequiredNumber
 } from "./TaxUtils";
 import {
+    Errors,
+    FormData,
+    LOWEST_PROBATION_SALARY_TO_BE_TAXED,
     MAXIMUM_BASIC_SALARY,
     MAXIMUM_PROBATION_PERCENTAGE,
     MINIMUM_BASIC_SALARY,
     MINIMUM_PROBATION_PERCENTAGE,
-    TaxCalculationResult
+    TaxCalculationResult,
+    Warnings
 } from "./TaxSupport";
-
-interface FormData {
-    basicSalary: number;
-    grossSalary: number;
-    dependants: number;
-    onProbation: boolean;
-    probationPercentage: number;
-    isNewTaxPeriod: boolean;
-    otherDeduction: number;
-}
-
-interface Errors {
-    [key: string]: string;
-}
-
-interface Warnings {
-    [key: string]: string;
-}
 
 function inputTopBottom() {
     return clsx(styles.input, "margin-bottom--xs", "margin-bottom--xs");
 }
 
+const EXIT_DURATION = 450;
+const ENTER_DURATION = 500;
+
+type DisplayMode = "normal" | "probation";
+type AnimState = "idle" | "exiting" | "entering";
+
+function formatNumber(value: number | string): string {
+    if (value === "" || value === null || value === undefined) {
+        return "";
+    }
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    if (isNaN(num)) {
+        return "";
+    }
+    return num.toLocaleString();
+}
+
+function parseFormattedNumber(value: string): number {
+    if (!value) return 0;
+    // Remove all non-digit characters except decimal separator
+    const cleaned = value.replace(/[^\d]/g, "");
+    return cleaned ? parseInt(cleaned, 10) : 0;
+}
+
 export default function TaxCalculator(): JSX.Element {
     const [formData, setFormData] = useState<FormData>({
-        basicSalary: 0,
-        grossSalary: 0,
+        basicSalary: 3700000,
+        grossSalary: 15500000,
         dependants: 0,
         onProbation: false,
         probationPercentage: MINIMUM_PROBATION_PERCENTAGE,
@@ -52,14 +62,44 @@ export default function TaxCalculator(): JSX.Element {
     const [errors, setErrors] = useState<Errors>({});
     const [warnings, setWarnings] = useState<Warnings>({});
     const [result, setResult] = useState<TaxCalculationResult | null>(null);
+    const [hasCalculated, setHasCalculated] = useState<boolean>(false);
+
+    // Animation state machine
+    const [displayMode, setDisplayMode] = useState<DisplayMode>(
+        formData.onProbation ? "probation" : "normal"
+    );
+    const [animState, setAnimState] = useState<AnimState>("idle");
+    const prevOnProbation = useRef(formData.onProbation);
+    const animTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+    // Formatted display values
+    const [displayValues, setDisplayValues] = useState({
+        basicSalary: formatNumber(3700000),
+        grossSalary: formatNumber(15500000),
+        otherDeduction: formatNumber(0),
+        probationPercentage: "85"
+    });
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
         const {name, value, type, checked} = e.target;
 
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : type === "radio" ? value === "true" : value,
-        }));
+        if (type === "checkbox") {
+            setFormData((prev) => ({...prev, [name]: checked}));
+        } else if (type === "radio") {
+            setFormData((prev) => ({...prev, [name]: value === "true"}));
+        } else if (name === "basicSalary" || name === "grossSalary" || name === "otherDeduction") {
+            // Handle number inputs with real-time formatting
+            const rawValue = parseFormattedNumber(value);
+            setFormData((prev) => ({...prev, [name]: rawValue}));
+            // Format immediately as user types
+            setDisplayValues((prev) => ({...prev, [name]: formatNumber(rawValue)}));
+        } else if (name === "probationPercentage") {
+            // Handle percentage without formatting
+            setFormData((prev) => ({...prev, [name]: value}));
+            setDisplayValues((prev) => ({...prev, [name]: value}));
+        } else {
+            setFormData((prev) => ({...prev, [name]: value}));
+        }
 
         if (errors[name]) {
             setErrors((prev) => ({...prev, [name]: ""}));
@@ -69,11 +109,7 @@ export default function TaxCalculator(): JSX.Element {
         }
     };
 
-    useEffect(() => {
-        setResult(null);
-    }, [formData.onProbation, formData.isNewTaxPeriod]);
-
-    const validateForm = (): boolean => {
+    const validateAndCalculate = (autoCalculate: boolean = false): boolean => {
         const newErrors: Errors = {};
         const newWarnings: Warnings = {};
 
@@ -81,7 +117,7 @@ export default function TaxCalculator(): JSX.Element {
 
         if (basicSalaryError) {
             newErrors.basicSalary = basicSalaryError;
-        } else {
+        } else if (!formData.onProbation) {
             const rangeValidation = validateRange(
                 parseFloat(String(formData.basicSalary)),
                 MINIMUM_BASIC_SALARY,
@@ -101,8 +137,10 @@ export default function TaxCalculator(): JSX.Element {
         const grossSalaryError = validateRequiredNumber(formData.grossSalary, "grossSalary");
         if (grossSalaryError) {
             newErrors.grossSalary = grossSalaryError;
-        } else if (parseFloat(String(formData.grossSalary)) < parseFloat(String(formData.basicSalary))) {
+        } else if (!formData.onProbation && parseFloat(String(formData.grossSalary)) < parseFloat(String(formData.basicSalary))) {
             newErrors.grossSalary = "Tổng thu nhập trước thuế phải lớn hơn lương đóng BH";
+        } else if (formData.onProbation && parseFloat(String(formData.grossSalary)) < LOWEST_PROBATION_SALARY_TO_BE_TAXED) {
+            newWarnings.grossSalary = `Thử việc dưới 3 tháng có mức lương thấp hơn ${LOWEST_PROBATION_SALARY_TO_BE_TAXED.toLocaleString()} VNĐ không bị khấu trừ thuế`;
         }
 
         const dependantsError = validateNonNegative(formData.dependants);
@@ -132,7 +170,61 @@ export default function TaxCalculator(): JSX.Element {
         setErrors(newErrors);
         setWarnings(newWarnings);
 
-        return Object.keys(newErrors).length === 0;
+        const isValid = Object.keys(newErrors).length === 0;
+
+        if (autoCalculate && isValid && hasCalculated) {
+            const calculationResult = calculateVietnamTax(
+                parseFloat(String(formData.basicSalary)),
+                parseFloat(String(formData.grossSalary)),
+                normalizeNumber(formData.dependants, 0, parseInt),
+                formData.onProbation,
+                formData.onProbation ? parseFloat(String(formData.probationPercentage)) : MAXIMUM_PROBATION_PERCENTAGE,
+                formData.isNewTaxPeriod,
+                normalizeNumber(formData.otherDeduction)
+            );
+            setResult(calculationResult);
+        } else if (autoCalculate && !isValid) {
+            setResult(null);
+        }
+
+        return isValid;
+    };
+
+    useEffect(() => {
+        validateAndCalculate(true);
+    }, [formData.onProbation, formData.isNewTaxPeriod]);
+
+    // Sequence: exit old fields → swap display → enter new fields
+    useEffect(() => {
+        if (formData.onProbation === prevOnProbation.current) return;
+        prevOnProbation.current = formData.onProbation;
+
+        // Cancel any in-flight timers from rapid toggling
+        animTimers.current.forEach(clearTimeout);
+        animTimers.current = [];
+
+        setAnimState("exiting");
+
+        const t1 = setTimeout(() => {
+            // Swap the rendered group and start enter animation in one batch
+            setDisplayMode(formData.onProbation ? "probation" : "normal");
+            setAnimState("entering");
+
+            const t2 = setTimeout(() => {
+                setAnimState("idle");
+            }, ENTER_DURATION);
+            animTimers.current.push(t2);
+        }, EXIT_DURATION);
+        animTimers.current.push(t1);
+    }, [formData.onProbation]);
+
+    // Cleanup timers on unmount
+    useEffect(() => {
+        return () => animTimers.current.forEach(clearTimeout);
+    }, []);
+
+    const validateForm = (): boolean => {
+        return validateAndCalculate(false);
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -149,6 +241,7 @@ export default function TaxCalculator(): JSX.Element {
                 normalizeNumber(formData.otherDeduction)
             );
             setResult(result);
+            setHasCalculated(true);
         }
     };
 
@@ -157,43 +250,34 @@ export default function TaxCalculator(): JSX.Element {
             <h1 className={clsx(styles.textCenter, "margin-bottom--lg")}>Tính thuế TNCN</h1>
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.inputWrapper}>
-                    <fieldset
-                        className={clsx(
-                            styles.formGroup,
-                            errors.basicSalary && styles.borderRed,
-                            warnings.basicSalary && styles.borderYellow
-                        )}
-                    >
-                        <legend className={styles.legend}>Mức lương đóng BH</legend>
-                        <input
-                            type="number"
-                            name="basicSalary"
-                            value={formData.basicSalary}
-                            onChange={handleInputChange}
-                            className={inputTopBottom()}
-                        />
-                    </fieldset>
-                    {errors.basicSalary && (
-                        <p className={styles.error}>{errors.basicSalary}</p>
-                    )}
-                    {warnings.basicSalary && (
-                        <p className={styles.warning}>{warnings.basicSalary}</p>
-                    )}
+                <div className={clsx(styles.toggleWrapper, "margin-bottom--md")}>
+                    <label className={styles.toggleLabel}>
+                        <label className={styles.toggleSwitch}>
+                            <input
+                                type="checkbox"
+                                name="onProbation"
+                                checked={formData.onProbation}
+                                onChange={handleInputChange}
+                            />
+                            <span className={styles.slider}></span>
+                        </label>
+                        Đang thử việc
+                    </label>
                 </div>
 
                 <div className={clsx(styles.inputWrapper, "margin-top--lg", "margin-bottom--lg")}>
                     <fieldset
                         className={clsx(
                             styles.formGroup,
-                            errors.grossSalary && styles.borderRed
+                            errors.grossSalary && styles.borderRed,
+                            warnings.grossSalary && styles.borderYellow
                         )}
                     >
                         <legend className={styles.legend}>Tổng thu nhập trước thuế</legend>
                         <input
-                            type="number"
+                            type="text"
                             name="grossSalary"
-                            value={formData.grossSalary}
+                            value={displayValues.grossSalary}
                             onChange={handleInputChange}
                             className={inputTopBottom()}
                         />
@@ -201,117 +285,150 @@ export default function TaxCalculator(): JSX.Element {
                     {errors.grossSalary && (
                         <p className={styles.error}>{errors.grossSalary}</p>
                     )}
-                </div>
-
-                <div className={clsx(styles.inputWrapper, "margin-top--lg", "margin-bottom--lg")}>
-                    <fieldset
-                        className={clsx(
-                            styles.formGroup,
-                            errors.otherDeduction && styles.borderRed
-                        )}
-                    >
-                        <legend className={clsx(styles.legend, styles.legendGreen)}>Phụ cấp không tính thuế</legend>
-                        <input
-                            type="number"
-                            name="otherDeduction"
-                            value={formData.otherDeduction}
-                            onChange={handleInputChange}
-                            className={inputTopBottom()}
-                        />
-                    </fieldset>
-                    {errors.otherDeduction && (
-                        <p className={styles.error}>{errors.otherDeduction}</p>
+                    {warnings.grossSalary && (
+                        <p className={styles.warning}>{warnings.grossSalary}</p>
                     )}
                 </div>
 
-                <div className={styles.inputWrapper}>
-                    <fieldset
-                        className={clsx(
-                            styles.formGroup,
-                            errors.dependants && styles.borderRed
-                        )}
-                    >
-                        <legend className={styles.legend}>Số người phụ thuộc</legend>
-                        <input
-                            type="number"
-                            name="dependants"
-                            value={formData.dependants}
-                            onChange={handleInputChange}
-                            className={inputTopBottom()}
-                        />
-                    </fieldset>
-                    {errors.dependants && (
-                        <p className={styles.error}>{errors.dependants}</p>
-                    )}
-                </div>
-
-                <div className={clsx(styles.checkboxWrapper, "margin-top--md", "margin-bottom--md")}>
-                    <label className={styles.checkboxLabel}>
-                        <input
-                            type="checkbox"
-                            name="onProbation"
-                            checked={formData.onProbation}
-                            onChange={handleInputChange}
-                            className={styles.checkbox}
-                        />
-                        Đang thử việc
-                    </label>
-                </div>
-
-                {formData.onProbation && (
-                    <div className={styles.inputWrapper}>
-                        <fieldset
-                            className={clsx(
-                                styles.formGroup,
-                                errors.probationPercentage && styles.borderRed
+                {displayMode === "normal" && (
+                    <div className={clsx(
+                        styles.fieldGroupAnimWrapper,
+                        animState === "exiting" ? styles.fieldGroupExit :
+                            animState === "entering" ? styles.fieldGroupEnter :
+                                undefined
+                    )}>
+                        <div className={styles.inputWrapper}>
+                            <fieldset
+                                className={clsx(
+                                    styles.formGroup,
+                                    errors.basicSalary && styles.borderRed,
+                                    warnings.basicSalary && styles.borderYellow
+                                )}
+                            >
+                                <legend className={styles.legend}>Mức lương đóng BH</legend>
+                                <input
+                                    type="text"
+                                    name="basicSalary"
+                                    value={displayValues.basicSalary}
+                                    onChange={handleInputChange}
+                                    className={inputTopBottom()}
+                                />
+                            </fieldset>
+                            {errors.basicSalary && (
+                                <p className={styles.error}>{errors.basicSalary}</p>
                             )}
-                        >
-                            <legend className={styles.legend}>
-                                % mức lương cơ bản (85-100)
-                            </legend>
-                            <input
-                                type="number"
-                                name="probationPercentage"
-                                value={formData.probationPercentage}
-                                onChange={handleInputChange}
-                                className={inputTopBottom()}
-                            />
-                        </fieldset>
-                        {errors.probationPercentage && (
-                            <p className={styles.error}>{errors.probationPercentage}</p>
-                        )}
+                            {warnings.basicSalary && (
+                                <p className={styles.warning}>{warnings.basicSalary}</p>
+                            )}
+                        </div>
+
+                        <div className={clsx(styles.inputWrapper, "margin-top--lg", "margin-bottom--lg")}>
+                            <fieldset
+                                className={clsx(
+                                    styles.formGroup,
+                                    errors.otherDeduction && styles.borderRed
+                                )}
+                            >
+                                <legend className={clsx(styles.legend, styles.legendGreen)}>Phụ cấp không tính thuế</legend>
+                                <input
+                                    type="text"
+                                    name="otherDeduction"
+                                    value={displayValues.otherDeduction}
+                                    onChange={handleInputChange}
+                                    className={inputTopBottom()}
+                                />
+                            </fieldset>
+                            {errors.otherDeduction && (
+                                <p className={styles.error}>{errors.otherDeduction}</p>
+                            )}
+                        </div>
+
+                        <div className={styles.inputWrapper}>
+                            <fieldset
+                                className={clsx(
+                                    styles.formGroup,
+                                    errors.dependants && styles.borderRed
+                                )}
+                            >
+                                <legend className={styles.legend}>Số người phụ thuộc</legend>
+                                <input
+                                    type="number"
+                                    name="dependants"
+                                    value={formData.dependants}
+                                    onChange={handleInputChange}
+                                    className={inputTopBottom()}
+                                />
+                            </fieldset>
+                            {errors.dependants && (
+                                <p className={styles.error}>{errors.dependants}</p>
+                            )}
+                        </div>
+
+                        <div className={clsx(styles.inputWrapper, "margin-top--md", "margin-bottom--md")}>
+                            <fieldset className={styles.formGroup}>
+                                <legend className={styles.legend}>Kỳ tính thuế</legend>
+                                <div className={styles.radioWrapper}>
+                                    <label className={styles.radioLabel}>
+                                        <input
+                                            type="radio"
+                                            name="isNewTaxPeriod"
+                                            value="false"
+                                            checked={!formData.isNewTaxPeriod}
+                                            onChange={handleInputChange}
+                                            className={styles.radio}
+                                        />
+                                        Trước 2026
+                                    </label>
+                                    <label className={styles.radioLabel}>
+                                        <input
+                                            type="radio"
+                                            name="isNewTaxPeriod"
+                                            value="true"
+                                            checked={formData.isNewTaxPeriod}
+                                            onChange={handleInputChange}
+                                            className={styles.radio}
+                                        />
+                                        Từ 2026
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
                 )}
 
-                <div className={clsx(styles.inputWrapper, "margin-top--md", "margin-bottom--md")}>
-                    <fieldset className={styles.formGroup}>
-                        <legend className={styles.legend}>Kỳ tính thuế</legend>
-                        <div className={styles.radioWrapper}>
-                            <label className={styles.radioLabel}>
+                {displayMode === "probation" && (
+                    <div className={clsx(
+                        styles.fieldGroupAnimWrapper,
+                        animState === "exiting" ? styles.fieldGroupExit :
+                            animState === "entering" ? styles.fieldGroupEnter :
+                                undefined
+                    )}>
+                        <div className={clsx(styles.inputWrapper, "margin-bottom--md")}>
+                            <fieldset
+                                className={clsx(
+                                    styles.formGroup,
+                                    errors.probationPercentage && styles.borderRed
+                                )}
+                            >
+                                <legend className={styles.legend}>
+                                    % mức lương cơ bản (85-100)
+                                </legend>
                                 <input
-                                    type="radio"
-                                    name="isNewTaxPeriod"
-                                    value="false"
-                                    checked={!formData.isNewTaxPeriod}
+                                    type="number"
+                                    name="probationPercentage"
+                                    value={displayValues.probationPercentage}
                                     onChange={handleInputChange}
-                                    className={styles.radio}
+                                    className={inputTopBottom()}
                                 />
-                                Trước 2026
-                            </label>
-                            <label className={styles.radioLabel}>
-                                <input
-                                    type="radio"
-                                    name="isNewTaxPeriod"
-                                    value="true"
-                                    checked={formData.isNewTaxPeriod}
-                                    onChange={handleInputChange}
-                                    className={styles.radio}
-                                />
-                                Từ 2026
-                            </label>
+                            </fieldset>
+                            {errors.probationPercentage && (
+                                <p className={styles.error}>
+                                    {errors.probationPercentage}
+                                </p>
+                            )}
                         </div>
-                    </fieldset>
-                </div>
+                    </div>
+                )}
 
                 <button
                     type="submit"
@@ -322,75 +439,99 @@ export default function TaxCalculator(): JSX.Element {
 
                 {result && (
                     <details
-                        className={clsx(
-                            styles.details,
-                            "margin-top--lg",
-                            "margin-bottom--lg"
-                        )}
+                        className={clsx(styles.resultDetails, "margin-top--lg", "margin-bottom--lg")}
                         open
                     >
-                        <summary className={styles.summary}>Kết quả</summary>
-                        <div className={styles.resultItem}>
-                            <span>Lương đóng BH:</span>
-                            <span className={styles.resultValue}>
-                {result.cappedBaseSalary && !isNaN(result.cappedBaseSalary)
-                    ? `${Number(result.cappedBaseSalary).toLocaleString()} đ`
-                    : "N/A"}
-              </span>
-                        </div>
+                        <summary className={styles.resultSummary}>
+                            Kết quả
+                        </summary>
+
+                        {!result.isProbation && (
+                            <div className={styles.resultItem}>
+                                <span>Lương đóng BH:</span>
+                                <span className={styles.resultValue}>
+                                    {result.cappedBaseSalary && !isNaN(result.cappedBaseSalary)
+                                        ? `${Number(result.cappedBaseSalary).toLocaleString()} đ`
+                                        : "N/A"}
+                                </span>
+                            </div>
+                        )}
+
                         <div className={styles.resultItem}>
                             <span>Lương trước thuế:</span>
                             <span className={styles.resultValue}>
-                {formData.grossSalary && !isNaN(Number(formData.grossSalary))
-                    ? `${Number(formData.grossSalary).toLocaleString()} đ`
-                    : "N/A"}
-              </span>
+                                {result.grossSalary && !isNaN(Number(result.grossSalary))
+                                    ? `${Number(result.grossSalary).toLocaleString()} đ`
+                                    : "N/A"}
+                            </span>
                         </div>
-                        <div className={styles.resultItem}>
-                            <span>Số người phụ thuộc:</span>
-                            <span className={styles.resultValue}>
-                {Number(formData.dependants).toLocaleString()}
-              </span>
-                        </div>
-                        {formData.onProbation && result.probationSalary !== undefined && (
+
+                        {!result.isProbation && (
                             <div className={styles.resultItem}>
-                                <span>Lương thử việc:</span>
+                                <span>Số người phụ thuộc:</span>
                                 <span className={styles.resultValue}>
-                  {`${result.probationSalary.toLocaleString()} đ`}
-                </span>
+                                    {Number(result.dependants).toLocaleString()}
+                                </span>
                             </div>
                         )}
+
+                        {result.isProbation && (
+                            <>
+                                <div className={styles.resultItem}>
+                                    <span>% mức lương thử việc:</span>
+                                    <span className={styles.resultValue}>
+                                        {`${result.probation.probationPercentage}%`}
+                                    </span>
+                                </div>
+                                <div className={styles.resultItem}>
+                                    <span>Lương thử việc:</span>
+                                    <span className={styles.resultValue}>
+                                        {`${result.probation.probationSalary.toLocaleString()} đ`}
+                                    </span>
+                                </div>
+                            </>
+                        )}
+
                         <hr/>
-                        <div className={styles.resultItem}>
-                            <span>Tổng đóng BH:</span>
-                            <span className={styles.resultValue}>
-                {result.insuranceAmount !== undefined
-                    ? `${result.insuranceAmount.toLocaleString()} đ`
-                    : "N/A"}
-              </span>
-                        </div>
+
+                        {!result.isProbation && (
+                            <div className={styles.resultItem}>
+                                <span>Tổng đóng BH:</span>
+                                <span className={styles.resultValue}>
+                                    {`${result.nonProbation.insuranceAmount.toLocaleString()} đ`}
+                                </span>
+                            </div>
+                        )}
+
                         <div className={styles.resultItem}>
                             <span>Thuế phải nộp:</span>
                             <span className={styles.resultValue}>
-                {result.taxedAmount !== undefined
-                    ? `${result.taxedAmount.toLocaleString()} đ`
-                    : "N/A"}
-              </span>
+                                {`${result.taxedAmount.toLocaleString()} đ`}
+                            </span>
                         </div>
+
                         <div className={styles.resultItem}>
                             <span>Thực lãnh:</span>
                             <span className={styles.netSalary}>
-                {result.netSalary !== undefined
-                    ? `${result.netSalary.toLocaleString()} đ`
-                    : "N/A"}
-              </span>
+                                {`${result.netSalary.toLocaleString()} đ`}
+                            </span>
                         </div>
                     </details>
                 )}
 
-                <Link to="/vietnam-tax-calculation">
-                    <i>Tham khảo cách tính thuế TNCN tại đây</i>
-                </Link>
+                <ul>
+                    <li>
+                        <Link to="/vietnam-tax-calculation">
+                            Tham khảo cách tính thuế TNCN tại đây
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link href="https://www.meinvoice.vn/tin-tuc/41039/cac-khoan-thu-nhap-khong-chiu-thue-tncn/">
+                            Tham khảo danh mục phụ cấp không tính thuế TNCN
+                        </Link>
+                    </li>
+                </ul>
             </form>
         </div>
     );
