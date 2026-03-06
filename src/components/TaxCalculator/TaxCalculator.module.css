@@ -183,6 +183,12 @@
     padding-bottom: 1em;
 }
 
+.toggleRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5em 5em;
+}
+
 .toggleLabel {
     display: flex;
     align-items: center;

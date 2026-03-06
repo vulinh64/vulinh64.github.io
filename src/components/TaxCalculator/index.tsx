@@ -31,7 +31,7 @@ const ENTER_DURATION = 500;
 type DisplayMode = "normal" | "probation";
 type AnimState = "idle" | "exiting" | "entering";
 
-function formatNumber(value: number | string): string {
+function formatNumber(value: number | string, locale?: string): string {
     if (value === "" || value === null || value === undefined) {
         return "";
     }
@@ -39,7 +39,7 @@ function formatNumber(value: number | string): string {
     if (isNaN(num)) {
         return "";
     }
-    return num.toLocaleString();
+    return num.toLocaleString(locale);
 }
 
 function parseFormattedNumber(value: string): number {
@@ -72,11 +72,14 @@ export default function TaxCalculator(): JSX.Element {
     const prevOnProbation = useRef(formData.onProbation);
     const animTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+    const [useVietnameseLocale, setUseVietnameseLocale] = useState(true);
+    const locale = useVietnameseLocale ? "vi-VN" : undefined;
+
     // Formatted display values
     const [displayValues, setDisplayValues] = useState({
-        basicSalary: formatNumber(3700000),
-        grossSalary: formatNumber(15500000),
-        otherDeduction: formatNumber(0),
+        basicSalary: formatNumber(3700000, locale),
+        grossSalary: formatNumber(15500000, locale),
+        otherDeduction: formatNumber(0, locale),
         probationPercentage: "85"
     });
 
@@ -92,7 +95,7 @@ export default function TaxCalculator(): JSX.Element {
             const rawValue = parseFormattedNumber(value);
             setFormData((prev) => ({...prev, [name]: rawValue}));
             // Format immediately as user types
-            setDisplayValues((prev) => ({...prev, [name]: formatNumber(rawValue)}));
+            setDisplayValues((prev) => ({...prev, [name]: formatNumber(rawValue, locale)}));
         } else if (name === "probationPercentage") {
             // Handle percentage without formatting
             setFormData((prev) => ({...prev, [name]: value}));
@@ -223,6 +226,16 @@ export default function TaxCalculator(): JSX.Element {
         return () => animTimers.current.forEach(clearTimeout);
     }, []);
 
+    // Reformat input display values when locale changes
+    useEffect(() => {
+        setDisplayValues((prev) => ({
+            ...prev,
+            basicSalary: formatNumber(formData.basicSalary, locale),
+            grossSalary: formatNumber(formData.grossSalary, locale),
+            otherDeduction: formatNumber(formData.otherDeduction, locale),
+        }));
+    }, [useVietnameseLocale]);
+
     const validateForm = (): boolean => {
         return validateAndCalculate(false);
     };
@@ -250,7 +263,7 @@ export default function TaxCalculator(): JSX.Element {
             <h1 className={clsx(styles.textCenter, "margin-bottom--lg")}>Tính thuế TNCN</h1>
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={clsx(styles.toggleWrapper, "margin-bottom--md")}>
+                <div className={clsx(styles.toggleRow, "margin-bottom--md")}>
                     <label className={styles.toggleLabel}>
                         <label className={styles.toggleSwitch}>
                             <input
@@ -262,6 +275,18 @@ export default function TaxCalculator(): JSX.Element {
                             <span className={styles.slider}></span>
                         </label>
                         Đang thử việc
+                    </label>
+
+                    <label className={styles.toggleLabel}>
+                        <label className={styles.toggleSwitch}>
+                            <input
+                                type="checkbox"
+                                checked={useVietnameseLocale}
+                                onChange={(e) => setUseVietnameseLocale(e.target.checked)}
+                            />
+                            <span className={styles.slider}></span>
+                        </label>
+                        🇻🇳
                     </label>
                 </div>
 
@@ -451,7 +476,7 @@ export default function TaxCalculator(): JSX.Element {
                                 <span>Lương đóng BH:</span>
                                 <span className={styles.resultValue}>
                                     {result.cappedBaseSalary && !isNaN(result.cappedBaseSalary)
-                                        ? `${Number(result.cappedBaseSalary).toLocaleString()} đ`
+                                        ? `${Number(result.cappedBaseSalary).toLocaleString(locale)} đ`
                                         : "N/A"}
                                 </span>
                             </div>
@@ -461,7 +486,7 @@ export default function TaxCalculator(): JSX.Element {
                             <span>Lương trước thuế:</span>
                             <span className={styles.resultValue}>
                                 {result.grossSalary && !isNaN(Number(result.grossSalary))
-                                    ? `${Number(result.grossSalary).toLocaleString()} đ`
+                                    ? `${Number(result.grossSalary).toLocaleString(locale)} đ`
                                     : "N/A"}
                             </span>
                         </div>
@@ -470,7 +495,7 @@ export default function TaxCalculator(): JSX.Element {
                             <div className={styles.resultItem}>
                                 <span>Số người phụ thuộc:</span>
                                 <span className={styles.resultValue}>
-                                    {Number(result.dependants).toLocaleString()}
+                                    {Number(result.dependants).toLocaleString(locale)}
                                 </span>
                             </div>
                         )}
@@ -486,7 +511,7 @@ export default function TaxCalculator(): JSX.Element {
                                 <div className={styles.resultItem}>
                                     <span>Lương thử việc:</span>
                                     <span className={styles.resultValue}>
-                                        {`${result.probation.probationSalary.toLocaleString()} đ`}
+                                        {`${result.probation.probationSalary.toLocaleString(locale)} đ`}
                                     </span>
                                 </div>
                             </>
@@ -498,7 +523,7 @@ export default function TaxCalculator(): JSX.Element {
                             <div className={styles.resultItem}>
                                 <span>Tổng đóng BH:</span>
                                 <span className={styles.resultValue}>
-                                    {`${result.nonProbation.insuranceAmount.toLocaleString()} đ`}
+                                    {`${result.nonProbation.insuranceAmount.toLocaleString(locale)} đ`}
                                 </span>
                             </div>
                         )}
@@ -506,14 +531,14 @@ export default function TaxCalculator(): JSX.Element {
                         <div className={styles.resultItem}>
                             <span>Thuế phải nộp:</span>
                             <span className={styles.resultValue}>
-                                {`${result.taxedAmount.toLocaleString()} đ`}
+                                {`${result.taxedAmount.toLocaleString(locale)} đ`}
                             </span>
                         </div>
 
                         <div className={styles.resultItem}>
                             <span>Thực lãnh:</span>
                             <span className={styles.netSalary}>
-                                {`${result.netSalary.toLocaleString()} đ`}
+                                {`${result.netSalary.toLocaleString(locale)} đ`}
                             </span>
                         </div>
                     </details>
