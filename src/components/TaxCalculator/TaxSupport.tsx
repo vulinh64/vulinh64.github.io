@@ -9,14 +9,31 @@ export interface TaxLevel {
     rate: number;
 }
 
-export interface TaxCalculationResult {
-    insuranceAmount: number;
-    taxedAmount: number;
-    netSalary: number;
-    isProbation: boolean;
-    probationSalary?: number;
-    cappedBaseSalary: number;
+interface ProbationDetails {
+    probationPercentage: number;
+    probationSalary: number;
 }
+
+interface NonProbationDetails {
+    insuranceAmount: number;
+}
+
+export type TaxCalculationResult = {
+    cappedBaseSalary: number;
+    grossSalary: number;
+    dependants: number;
+    netSalary: number;
+    taxedAmount: number;
+} & (
+    | {
+          isProbation: true;
+          probation: ProbationDetails;
+      }
+    | {
+          isProbation: false;
+          nonProbation: NonProbationDetails;
+      }
+);
 
 // Constants
 export const INSURANCE_RATES: InsuranceRates = {
@@ -40,6 +57,7 @@ export const MINIMUM_BASIC_SALARY = 3700000;
 export const MAXIMUM_BASIC_SALARY = 46800000;
 export const MINIMUM_PROBATION_PERCENTAGE = 85;
 export const MAXIMUM_PROBATION_PERCENTAGE = 100;
+export const LOWEST_PROBATION_SALARY_TO_BE_TAXED = 2000000;
 
 // @ts-ignore
 export const TAX_LEVELS: Record<boolean, TaxLevel> = {
@@ -104,3 +122,21 @@ export const TAX_LEVELS: Record<boolean, TaxLevel> = {
         },
     ]
 };
+
+export interface FormData {
+    basicSalary: number;
+    grossSalary: number;
+    dependants: number;
+    onProbation: boolean;
+    probationPercentage: number;
+    isNewTaxPeriod: boolean;
+    otherDeduction: number;
+}
+
+export interface Errors {
+    [key: string]: string;
+}
+
+export interface Warnings {
+    [key: string]: string;
+}
