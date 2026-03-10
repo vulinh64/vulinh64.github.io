@@ -1,6 +1,9 @@
 import {
     DEDUCTION_PER_DEPENDANT,
-    INSURANCE_RATES, LOWEST_PROBATION_SALARY_TO_BE_TAXED,
+    EMPTY,
+    FormData,
+    INSURANCE_RATES,
+    LOWEST_PROBATION_SALARY_TO_BE_TAXED,
     MAXIMUM_BASIC_SALARY,
     MAXIMUM_PROBATION_PERCENTAGE,
     MINIMUM_BASIC_SALARY,
@@ -17,7 +20,7 @@ export const validateRequiredNumber = (
     value: any,
     errorMessage: string = "Hãy nhập số hợp lệ"
 ): string | null => {
-    return value !== "" && value !== null && value !== undefined && !isNaN(Number(value))
+    return value !== EMPTY && value !== null && value !== undefined && !isNaN(Number(value))
         ? null :
         errorMessage;
 };
@@ -160,4 +163,108 @@ export const calculateVietnamTax = (
         grossSalary: grossSalary,
         dependants: numberOfDependants,
     };
+};
+
+export function formatNumber(value: number | string, locale?: string): string {
+    if (value === EMPTY || value === null || value === undefined) {
+        return EMPTY;
+    }
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    if (isNaN(num)) {
+        return EMPTY;
+    }
+    return num.toLocaleString(locale);
+}
+
+export const parseFormattedNumber = (value: string): number => {
+    if (!value) return 0;
+    // Remove all non-digit characters except decimal separator
+    const cleaned = value.replace(/[^\d]/g, EMPTY);
+    return cleaned ? parseInt(cleaned, 10) : 0;
+};
+
+export const getInitialState = () => {
+    const url = readUrlParams();
+    const isVnLocale = url.isVnLocale ?? true;
+
+    const formData: FormData = {
+        basicSalary: url.basicSalary ?? 3700000,
+        grossSalary: url.grossSalary ?? 15500000,
+        dependants: url.dependants ?? 0,
+        onProbation: url.onProbation ?? false,
+        probationPercentage: url.probationPercentage ?? MINIMUM_PROBATION_PERCENTAGE,
+        isNewTaxPeriod: url.isNewTaxPeriod ?? (new Date().getFullYear() >= 2026),
+        otherDeduction: url.otherDeduction ?? 0,
+    };
+
+    return {formData, isVnLocale, hasUrlParams: Object.keys(url).length > 0};
+};
+
+const readUrlParams = (): {
+    basicSalary?: number;
+    grossSalary?: number;
+    otherDeduction?: number;
+    dependants?: number;
+    onProbation?: boolean;
+    isNewTaxPeriod?: boolean;
+    probationPercentage?: number;
+    isVnLocale?: boolean;
+} => {
+    if (typeof window === "undefined") return {};
+    const params = new URLSearchParams(window.location.search);
+    const result: { [key: string]: any } = {};
+
+    if (params.has("grossSalary")) {
+        const v = parseInt(params.get("grossSalary")!, 10);
+
+        if (!isNaN(v) && v >= 0) {
+            result.grossSalary = v;
+        }
+    }
+
+    if (params.has("basicSalary")) {
+        const v = parseInt(params.get("basicSalary")!, 10);
+
+        if (!isNaN(v) && v >= 0) {
+            result.basicSalary = v;
+        }
+    }
+
+    if (params.has("otherDeduction")) {
+        const v = parseInt(params.get("otherDeduction")!, 10);
+
+        if (!isNaN(v) && v >= 0) {
+            result.otherDeduction = v;
+        }
+    }
+
+    if (params.has("dependants")) {
+        const v = parseInt(params.get("dependants")!, 10);
+
+        if (!isNaN(v) && v >= 0) {
+            result.dependants = v;
+        }
+    }
+
+    if (params.has("onProbation")) {
+        result.onProbation = params.get("onProbation") === "true";
+    }
+
+    if (params.has("isPost2026")) {
+        result.isNewTaxPeriod = params.get("isPost2026") === "true";
+    }
+
+    if (params.has("probationPercentage")) {
+        const v = parseInt(params.get("probationPercentage")!, 10);
+
+        if (!isNaN(v)) {
+            result.probationPercentage = v;
+        }
+    }
+
+    if (params.has("isVnLocale")) {
+        result.isVnLocale = params.get("isVnLocale") !== "false";
+    }
+
+    return result;
 };

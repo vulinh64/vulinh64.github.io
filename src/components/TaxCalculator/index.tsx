@@ -3,13 +3,16 @@ import clsx from "clsx";
 import styles from "./TaxCalculator.module.css";
 import Link from "@docusaurus/Link";
 import {
-    calculateVietnamTax,
+    calculateVietnamTax, formatNumber,
+    getInitialState,
     normalizeNumber,
+    parseFormattedNumber,
     validateNonNegative,
     validateRange,
     validateRequiredNumber
 } from "./TaxUtils";
 import {
+    EMPTY,
     Errors,
     FormData,
     LOWEST_PROBATION_SALARY_TO_BE_TAXED,
@@ -33,56 +36,44 @@ const ENTER_DURATION = 500;
 type DisplayMode = "normal" | "probation";
 type AnimState = "idle" | "exiting" | "entering";
 
-function formatNumber(value: number | string, locale?: string): string {
-    if (value === "" || value === null || value === undefined) {
-        return "";
-    }
-    const num = typeof value === "string" ? parseFloat(value) : value;
-    if (isNaN(num)) {
-        return "";
-    }
-    return num.toLocaleString(locale);
-}
-
-function parseFormattedNumber(value: string): number {
-    if (!value) return 0;
-    // Remove all non-digit characters except decimal separator
-    const cleaned = value.replace(/[^\d]/g, "");
-    return cleaned ? parseInt(cleaned, 10) : 0;
-}
-
 export default function TaxCalculator(): JSX.Element {
-    const [formData, setFormData] = useState<FormData>({
-        basicSalary: 3700000,
-        grossSalary: 15500000,
-        dependants: 0,
-        onProbation: false,
-        probationPercentage: MINIMUM_PROBATION_PERCENTAGE,
-        isNewTaxPeriod: new Date().getFullYear() >= 2026,
-        otherDeduction: 0
-    });
+    const [
+        {
+            formData: initFormData,
+            isVnLocale: initIsVnLocale,
+            hasUrlParams: initHasUrlParams
+        }
+    ] = useState(getInitialState);
+
+    const [formData, setFormData] = useState<FormData>(initFormData);
     const [errors, setErrors] = useState<Errors>({});
     const [warnings, setWarnings] = useState<Warnings>({});
     const [result, setResult] = useState<TaxCalculationResult | null>(null);
-    const [hasCalculated, setHasCalculated] = useState<boolean>(false);
+    const [hasCalculated, setHasCalculated] = useState<boolean>(initHasUrlParams);
+    const [urlActive, setUrlActive] = useState(initHasUrlParams);
 
     // Animation state machine
     const [displayMode, setDisplayMode] = useState<DisplayMode>(
-        formData.onProbation ? "probation" : "normal"
+        formData.onProbation
+            ? "probation"
+            : "normal"
     );
-    const [animState, setAnimState] = useState<AnimState>("idle");
+    const [animationState, setAnimationState] = useState<AnimState>("idle");
     const prevOnProbation = useRef(formData.onProbation);
     const animTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-    const [useVietnameseLocale, setUseVietnameseLocale] = useState(true);
-    const locale = useVietnameseLocale ? "vi-VN" : undefined;
+    const [useVietnameseLocale, setUseVietnameseLocale] = useState(initIsVnLocale);
+
+    const locale = useVietnameseLocale
+        ? "vi-VN"
+        : undefined;
 
     // Formatted display values
     const [displayValues, setDisplayValues] = useState({
-        basicSalary: formatNumber(3700000, locale),
-        grossSalary: formatNumber(15500000, locale),
-        otherDeduction: formatNumber(0, locale),
-        probationPercentage: "85"
+        basicSalary: formatNumber(initFormData.basicSalary, locale),
+        grossSalary: formatNumber(initFormData.grossSalary, locale),
+        otherDeduction: formatNumber(initFormData.otherDeduction, locale),
+        probationPercentage: String(initFormData.probationPercentage)
     });
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -99,18 +90,18 @@ export default function TaxCalculator(): JSX.Element {
             // Format immediately as user types
             setDisplayValues((prev) => ({...prev, [name]: formatNumber(rawValue, locale)}));
         } else if (name === "probationPercentage") {
-            // Handle percentage without formatting
-            setFormData((prev) => ({...prev, [name]: value}));
+            const numericValue = parseFloat(value);
+            setFormData((prev) => ({...prev, [name]: numericValue}));
             setDisplayValues((prev) => ({...prev, [name]: value}));
         } else {
             setFormData((prev) => ({...prev, [name]: value}));
         }
 
         if (errors[name]) {
-            setErrors((prev) => ({...prev, [name]: ""}));
+            setErrors((prev) => ({...prev, [name]: EMPTY}));
         }
         if (warnings[name]) {
-            setWarnings((prev) => ({...prev, [name]: ""}));
+            setWarnings((prev) => ({...prev, [name]: EMPTY}));
         }
     };
 
@@ -127,8 +118,8 @@ export default function TaxCalculator(): JSX.Element {
                 parseFloat(String(formData.basicSalary)),
                 MINIMUM_BASIC_SALARY,
                 MAXIMUM_BASIC_SALARY,
-                `Lương đóng BHXH không được thấp hơn ${MINIMUM_BASIC_SALARY.toLocaleString()} VNĐ`,
-                `Mức lương đóng BH tối đa là ${MAXIMUM_BASIC_SALARY.toLocaleString()} VNĐ`
+                `Lương đóng BHXH không được thấp hơn ${MINIMUM_BASIC_SALARY.toLocaleString(locale)} VNĐ`,
+                `Mức lương đóng BH tối đa là ${MAXIMUM_BASIC_SALARY.toLocaleString(locale)} VNĐ`
             );
             if (rangeValidation.error) {
                 newErrors.basicSalary = rangeValidation.error;
@@ -145,7 +136,7 @@ export default function TaxCalculator(): JSX.Element {
         } else if (!formData.onProbation && parseFloat(String(formData.grossSalary)) < parseFloat(String(formData.basicSalary))) {
             newErrors.grossSalary = "Tổng thu nhập trước thuế phải lớn hơn lương đóng BH";
         } else if (formData.onProbation && parseFloat(String(formData.grossSalary)) < LOWEST_PROBATION_SALARY_TO_BE_TAXED) {
-            newWarnings.grossSalary = `Thử việc dưới 3 tháng có mức lương thấp hơn ${LOWEST_PROBATION_SALARY_TO_BE_TAXED.toLocaleString()} VNĐ không bị khấu trừ thuế`;
+            newWarnings.grossSalary = `Thử việc dưới 3 tháng có mức lương thấp hơn ${LOWEST_PROBATION_SALARY_TO_BE_TAXED.toLocaleString(locale)} VNĐ không bị khấu trừ thuế`;
         }
 
         const dependantsError = validateNonNegative(formData.dependants);
@@ -156,6 +147,7 @@ export default function TaxCalculator(): JSX.Element {
 
         if (formData.onProbation) {
             const probationError = validateRequiredNumber(formData.probationPercentage, "probationPercentage");
+
             if (probationError) {
                 newErrors.probationPercentage = probationError;
             } else {
@@ -178,16 +170,17 @@ export default function TaxCalculator(): JSX.Element {
         const isValid = Object.keys(newErrors).length === 0;
 
         if (autoCalculate && isValid && hasCalculated) {
-            const calculationResult = calculateVietnamTax(
+            setResult(calculateVietnamTax(
                 parseFloat(String(formData.basicSalary)),
                 parseFloat(String(formData.grossSalary)),
                 normalizeNumber(formData.dependants, 0, parseInt),
                 formData.onProbation,
-                formData.onProbation ? parseFloat(String(formData.probationPercentage)) : MAXIMUM_PROBATION_PERCENTAGE,
+                formData.onProbation
+                    ? parseFloat(String(formData.probationPercentage))
+                    : MAXIMUM_PROBATION_PERCENTAGE,
                 formData.isNewTaxPeriod,
                 normalizeNumber(formData.otherDeduction)
-            );
-            setResult(calculationResult);
+            ));
         } else if (autoCalculate && !isValid) {
             setResult(null);
         }
@@ -197,26 +190,31 @@ export default function TaxCalculator(): JSX.Element {
 
     useEffect(() => {
         validateAndCalculate(true);
-    }, [formData.onProbation, formData.isNewTaxPeriod]);
+    }, [formData.onProbation, formData.isNewTaxPeriod, locale]);
 
     // Sequence: exit old fields → swap display → enter new fields
     useEffect(() => {
-        if (formData.onProbation === prevOnProbation.current) return;
+        if (formData.onProbation === prevOnProbation.current) {
+            return;
+        }
+
         prevOnProbation.current = formData.onProbation;
 
         // Cancel any in-flight timers from rapid toggling
         animTimers.current.forEach(clearTimeout);
         animTimers.current = [];
 
-        setAnimState("exiting");
+        setAnimationState("exiting");
 
         const t1 = setTimeout(() => {
             // Swap the rendered group and start enter animation in one batch
-            setDisplayMode(formData.onProbation ? "probation" : "normal");
-            setAnimState("entering");
+            setDisplayMode(formData.onProbation
+                ? "probation"
+                : "normal");
+            setAnimationState("entering");
 
             const t2 = setTimeout(() => {
-                setAnimState("idle");
+                setAnimationState("idle");
             }, ENTER_DURATION);
             animTimers.current.push(t2);
         }, EXIT_DURATION);
@@ -238,24 +236,51 @@ export default function TaxCalculator(): JSX.Element {
         }));
     }, [useVietnameseLocale]);
 
+    // Sync form state to URL parameters
+    useEffect(() => {
+        if (typeof window === "undefined" || !urlActive) {
+            return;
+        }
+
+        const params = new URLSearchParams();
+
+        params.set("grossSalary", String(formData.grossSalary));
+        params.set("onProbation", String(formData.onProbation));
+        params.set("isVnLocale", String(useVietnameseLocale));
+
+        if (formData.onProbation) {
+            params.set("probationPercentage", String(formData.probationPercentage));
+        } else {
+            params.set("basicSalary", String(formData.basicSalary));
+            params.set("otherDeduction", String(formData.otherDeduction));
+            params.set("dependants", String(formData.dependants));
+            params.set("isPost2026", String(formData.isNewTaxPeriod));
+        }
+
+        window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+    }, [formData, useVietnameseLocale, urlActive]);
+
     const validateForm = (): boolean => {
         return validateAndCalculate(false);
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
+        setUrlActive(true);
 
         if (validateForm()) {
-            const result = calculateVietnamTax(
+            setResult(calculateVietnamTax(
                 parseFloat(String(formData.basicSalary)),
                 parseFloat(String(formData.grossSalary)),
                 normalizeNumber(formData.dependants, 0, parseInt),
                 formData.onProbation,
-                formData.onProbation ? parseFloat(String(formData.probationPercentage)) : MAXIMUM_PROBATION_PERCENTAGE,
+                formData.onProbation
+                    ? parseFloat(String(formData.probationPercentage))
+                    : MAXIMUM_PROBATION_PERCENTAGE,
                 formData.isNewTaxPeriod,
                 normalizeNumber(formData.otherDeduction)
-            );
-            setResult(result);
+            ));
+
             setHasCalculated(true);
         }
     };
@@ -284,7 +309,9 @@ export default function TaxCalculator(): JSX.Element {
                             <input
                                 type="checkbox"
                                 checked={useVietnameseLocale}
-                                onChange={(e) => setUseVietnameseLocale(e.target.checked)}
+                                onChange={(e: {
+                                    target: { checked: boolean | ((prevState: boolean) => boolean); };
+                                }) => setUseVietnameseLocale(e.target.checked)}
                             />
                             <span className={styles.slider}></span>
                         </label>
@@ -320,9 +347,11 @@ export default function TaxCalculator(): JSX.Element {
                 {displayMode === "normal" && (
                     <div className={clsx(
                         styles.fieldGroupAnimWrapper,
-                        animState === "exiting" ? styles.fieldGroupExit :
-                            animState === "entering" ? styles.fieldGroupEnter :
-                                undefined
+                        animationState === "exiting"
+                            ? styles.fieldGroupExit
+                            : animationState === "entering"
+                                ? styles.fieldGroupEnter
+                                : undefined
                     )}>
                         <div className={styles.inputWrapper}>
                             <fieldset
@@ -426,9 +455,11 @@ export default function TaxCalculator(): JSX.Element {
                 {displayMode === "probation" && (
                     <div className={clsx(
                         styles.fieldGroupAnimWrapper,
-                        animState === "exiting" ? styles.fieldGroupExit :
-                            animState === "entering" ? styles.fieldGroupEnter :
-                                undefined
+                        animationState === "exiting"
+                            ? styles.fieldGroupExit
+                            : animationState === "entering"
+                                ? styles.fieldGroupEnter
+                                : undefined
                     )}>
                         <div className={clsx(styles.inputWrapper, "margin-bottom--md")}>
                             <fieldset
@@ -521,7 +552,7 @@ export default function TaxCalculator(): JSX.Element {
 
                         <hr/>
 
-                        {!result.isProbation && (
+                        {!result.isProbation && result.nonProbation && (
                             <div className={styles.resultItem}>
                                 <span>Tổng đóng BH:</span>
                                 <span className={styles.resultValue}>

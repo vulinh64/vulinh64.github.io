@@ -59,6 +59,8 @@ export const MINIMUM_PROBATION_PERCENTAGE = 85;
 export const MAXIMUM_PROBATION_PERCENTAGE = 100;
 export const LOWEST_PROBATION_SALARY_TO_BE_TAXED = 2000000;
 
+export const EMPTY = "";
+
 // @ts-ignore
 export const TAX_LEVELS: Record<boolean, TaxLevel> = {
     false: [
