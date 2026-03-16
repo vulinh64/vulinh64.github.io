@@ -195,7 +195,7 @@ Create a local instance of PostgreSQL, using the `postgres:alpine` image:
 <TabItem value="windows" label="Windows">
 
 ```shell
-docker run --detach --name postgresql -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=123456" -e "POSTGRES_DB=mydatabase" -p 5432:5432 -v postgresql-volume:/var/lib/postgresql/data postgres:alpine
+docker run --detach --name postgresql -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=123456" -e "POSTGRES_DB=mydatabase" -p 5432:5432 -v postgresql-volume:/var/lib/postgresql postgres:alpine
 ```
 
 </TabItem>
@@ -210,7 +210,7 @@ docker run \
   -e "POSTGRES_PASSWORD=123456" \
   -e "POSTGRES_DB=mydatabase" \
   -p 5432:5432 \
-  -v postgresql-volume:/var/lib/postgresql/data \
+  -v postgresql-volume:/var/lib/postgresql \
   postgres:alpine
 ```
 
