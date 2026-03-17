@@ -163,6 +163,8 @@ if (log.isDebugEnabled()) {
 
 Ugly? Slightly. Effective? Completely. Works everywhere, requires no special versions of anything, and has been saving developer lives since before you could drive.
 
+That said, methods like `Instant.now()`, `LocalDateTime.now()`, or similar inexpensive methods should be cheap enough to not require a guard clause, but if you're doing anything more expensive than that, you should be asking yourself whether it belongs in a log statement at all. If it's important enough to log, it's important enough to be calculated regardless of log level. If it's not important enough to be calculated, maybe it doesn't need to be logged at all. Just some food for thought.
+
 :::warning[Cognitive Complexity]
 
 One small catch though: that `if` statement is a branch, and Sonar will dutifully count it toward your cognitive complexity score like the little hall monitor it is. It also means your test suite needs to cover both the enabled and disabled paths, or your code coverage metric starts giving you the side-eye. If you care about either of those things (and your tech lead might care on your behalf), Option B sidesteps both problems entirely.
@@ -182,7 +184,13 @@ That lambda means `someCalculation()` only runs if debug logging is actually ena
 
 Other logging frameworks have similar APIs, but SLF4J's is particularly elegant.
 
-## Advice #4: Pass `e`, Not `e.getMessage()`
+:::note
+
+Yes, using log builder and lambda expressions will incur a slight overhead. And also yes, this is still much cheaper than any kind of eager evaluation. If you have a hot path where even the lambda overhead is too much, you can always fall back to the guard clause. The key is to be intentional about it and understand the trade-offs.
+
+:::
+
+## Advice #4: Pass the Exception `e`, Not `e.getMessage()` Info!
 
 Picture this: production is down. Users are angry. Your Slack is a horror show. You crack open the logs and you find this:
 

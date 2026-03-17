@@ -149,3 +149,7 @@ See the [full article](./2025-12-22-spring-boot-exception-handler.md) for some s
 ## Cute Annotations? Remember Where to Put It
 
 Full article is [here](./2026-03-13-how-to-use-aop-annotations-correctly.md), please come and read it.
+
+## Logging Correctly? Both Easy and Hard
+
+Read the [full article](./2026-03-16-how-to-log-correctly-in-java.md), and give me your thought!
