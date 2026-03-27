@@ -1,3 +1,7 @@
+ai:
+  label: "A.I."
+  description: "Well, A.I., I guess?"
+  permalink: /ai
 docker:
   label: "Docker"
   description: "A platform for containerizing and running applications."
