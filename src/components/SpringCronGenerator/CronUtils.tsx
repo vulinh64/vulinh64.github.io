@@ -39,6 +39,7 @@ import {
     TYPE_NTH,
     TYPE_RANGES,
     TYPE_SPECIFIC,
+    TYPE_UNSPECIFIED,
     WEEK_DAYS,
     WEEKDAY_MON
 } from "./Const";
@@ -357,15 +358,20 @@ export const getInitialState = (
         error: TEXT_EMPTY
     };
 
-    // Check if running in a browser environment
     if (isNotBrowser()) {
-        return initialState; // Return default state for non-browser environments
+        return initialState;
     }
 
     const urlParams = new URLSearchParams(window.location.search);
 
     const optionIndex = parseInt(urlParams.get(optionParam) || '-1', DEFAULT_RADIX);
     const [arg1, arg2, arg3] = argParams.map(param => urlParams.get(param));
+
+    // Explicit -1 for day fields means TYPE_UNSPECIFIED (Quartz mode)
+    if (optionIndex === -1 && (isDayOfMonth(name) || isDayOfWeek(name)) && urlParams.has(optionParam)) {
+        initialState.option = TYPE_UNSPECIFIED;
+        return initialState;
+    }
 
     if (optionIndex < 0 || optionIndex >= validOptions.length || !validOptions[optionIndex]) {
         return initialState;
@@ -489,6 +495,14 @@ export const updateUrlParams = (
 
     const {optionParam, argParams, validOptions} = urlConfig;
     const urlParams = new URLSearchParams(window.location.search);
+
+    if ((isDayOfMonth(name) || isDayOfWeek(name)) && state.option === TYPE_UNSPECIFIED) {
+        urlParams.set(optionParam, '-1');
+        argParams.forEach(param => urlParams.delete(param));
+        window.history.replaceState({}, TEXT_EMPTY, `${window.location.pathname}?${urlParams.toString()}`);
+        return;
+    }
+
     const optionIndex = validOptions.indexOf(state.option);
 
     if (optionIndex === -1) {

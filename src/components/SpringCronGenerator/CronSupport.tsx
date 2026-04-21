@@ -68,6 +68,8 @@ import {
     TYPE_NTH,
     TYPE_RANGES,
     TYPE_SPECIFIC,
+    TYPE_UNSPECIFIED,
+    QUARTZ_WILDCARD,
     WEEK_DAYS,
     WEEKDAY_INPUT_FIELD,
     WEEKDAY_MON,
@@ -106,6 +108,8 @@ export interface CronPartProps {
     name: string;
     plural: string;
     onExpressionChange: (expression: string) => void;
+    quartzMode?: boolean;
+    quartzForceUnspecified?: boolean;
 }
 
 export type OptionType = typeof TYPE_EVERY
@@ -116,7 +120,8 @@ export type OptionType = typeof TYPE_EVERY
     | typeof TYPE_NTH
     | typeof TYPE_LAST
     | typeof TYPE_LAST_WEEKDAY
-    | typeof TYPE_INTERVAL_BETWEEN;
+    | typeof TYPE_INTERVAL_BETWEEN
+    | typeof TYPE_UNSPECIFIED;
 
 export interface CronPartState {
     option: OptionType;
@@ -140,7 +145,7 @@ export interface UrlParamConfig {
     maxVal: number;
 }
 
-export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange}) => {
+export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionChange, quartzMode = false, quartzForceUnspecified = false}) => {
     const config = cronPartConfig[name];
 
     const urlConfig: UrlParamConfig = useMemo(() => ({
@@ -166,6 +171,21 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
         () => [...state.selectedWeekdays].sort((a, b) => weekdayOrder[a] - weekdayOrder[b]),
         [state.selectedWeekdays]
     );
+
+    useEffect(() => {
+        if (quartzForceUnspecified) {
+            setState(prev => ({...prev, option: TYPE_UNSPECIFIED, error: TEXT_EMPTY}));
+        }
+    }, [quartzForceUnspecified]);
+
+    const prevQuartzModeRef = useRef(quartzMode);
+    useEffect(() => {
+        const prev = prevQuartzModeRef.current;
+        prevQuartzModeRef.current = quartzMode;
+        if (prev && !quartzMode && (isDayOfMonth(name) || isDayOfWeek(name))) {
+            setState(s => s.option === TYPE_UNSPECIFIED ? {...s, option: TYPE_EVERY, error: TEXT_EMPTY} : s);
+        }
+    }, [quartzMode, name]);
 
     const handleMonthChange = useCallback((month: string) => {
         setState(prev => ({
@@ -270,12 +290,16 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
             }
 
             if (isAnyNilOrEmpty(newError)) {
-                const generator = expressionGeneratorMatrix[name]?.[options.type];
-
-                if (generator) {
-                    expression = generator(options);
+                if (options.type === TYPE_UNSPECIFIED) {
+                    expression = QUARTZ_WILDCARD;
                 } else {
-                    throw new CronError(`Invalid option '${options.type}' for cron part '${name}'`);
+                    const generator = expressionGeneratorMatrix[name]?.[options.type];
+
+                    if (generator) {
+                        expression = generator(options);
+                    } else {
+                        throw new CronError(`Invalid option '${options.type}' for cron part '${name}'`);
+                    }
                 }
             }
 
@@ -381,6 +405,9 @@ export const CronPart: React.FC<CronPartProps> = ({name, plural, onExpressionCha
                     onChange={(e: { target: { value: string; }; }) => handleOptionChange(e.target.value as OptionType)}
                     className={clsx(styles.optionSelect, 'margin-top--md', 'margin-bottom--md')}
                 >
+                    {quartzMode && (isDayOfMonth(name) || isDayOfWeek(name)) && (
+                        <option value={TYPE_UNSPECIFIED}>Unspecified</option>
+                    )}
                     <option value={TYPE_EVERY}>Every {name}</option>
                     <option value={TYPE_INTERVAL}>Every N {name}</option>
                     <option value={TYPE_BETWEEN}>Between {name} range</option>

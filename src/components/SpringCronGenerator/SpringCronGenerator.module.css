@@ -371,3 +371,61 @@
     outline: none;
     border-color: var(--ifm-color-primary);
 }
+
+.toggleContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    padding: 0.5em 0;
+    width: 100%;
+}
+
+.toggleLabel {
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 3em;
+    height: 1.6em;
+    flex-shrink: 0;
+}
+
+.toggleSwitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggleSlider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--ifm-toc-border-color);
+    border-radius: 1.6em;
+    transition: background-color 0.25s;
+}
+
+.toggleSlider::before {
+    position: absolute;
+    content: '';
+    height: 1.2em;
+    width: 1.2em;
+    left: 0.2em;
+    bottom: 0.2em;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.25s;
+}
+
+.toggleSwitch input:checked + .toggleSlider {
+    background-color: var(--ifm-color-primary);
+}
+
+.toggleSwitch input:checked + .toggleSlider::before {
+    transform: translateX(1.4em);
+}
