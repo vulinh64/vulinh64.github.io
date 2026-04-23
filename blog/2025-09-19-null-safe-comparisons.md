@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 You probably won't need to sort your list of objects with custom comparison very often. But when you do... well, buckle up boys, because we're going on a wild ride!
 
-<!-- truncate -->
+{/* truncate */}
 
 Alright, alright, I hear you Kotlin fanboys screaming "*BUT KOTLIN HAS NULL SAFETY!*" 🤡 from the back of the room. Cool story bro, but we're doing Java today, so you can grab your fancy null safety and go hang out with the Rust evangelists at the hipster coffee shop. The rest of us mortals are stuck dealing with the age-old nemesis: `null`. And spoiler alert, it's not going anywhere anytime soon.
 

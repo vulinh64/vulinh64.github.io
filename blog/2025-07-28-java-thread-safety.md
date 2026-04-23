@@ -8,7 +8,7 @@ description: Everything you need to know about creating singleton objects in Jav
 
 This guide is your trusty sidekick on a quest to make your Java apps behave in a polite, orderly, and thread-safe manner. We'll go from making your code so chill it doesn't even have state, to wielding mighty locking mechanisms that make sure everyone takes turns.
 
-<!-- truncate -->
+{/* truncate */}
 
 So, you're in a tech interview, heart pounding, and they hit you with the classic:
 

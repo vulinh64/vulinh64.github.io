@@ -14,7 +14,7 @@ import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 
 What is defensive copy? What defensive copy?
 
-<!-- truncate -->
+{/* truncate */}
 
 ## The Wild ~~West~~ Collections Era
 

@@ -8,7 +8,7 @@ description: How to use new OpenFeign's QueryDSL
 
 Guide on how to make use of new QueryDSL fork by OpenFeign team.
 
-<!--truncate-->
+{/* truncate */}
 
 :::note
 

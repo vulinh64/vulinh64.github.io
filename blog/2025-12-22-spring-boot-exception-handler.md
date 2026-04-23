@@ -14,7 +14,7 @@ import TabItem from '@theme/TabItem';
 
 The quickest, cleanest, and easiest way to handle exceptions for requests in Spring Boot like a professional programmer in enterprises (or at least look like one).
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Introduction
 

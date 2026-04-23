@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 Here are some non-exhaustive battle-tested tips and tricks for coding with Java (yes, yes, I hear you muttering about Kotlin, Go, or C#, but if Java is currently keeping the lights on and ramen in your bowl, then buckle up and keep reading).
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Prefer Returning `java.util.Optional` Over `null`
 

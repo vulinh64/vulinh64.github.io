@@ -12,7 +12,7 @@ Wanna have fun with Spring Boot? Check those tips and tricks out!
 
 For more dedicated coding tips and tricks in general, see [this article](2025-08-22-java-coding-tips-and-tricks.md).
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Use Java Records for Configuration Properties
 

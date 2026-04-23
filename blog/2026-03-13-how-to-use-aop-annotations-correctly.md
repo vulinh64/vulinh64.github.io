@@ -15,7 +15,7 @@ So you've discovered the magical world of `@Transactional`, `@Async`, `@Cacheabl
 
 Under the hood, Spring AOP works by wrapping your beans in **proxy objects**. Those fancy annotations only fire when a call passes through that proxy. Break the rules and Spring silently does nothing: no error, no warning, just broken behavior at 2 AM while your on-call phone buzzes and the server fans spin up to jet engine levels.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## The Uncompromised Rules
 

@@ -14,7 +14,7 @@ import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 
 Stream Gatherers are basically custom superpowers for your Stream API (they return another `Stream` and mostly just chill until a terminal operation shows up to actually do the work, basically intermediate operations). This JEP is like giving the Stream API steroids: now you can bend streams to your will in ways that would make previous Java developers weep tears of pure joy.
 
-<!-- truncate -->
+{/* truncate */}
 
 This article is a part of the original article [here](./2025-08-18-java-25-new-features.md).
 

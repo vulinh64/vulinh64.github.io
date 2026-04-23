@@ -10,7 +10,7 @@ image: ./thumbnails/2025-08-20-funny-java-comments-2.png
 
 Continuing from [part 1](2025-07-21-funny-java-comments-1.md), we bask ourselves in some of the "funniest" comments found in various Java libraries.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## What Was a [Charmander](https://www.pokemon.com/us/pokedex/charmander) Doing Here?
 

@@ -12,7 +12,7 @@ import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 
 Java's getting a makeover, and honestly, it's about time. Let's see how the JDK is slowly but surely making Java less intimidating for folks who just want to print "Hello, World!" without summoning the ancient spirits of enterprise development.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## The Ancient Dark Arts (Pre-JDK 7)
 

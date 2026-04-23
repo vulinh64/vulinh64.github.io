@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 A simple cheat sheet for some of the most common `docker run` commands. Suitable for development environments, but more tinkering is needed if you want to run production-grade containers.
 
-<!-- truncate -->
+{/* truncate */}
 
 :::warning
 

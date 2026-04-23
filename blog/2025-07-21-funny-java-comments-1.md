@@ -10,7 +10,7 @@ image: ./thumbnails/2025-07-21-funny-java-comments-1.png
 
 Here are some of the funniest comments I've discovered while "spelunking" through Java's source code: from the JDK itself to various libraries. These gems prove that even the most serious enterprise code can't suppress the human spirit (and occasional frustration) of its creators.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Jackson Team Was Clearly Annoyed by Eclipse (But Not IntelliJ)
 

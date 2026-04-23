@@ -19,7 +19,7 @@ You've probably repeated this wisdom during countless interviews, nodding sagely
 
 Have you ever actually questioned ***why***?
 
-<!-- truncate -->
+{/* truncate */}
 
 Good news! Being a skeptic in 2025 won't get you burned at the stake like it would have in medieval times (~~or being forced to work with JDK version less than 8~~). Doubt is not just allowed; it's practically a requirement for integrity in software engineering. So let's put on our skeptic hats and actually investigate this claim.
 

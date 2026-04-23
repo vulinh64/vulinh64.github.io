@@ -15,7 +15,7 @@ import TabItem from '@theme/TabItem';
 
 The usage of Project Lombok's different annotations for specialized use cases (and how to avoid becoming the person everyone blames when the build breaks).
 
-<!-- truncate -->
+{/* truncate */}
 
 ## TL;DR
 

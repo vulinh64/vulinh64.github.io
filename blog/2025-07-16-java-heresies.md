@@ -8,7 +8,7 @@ description: Some of Java's strangest and weird quirks
 
 You can be sure that Java does have its set of intricate and quirks. Are they funny or harmful. You will decide right away!
 
-<!-- truncate -->
+{/* truncate */}
 
 Over its long and storied journey, Java has collected a fascinating gallery of quirks: vestiges of a different era, curious design trade-offs, and syntax that just makes you tilt your head. Some might even call them... heresies.
 

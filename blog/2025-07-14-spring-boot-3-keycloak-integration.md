@@ -12,7 +12,7 @@ import { QuestionAnswerBox, Question, Answer } from '@site/src/components/Questi
 
 This is a comprehensive guide on how to integrate KeyCloak into your Spring Boot application.
 
-<!--truncate-->
+{/* truncate */}
 
 ## TL;DR
 

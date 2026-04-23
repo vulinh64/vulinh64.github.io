@@ -8,7 +8,7 @@ description: Everything you need to know about creating singleton objects in Jav
 
 Singleton and its (also singleton) friends are here to rescue (or ruin) your day, depending on how you implement them! Buckle up for a journey through the good, the bad, and the "why does this even compile?"
 
-<!-- truncate -->
+{/* truncate */}
 
 ## When Does Singleton Actually Make Sense?
 

@@ -14,7 +14,7 @@ Why do we still cling to the ancient dogma of single `Service` and single `Servi
 
 This will be a very long rant post. I've put some sections into expandable boxes so that you can read them only when you need to.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Abstraction (Yes, Why Not?)
 

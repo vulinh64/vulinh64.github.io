@@ -12,7 +12,7 @@ So, Java is dead. Again. For the 4996th time this year, apparently.
 
 If I got one dollar every time I heard that phrase, I would be richer than Elon Musk in a matter of months. Seriously, I could probably buy Twitter myself and rename it back to something sensible.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## The Uncomfortable Truth
 

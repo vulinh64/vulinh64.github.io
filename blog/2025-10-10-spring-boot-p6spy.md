@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 This tutorial shows how to use P6Spy to inspect generated SQL statements when debugging a Spring Boot application. Because let's face it, squinting at TRACE logs is about as fun as a root canal.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## TL;DR
 

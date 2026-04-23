@@ -15,7 +15,7 @@ import TabItem from '@theme/TabItem';
 
 Đây là bài viết hướng dẫn nhanh cách các bạn tự tính thuế TNCN và thu nhập thực nhận của bạn theo luật LĐ của Việt Nam, tính đến thời điểm hiện tại (2025).
 
-<!-- truncate -->
+{/* truncate */}
 
 <sub>Nguồn ảnh: [luatvietnam.vn](https://english.luatvietnam.vn/latest-news/2-cases-are-ineligible-for-personal-income-tax-exemption-in-house-trading-4727-97267-article.html)</sub>
 

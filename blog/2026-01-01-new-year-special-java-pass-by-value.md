@@ -12,7 +12,7 @@ import YoutubePlayer from '@site/src/components/YoutubePlayer/YoutubePlayer';
 
 Look, I'm just going to say it: Java is always pass-by-value. No exception. Period. End of story.
 
-<!-- truncate -->
+{/* truncate */}
 
 Oracle said it.
 

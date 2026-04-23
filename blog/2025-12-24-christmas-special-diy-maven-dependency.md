@@ -10,7 +10,7 @@ image: ./thumbnails/2025-12-24-christmas-special-diy-maven-dependency.png
 
 Or how I learned from my silly mistakes when creating myself a common Maven dependency.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## The Pain Begins
 

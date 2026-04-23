@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 Today we're going on a container diet journey that'll make your Spring Boot apps leaner than the bloated things you often see during your Docker builds.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## TL;DR
 

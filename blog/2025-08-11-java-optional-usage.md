@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 Are you sure you have used `Optional` the right way?
 
-<!-- truncate -->
+{/* truncate */}
 
 So, JDK 8 dropped `java.util.Optional` on us, and half the developer community was like "Meh, just another way to avoid `NullPointerException`" while the other half started writing Medium articles about monads. 
 

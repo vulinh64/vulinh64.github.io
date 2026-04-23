@@ -12,7 +12,7 @@ import { CJK } from '@site/src/components/CJK/cjk.tsx';
 
 Listen, I'm just going to say it: dealing with date and time in programming is [***one of the circles of hell Dante forgot to mention***](https://en.wikipedia.org/wiki/Inferno_(Dante)). It's right there between "*people who talk in movie theaters*" and "*folks who don't use version control.*"
 
-<!-- truncate -->
+{/* truncate */}
 
 ## The Earth Is Big
 

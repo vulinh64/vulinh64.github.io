@@ -44,6 +44,10 @@ export const TYPE_LAST_WEEKDAY = 'lastWeekday';
 
 export const TYPE_INTERVAL_BETWEEN = 'intervalBetween';
 
+export const TYPE_UNSPECIFIED = 'unspecified';
+
+export const QUARTZ_WILDCARD = '?';
+
 export const WEEKDAY_MON = 'MON';
 
 export const WEEKDAY_SUN = 'SUN';

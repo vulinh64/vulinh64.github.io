@@ -8,7 +8,7 @@ description: Swapping two numbers in Java and its intricate.
 
 The classic swapping two numbers. But there are more than it seems!
 
-<!--truncate-->
+{/* truncate */}
 
 Look here, the classic CS 101 swapping two variables:
 

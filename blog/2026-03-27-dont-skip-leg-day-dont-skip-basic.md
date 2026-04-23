@@ -10,7 +10,7 @@ thumbnail: 2026-03-27-dont-skip-leg-day-dont-skip-basic.png
 
 The A.I. storm is approaching, provoking dread and fear in isolation!
 
-<!-- truncate -->
+{/* truncate */}
 
 We are living in strange, weird, and honestly kind of hilarious times.
 

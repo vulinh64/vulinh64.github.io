@@ -10,7 +10,7 @@ thumbnail: 2026-03-16-how-to-log-correctly-in-java.png
 
 Today's lesson: logging. I know, I know. "*It's just printing stuff.*" Sure. And a forest fire is "*just a candle*". Let's talk.
 
-<!-- truncate -->
+{/* truncate */}
 
 Congratulations, you graduated! You survived four years of instant noodle, existential dread, and professors who thought 8 AM lectures were a great idea. You built a to-do app. You put it on GitHub. You even wrote a README (half of it, anyway) and made some fancy CI/CD pipelines. Now you've landed your first real Java job (assuming A.I left anything to salvage) and you're about to discover that everything you think you know about software is, to put it professionally, adorable.
 
