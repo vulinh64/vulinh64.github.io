@@ -37,6 +37,11 @@ jdk25:
   description: "Java Development Kit version 25, the latest long-term support release.."
   permalink: /jdk25
 
+jpa:
+  label: "JPA"
+  description: "Java Jakarta Persistence API"
+  permalink: /jpa
+
 keycloak:
   label: "KeyCloak"
   description: "An open-source identity and access management solution."
