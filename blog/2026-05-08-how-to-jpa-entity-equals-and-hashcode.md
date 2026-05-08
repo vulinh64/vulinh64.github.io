@@ -8,7 +8,7 @@ image: ./thumbnails/2026-05-08-how-to-jpa-entity-equals-and-hashcode.png
 thumbnail: 2026-05-08-how-to-jpa-entity-equals-and-hashcode.png
 ---
 
-Sometimes, you wonder why JPA entities are very different beast type in the large world of Java.
+Sometimes, you wonder why JPA entities are a very different beast type in the large world of Java.
 
 {/* truncate */}
 
@@ -16,11 +16,11 @@ Sometimes, you wonder why JPA entities are very different beast type in the larg
 
 * Go read [this article](https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/). Seriously. But if you're the type who likes to suffer through my rambling first, grab your coffee and settle in.
 
-* Copy and paste everything from [this class](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java), then let your JPA entities extend it (and perhaps override the `getIdType()` to return `IdType.CONCRETE` if any of your JPA entities has preset ID value).
+* Too long? Copy and paste everything from [this class](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java), then let your JPA entities extend it (and perhaps override the `getIdType()` to return `IdType.CONCRETE` if any of your JPA entities has preset ID value).
 
-Still with me? Good, now let's hear my long rambling below:
+Still with me? Good, now let's hear my long rambling below.
 
-## The Problem Nobody Talks About Until It's Too Late
+## The Problem Nobody Talks About (Until It's Too Late)
 
 Here's the dirty secret about JPA entities that they don't warn you about in those fancy enterprise architecture courses:
 
@@ -31,6 +31,8 @@ Here's the dirty secret about JPA entities that they don't warn you about in tho
 * **Transient**: freshly `new`'d up. ID is `null`. The database has never heard of it.
 
 * **Persisted**: after `persist()` / `save()`. ID is suddenly populated, either by the database (sequence, identity column) or by the ORM itself (UUID generator, table generator, and so on).
+
+> The detached state is a different thing, but basically, it comes out from persisted state with an ID, then the entity manager doesn't care for it anymore. Still with an ID.
 
 Your entity quite literally becomes a different person mid-lifecycle.
 
@@ -166,21 +168,25 @@ public class Customer {
 }
 ```
 
-Congratulations, you're knee-deep in hash-based collection territory. A broken `equals()`/`hashCode()` will quietly trash those collections during cascade saves, dirty checking, and orphan removal, and the framework will keep smiling at you the whole time. Switching to `List` doesn't save you either: half the time the framework picked the data structure for you and you don't get to argue.
+Congratulations, you're knee-deep in hash-based collection territory. A broken `equals()`/`hashCode()` will quietly trash those collections during cascade saves, dirty checking, and orphan removal, and the framework will keep smiling at you the whole time. 
+
+> Switching to `List` means you may lose some of the benefits of being a `Set` (for example, `@EntityGraph` with multiple attributes means you absolutely must use `Set`, or risk the wrath of `MultipleBagFetchException`. Try it out, and you will know why.
 
 <details>
 
-<summary>"Wait, what about the ***sorted*** cousins?" (a brief detour into `TreeSet`'s identity crisis)</summary>
+<summary>"*Wait, what about the ***sorted*** cousins?*" (a brief detour into `TreeSet`'s identity crisis)</summary>
 
 Oh, you noticed. Yes, Hibernate also ships `PersistentSortedSet` and `PersistentSortedMap`, the introverted siblings of the family, backed by `TreeSet` and `TreeMap`. They couldn't care less about `equals()`/`hashCode()`. They live and die by `Comparable`/`Comparator` instead. So technically, they're someone else's problem.
 
 But hold on. The *flavor* of disaster is suspiciously familiar:
 
-- **`Comparable` (natural ordering)**:for JPA entities, `compareTo()` is almost always written against the ID, because of course it is. Which means it inherits the exact same lifecycle bug we've been ranting about for the last few sections. Transient entity orders one way, persisted entity orders another, `TreeSet` quietly loses track of it. Same villain, different cape. Same fix: keep the ID immutable.
+- **`Comparable` (natural ordering)**: for JPA entities, `compareTo()` is almost always written against the ID, because of course it is. Which means it inherits the exact same lifecycle bug we've been ranting about for the last few sections. Transient entity orders one way, persisted entity orders another, `TreeSet` quietly loses track of it. Same villain, different cape. Same fix: keep the ID immutable.
 
 - **`Comparator` (custom ordering)**: *this* one is genuinely scary. Real-world code is full of `Comparator.comparing(User::getName)`, `Comparator.comparing(Order::getCreatedAt)`, `Comparator.comparing(Task::getStatus)`. These fields are not IDs. They are emphatically allowed to change. Names get edited. Orders get shipped. Statuses progress. And the second business logic mutates one of them on an entity already living inside a `TreeSet`, the ordering invariant is quietly violated. No transient-to-persisted plot twist required. A boring Tuesday afternoon is enough.
 
-The takeaway? With `Comparable`-based ordering, the same "ID is sacred" rule from the rest of this article keeps you alive. With `Comparator`-based ordering, either sort on a field that is itself immutable, or treat the `TreeSet`/`TreeMap` as a one-time snapshot and rebuild it after the mutation. Anything else is just a slower, more elegant footgun.
+With `Comparable`-based ordering, the same "ID is sacred" rule from the rest of this article keeps you alive. With `Comparator`-based ordering, either sort on a field that is itself immutable, or treat the `TreeSet`/`TreeMap` as a one-time snapshot and rebuild it after the mutation. Anything else is just a slower, more elegant footgun.
+
+Be careful!
 
 </details>
 
@@ -232,7 +238,7 @@ This is *perfect* because concrete ID entities should never have `null` IDs anyw
 
 ## The Full Implementation (Where the Magic Happens)
 
-Plot twist: you've already seen the spoiler. It's bullet #2 from the [TL;DR](#tldr). Grab the source from [`AbstractEntity` on GitHub](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java), drop it into your project, have your entities extend it, and go enjoy a coffee.
+You've already seen the spoiler. It's bullet #2 from the [TL;DR](#tldr). Grab the source from [`AbstractEntity` on GitHub](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java), drop it into your project, have your entities extend it, and go enjoy a coffee.
 
 <details>
 
@@ -252,25 +258,26 @@ That `final` is not a mood swing. It is load-bearing. Here is why I locked the d
 
 * **Subclasses helpfully "improving" things**: Without `final`, every entity that extends `AbstractEntity` is one well-meaning override away from re-introducing the exact bugs the rest of this article exists to prevent. Someone *will* think, "Oh, I'll just add a quick comparison on `email` here, no big deal." It is a big deal. Two seconds later you are back to mismatched buckets and ghost entities.
 
-* **Lombok's drive-by drive-bys**: Slap `@Data` or `@EqualsAndHashCode` on an entity and Lombok will cheerfully generate fresh `equals`/`hashCode` methods on the subclass, shadowing ours. `final` is the polite way to tell Lombok to take a walk. Don't let overly helpful Lombok ruin your day!
-
 * **The Hibernate proxy contract is delicate**: The whole "compare via effective class" dance only works if every entity in the hierarchy goes through the same code path. Allow overrides and any one entity can quietly opt out, breaking comparisons between proxies and real instances in genuinely mysterious ways.
 
 * **Future-you protection**: `final` is a love letter from current-you to 3 AM-you. Current-you knows the trade-offs. 3 AM-you, exhausted and Slack-pinged, will absolutely "just temporarily" override `equals` to ship a bug fix. `final` is the door slamming shut before you can do something you'll regret.
 
-If you genuinely believe you need different `equals`/`hashCode` semantics for a specific entity, that is a strong hint that entity does not want to extend `AbstractEntity`. Build a different base class. Do not smuggle exceptions through overrides.
+If you genuinely believe you need different `equals`/`hashCode` semantics for a specific entity, that is a strong hint that entity does not want to extend `AbstractEntity`. Build a different base class.
 
 </details>
 
 ## How to Use This Beautiful Thing
 
-Most of your entities? Just extend `AbstractEntity` and forget about implementing `equals()` and `hashCode()`. They'll work correctly with dynamic IDs right out of the box. No fuss. No muss.
+Most of your entities?
+
+Just extend `AbstractEntity` and forget about implementing `equals()` and `hashCode()`. They'll work correctly with dynamic IDs right out of the box. No fuss. No muss.
 
 Got a special snowflake entity with a concrete ID? Just override one method:
 
 ```java
 @Entity
 public class UserProfile extends AbstractEntity<String> {
+
   @Id
   private String username;  // Set by application before saving
 
@@ -296,7 +303,7 @@ Okay, real talk time. This is the part they don't teach in CS classes, but your 
 
 This means two things:
 
-1. **Never call `setId()`**. Once an entity is in a collection, cached, or in a persistence context, never change it via a setter.
+1. **Never call `setId()`**. Once an entity is in a collection, cached, or in a persistence context, never change it via a setter. For concrete, do not change after persisting.
 
 2. **Never mutate the ID's internal state**. If your ID is a composite key (like an `@EmbeddedId`), the object itself must be immutable. Don't just avoid setters; design the ID class as an immutable value type with no way to change its internal fields.
 
@@ -339,6 +346,7 @@ user.getId().setTenantId("tenant2");  // ☠️ DEAD INSIDE ☠️
 // GOOD: Immutable ID class
 @Embeddable
 public final class CompositeKey implements Serializable {
+
   private final String tenantId;
   private final String entityId;
 
@@ -348,6 +356,7 @@ public final class CompositeKey implements Serializable {
   }
 
   // Only getters, no setters
+  // Immutable fields can never have setters anyway
   public String getTenantId() { return tenantId; }
   public String getEntityId() { return entityId; }
 
@@ -388,6 +397,7 @@ Allergic to records? Or stuck on a project that hasn't been blessed with a runti
 @Value
 @Embeddable
 public class CompositeKey implements Serializable {
+
   String tenantId;
   String entityId;
 }
@@ -426,4 +436,4 @@ Your collections will be stable. Your entities will behave predictably. And mayb
 
 You're welcome. Now go forth and implement this. Your future self is counting on you.
 
-*P.S. If you implement a `setId()` method on your entities after reading this, we can't be friends anymore. I mean it.*
+*P.S. If you implement a `setId()` method on your entities after reading this, please reconsider. It is meaningless to do that to an entity with dynamic ID, and for concrete one, stay away from it after persisting. Maybe asking yourself if you would even need such a method in the first place.
