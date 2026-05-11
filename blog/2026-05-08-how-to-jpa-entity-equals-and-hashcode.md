@@ -14,9 +14,15 @@ Sometimes, you wonder why JPA entities are a very different beast type in the la
 
 ## TL;DR
 
-* Go read [this article](https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/). Seriously. But if you're the type who likes to suffer through my rambling first, grab your coffee and settle in.
+### If you are impatient
 
-* Too long? Copy and paste everything from [this class](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java), then let your JPA entities extend it (and perhaps override the `getIdType()` to return `IdType.CONCRETE` if any of your JPA entities has preset ID value).
+Go read [this article](https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/). Seriously. But if you're the type who likes to suffer through my rambling first, grab your coffee and settle in.
+
+### If you want a more in-depth approach?
+
+* Copy and paste everything from [this class](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java) and [this class](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/utils/JpaEntityUtils.java);
+
+* Then let your JPA entities extend it (and perhaps override the `getIdType()` to return `IdType.CONCRETE` if any of your JPA entities has preset ID value).
 
 Still with me? Good, now let's hear my long rambling below.
 
@@ -32,7 +38,11 @@ Here's the dirty secret about JPA entities that they don't warn you about in tho
 
 * **Persisted**: after `persist()` / `save()`. ID is suddenly populated, either by the database (sequence, identity column) or by the ORM itself (UUID generator, table generator, and so on).
 
-> The detached state is a different thing, but basically, it comes out from persisted state with an ID, then the entity manager doesn't care for it anymore. Still with an ID.
+:::note
+
+Pedants will note there's technically a third state: *detached*. That's an entity that was once persisted but is no longer attached to an `EntityManager`. Maybe the transaction ended. Maybe the request finished. Maybe it took a trip across the wire and came back. Either way, it still has an ID. Therefore, for `equals()`/`hashCode()` purposes it behaves exactly like a persisted entity. Same bucket, different label.
+
+:::
 
 Your entity quite literally becomes a different person mid-lifecycle.
 
@@ -44,7 +54,7 @@ If you only ever put entities in a `List`, you'd never notice. But the moment yo
 >
 > * You add a transient entity to a `HashSet`. `hashCode()` runs against a `null` ID and the entity gets tucked into bucket X.
 >
-> * You persist it. The ID is now `42`.
+> * You persist it. The ID is now `9999`.
 >
 > * The next `hashCode()` call returns a completely different value, pointing at bucket Y. The entity is still in the set, just permanently unreachable. It ghosted itself.
 
@@ -56,7 +66,53 @@ If you only ever put entities in a `List`, you'd never notice. But the moment yo
 
 About as useful as a screen door on a submarine.
 
-### And the naive `@Id`-based approach? It explodes catastrophically.
+### "*I'll Just Use `@Data`*", or the naive approach and its spectacular demise
+
+:::danger[The One Annotation You Must Never Reach For]
+
+Do not put `@Data` (or its accomplice `@EqualsAndHashCode` with default settings) on a JPA entity. Ever. The rest of this section explains why, but if you take only one sentence away from this article, take this one.
+
+:::
+
+Ah yes. The siren song of Lombok's `@Data`. One annotation, and you get `equals()`, `hashCode()`, `toString()`, getters, setters, basically everything! How could this go wrong?
+
+Spoiler alert: **So wrong on so many levels!**
+
+Let me paint you a picture of the disaster landscape:
+
+**Best case scenario:** You get some weird `LazyInitializationException` when `equals()` tries to traverse a lazily-loaded association that's no longer attached to a session. Or you get the N+1 query problem because `hashCode()` innocently triggers the loading of a lazy collection. And JPA, ever the eager helper, fires off a hundred queries you didn't ask for.
+
+**Worst case scenario:** `StackOverflowError`.
+
+Yes. **Stack. Overflow. Error.**
+
+Dare to venture into the utter darkness?
+
+<details>
+
+<summary>If it scares you? Read it so you will be less scared</summary>
+
+Here's why: JPA loves bidirectional relationships. `User` has a `List<Order>`, and each `Order` has a back-reference to `User`. Lombok's `@Data` happily generates `equals()` and `hashCode()` (and `toString()`) that **include all fields**, including those relationships.
+
+So when you call `user.equals(anotherUser)`, it tries to compare the `orders` list. To compare the `orders` list, it calls `equals()` on each `Order`. Each `Order` has a `user` field, so it calls `equals()` on `User` again. Which tries to compare the `orders` list. Which...
+
+```
+Exception in thread "main" java.lang.StackOverflowError
+    at com.example.User.equals(User.java:42)
+    at com.example.Order.equals(Order.java:31)
+    at com.example.User.equals(User.java:42)
+    at com.example.Order.equals(Order.java:31)
+    at com.example.User.equals(User.java:42)
+    ... (10,000 more lines that your scrollbar refuses to acknowledge)
+```
+
+It's almost *beautiful* in how completely it melts down. If you have godly amounts of memory, the stack trace alone will make your eyes water. After all, no amount of memory is going to handle a *theoretically infinite amount*. And if your app somehow survives long enough for you to scroll through it, you might even find it cathartic. Just like watching a sandcastle get annihilated by a wave in slow motion.
+
+The culprit? Lombok's `@Data` generates methods that include every field by default, without any awareness of JPA's circular-reference-friendly object graph. You'd need to litter your code with `@EqualsAndHashCode.Exclude` annotations on every relationship, at which point... you might as well just write the methods yourself.
+
+</details>
+
+### And the cautious `@Id`-based approach? It explodes catastrophically
 
 Here's what the naive version typically looks like. It's the kind of thing your IDE happily generates when you click "Generate equals() and hashCode()":
 
@@ -100,11 +156,11 @@ var user = new User();
 user.setName("Alice");
 
 var users = new HashSet<User>();
-users.add(user);          // hashCode() based on id == null -> goes into bucket X
+users.add(user);          // hashCode() based on id == null, mean 0 -> goes into bucket X
 
 entityManager.persist(user); // mutates the SAME user object in place; user.id is now 42
 
-users.contains(user);     // false. hashCode() now based on 42 -> looks in bucket Y
+users.contains(user);     // false. hashCode() now based on 9999 -> looks in bucket Y
 users.remove(user);       // does nothing. The entity is still in there, just unreachable.
 ```
 
@@ -116,19 +172,31 @@ You've just leaked an entity into a `HashSet` you can never get back. Two transi
 
 We need plan B:
 
-**Use the effective class's `hashCode()` instead.**
+**Use the class's `hashCode()` instead.**
 
-I know what you're thinking: "*Wait, if I use the class hash code, don't all instances of the same class get the same hash?*"
+<details>
 
-Yes. Yes, they do.
+<summary>`O(n)` or `O(log n)` Complexity?</summary>
 
-"*Isn't that terrible?*"
+I know exactly what you're thinking: "*Wait. If I use the class hash code, doesn't every instance of the same class collide into the same bucket?*"
 
-A slight speed bump, yes. But not too much.
+Yes. That is literally what happens. Every transient `User` you toss into a `HashSet` lands in the same slot. Welcome to bucket town. Population: all of you.
 
-Well, let's call it a "pragmatic trade-off."
+"*Isn't that... catastrophic?*"
 
-See, the beautiful thing about using the class hash code for transient entities is that it's *stable*. It doesn't change. Your entity can stay in a hash-based collection before persistence without causing any chaos. It's boring. It's predictable. It works.
+Honestly? No. It's mildly annoying at worst. Here is what actually happens under the hood:
+
+- **Before Java 8**: a crowded hash bucket degenerates into a linked list, and lookups in that bucket fall to O(n).
+
+- **Java 8 onward**: `HashMap` got smarter. Once a bucket accumulates enough entries (the threshold is 8, since you asked), it quietly *treeifies* itself into a red-black tree, dragging the worst case back down to O(log n).
+
+So the real cost is a `HashSet` that's slower-than-ideal for transient entities. **Slower, not broken.** And in practice, the collections we're talking about: `@OneToMany` sets, short-lived working sets in a service method, the like. They are small enough that the difference is statistically invisible. You will never measure it. Your profiler will never blame it. Your manager will never ask about it.
+
+Now compare that to the alternative: entities silently ghosting themselves the moment they get persisted, no exception thrown, no log line written, just quietly corrupted state festering in production for weeks until a customer screenshot lands in `#support`. Which one would *you* rather debug at 3 AM?
+
+Yeah. Thought so.
+
+</details>
 
 But here comes the Hibernate nightmare.
 
@@ -138,7 +206,9 @@ Hibernate doesn't just hand you plain entities. It loves to wrap them in proxies
 
 If you blindly call `getClass().hashCode()`, you might be comparing a real entity with a Hibernate proxy of that same entity. From `equals()` contract perspective, these are different classes. Your logic breaks. Again.
 
-The fix? **Use Hibernate's tools to get the effective class:**
+The fix?
+
+**Use Hibernate's tools to get the effective class:**
 
 ```java
 static Class<?> getEffectiveClass(Object object) {
@@ -150,11 +220,9 @@ static Class<?> getEffectiveClass(Object object) {
 
 This extracts the real underlying class from the proxy, so you can actually compare apples to apples. Problem solved. You're welcome.
 
-### "But I never put entities in a `HashSet` myself!"
+### "*But I never put entities in a `HashSet` myself!*"
 
-Cute. You think you can dodge this whole mess by simply… not using hash-based collections in your own code. Just stick to `List` everywhere, problem solved, time for lunch.
-
-I have bad news for you: Hibernate has been using them on your behalf this entire time. Behind your back. Under your nose. While you were drinking that lunch.
+But you do use `Set` or `Map` in your entity, in some cases.
 
 Map a `Set<Order>` or a `Map<String, Address>` on an entity and Hibernate doesn't politely ask if you'd like a `HashSet`. It hands you a `PersistentSet` (which is `HashSet` in a trench coat) or a `PersistentMap` (you get the idea). The instant a lazy collection wakes up, every child entity inside it gets `hashCode()` called on it to find its bucket. You don't get a say.
 
@@ -168,9 +236,15 @@ public class Customer {
 }
 ```
 
-Congratulations, you're knee-deep in hash-based collection territory. A broken `equals()`/`hashCode()` will quietly trash those collections during cascade saves, dirty checking, and orphan removal, and the framework will keep smiling at you the whole time. 
+Congratulations, you're knee-deep in hash-based collection territory. A broken `equals()`/`hashCode()` will quietly trash those collections during cascade saves, dirty checking, and orphan removal, and the framework will keep smiling at you the whole time.
 
-> Switching to `List` means you may lose some of the benefits of being a `Set` (for example, `@EntityGraph` with multiple attributes means you absolutely must use `Set`, or risk the wrath of `MultipleBagFetchException`. Try it out, and you will know why.
+:::warning
+
+Tempted to swap `Set` for `List` and dodge the whole conversation? Don't bother. The first time you try to eager-fetch two collections at once with `@EntityGraph`, Hibernate slaps you with a `MultipleBagFetchException`, as its polite way of saying "*two unordered `List`s in the same query would produce a Cartesian product, and I'd rather die than help you do that.*" `Set` collapses the duplicates; `List` doesn't. So you can't actually escape `Set`. The framework keeps dragging you back.
+
+:::
+
+And there are more, but not exactly unrelated to our article today. If you are curious and want to go deeper?
 
 <details>
 
@@ -180,9 +254,23 @@ Oh, you noticed. Yes, Hibernate also ships `PersistentSortedSet` and `Persistent
 
 But hold on. The *flavor* of disaster is suspiciously familiar:
 
-- **`Comparable` (natural ordering)**: for JPA entities, `compareTo()` is almost always written against the ID, because of course it is. Which means it inherits the exact same lifecycle bug we've been ranting about for the last few sections. Transient entity orders one way, persisted entity orders another, `TreeSet` quietly loses track of it. Same villain, different cape. Same fix: keep the ID immutable.
+**`Comparable` (natural ordering)**:
 
-- **`Comparator` (custom ordering)**: *this* one is genuinely scary. Real-world code is full of `Comparator.comparing(User::getName)`, `Comparator.comparing(Order::getCreatedAt)`, `Comparator.comparing(Task::getStatus)`. These fields are not IDs. They are emphatically allowed to change. Names get edited. Orders get shipped. Statuses progress. And the second business logic mutates one of them on an entity already living inside a `TreeSet`, the ordering invariant is quietly violated. No transient-to-persisted plot twist required. A boring Tuesday afternoon is enough.
+For JPA entities, `compareTo()` is almost always written against the ID, because of course it is. Which means it inherits the exact same lifecycle bug we've been ranting about for the last few sections. Transient entity orders one way, persisted entity orders another, `TreeSet` quietly loses track of it. Same villain, different cape. Same fix: keep the ID immutable.
+
+**`Comparator` (custom ordering)**:
+
+*This* one is genuinely scary. Real-world code is full of:
+
+* `Comparator.comparing(User::getName)`;
+
+* `Comparator.comparing(Order::getCreatedAt)`;
+
+* `Comparator.comparing(Task::getStatus)`.
+
+* And so on...
+
+These fields are not IDs. They are emphatically allowed to change. Names get edited. Orders get shipped. Statuses progress. And the second business logic mutates one of them on an entity already living inside a `TreeSet`, the ordering invariant is quietly violated. No transient-to-persisted plot twist required. A boring Tuesday afternoon is enough.
 
 With `Comparable`-based ordering, the same "ID is sacred" rule from the rest of this article keeps you alive. With `Comparator`-based ordering, either sort on a field that is itself immutable, or treat the `TreeSet`/`TreeMap` as a one-time snapshot and rebuild it after the mutation. Anything else is just a slower, more elegant footgun.
 
@@ -194,9 +282,9 @@ Be careful!
 
 Now here's where we get clever. Not all IDs are created equal in the JPA world. You've got two main flavors:
 
-1. **Dynamic IDs**: The database assigns them. Most common. Your problem child.
+* **Dynamic IDs**: The database assigns them. Most common. Your problem child.
 
-2. **Concrete IDs**: The application assigns them before persistence. These are stable from day one.
+* **Concrete IDs**: The application assigns them before persistence. These are stable from day one.
 
 With dynamic IDs, yeah, you're stuck using that class-based hashCode for transient entities. It's a compromise, and honestly? It's a good one.
 
@@ -226,19 +314,35 @@ public enum IdType {
 Override `getIdType()` to return `CONCRETE` and suddenly your `equals()` and `hashCode()` use the actual ID. And here's the beautiful part: if someone tries to use a concrete ID entity without setting an ID first, we throw an exception:
 
 ```java
-private void throwIfNullConcreteId() {
-  if (getIdType() == IdType.CONCRETE) {
+private static void throwIfNullConcreteId(AbstractEntity<?> self) {
+  if (self.getIdType() == IdType.CONCRETE && self.getId() == null) {
     throw new ConcreteEntityIdMissingException(
-        "CONCRETE entity %s has null id".formatted(getEffectiveClass(this).getName()));
+        "CONCRETE entity %s has null id".formatted(getEffectiveClass(self).getName()));
   }
 }
 ```
 
 This is *perfect* because concrete ID entities should never have `null` IDs anyway. They can't be persisted in that state. So failing fast and loud is exactly what you want. No silent corruption. No mysterious bugs. Just a clear error message telling you exactly what's wrong.
 
+:::note[A quick word on why this exception is a *custom* one]
+
+You'll notice we throw a [custom `ConcreteEntityIdMissingException`](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/exception/ConcreteEntityIdMissingException.java) here. The JVM, frankly, doesn't care; `throw` accepts any `Throwable`. You could fling an `IllegalStateException`, a bare `RuntimeException`, or, if you're feeling truly chaotic, an `Error` subclass. Please don't pick that last one: `Error` is reserved for "*the JVM itself is on fire*" moments like `OutOfMemoryError` and `StackOverflowError`, and using it for application logic is like calling the fire department because your toast came out a little dark.
+
+So why bother with a custom type? Boring, practical reasons. `@ControllerAdvice` / `@ExceptionHandler` can pattern-match the type precisely without doing string surgery on the message. Your observability stack (Sentry, Prometheus, whatever) can count occurrences as its own dedicated metric. A `grep` over log files finds every offender by class name. `IllegalStateException` says "*something went wrong somewhere.*" `ConcreteEntityIdMissingException` says "*this exact contract was violated, by this exact class, right here.*" 3 AM-you will appreciate the specificity.
+
+:::
+
 ## The Full Implementation (Where the Magic Happens)
 
-You've already seen the spoiler. It's bullet #2 from the [TL;DR](#tldr). Grab the source from [`AbstractEntity` on GitHub](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java), drop it into your project, have your entities extend it, and go enjoy a coffee.
+You've already seen the spoiler. It's bullet #2 from the [TL;DR](#tldr). Grab the source from:
+
+ * [`AbstractEntity` on GitHub](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/data/base/AbstractEntity.java);
+
+ * and [`JpaEntityUtils` on GitHub](https://github.com/vulinh64/spring-base-commons/blob/main/src/main/java/com/vulinh/utils/JpaEntityUtils.java);
+
+ * Drop it into your project, have your entities extend it, and go enjoy a coffee.
+
+And you may have questions:
 
 <details>
 
@@ -295,17 +399,27 @@ public class UserProfile extends AbstractEntity<String> {
 
 Done. Your `equals()` and `hashCode()` now respect your preset IDs, and you get an immediate exception if someone tries to persist without setting the ID first.
 
+:::tip[SONARQUBE WARNINGS?]
+
+Cannot `extends AbstractEntity` because of SonarQube warnings about inheritance hierarchy? Just make the entity call `jpaEquals` and `jpaHashCode` from `JpaEntityUtils` and get the benefits.
+
+:::
+
 ## The Sacred Rule: ID Immutability
 
 Okay, real talk time. This is the part they don't teach in CS classes, but your production database will teach you at 3 AM on a Monday morning:
+
+:::danger[Thou Shalt Not Mutate Thy ID]
 
 **Your ID must be immutable after the entity is created.**
 
 This means two things:
 
-1. **Never call `setId()`**. Once an entity is in a collection, cached, or in a persistence context, never change it via a setter. For concrete, do not change after persisting.
+1. **Never call `setId()`**. Once an entity is in a collection, cached, or in a persistence context, never change it via a setter. For concrete IDs, do not change after persisting.
 
 2. **Never mutate the ID's internal state**. If your ID is a composite key (like an `@EmbeddedId`), the object itself must be immutable. Don't just avoid setters; design the ID class as an immutable value type with no way to change its internal fields.
+
+:::
 
 If you violate this, you're silently corrupting hash-based structures. You might not notice for weeks. Then one day:
 
@@ -370,11 +484,11 @@ public final class CompositeKey implements Serializable {
 
 Treat IDs like constants. Use them. Love them. But don't change them. Your future self at 3 AM will thank you.
 
-### Bonus
+## Bonus
 
-#### Hibernate 6.5+
+If you want some more spicy additions:
 
-:::tip
+<details>
 
 If you're on **Hibernate 6.5 or newer**, congratulations, the universe has gifted you a shortcut. You can skip the whole ceremony above and just use a Java `record`:
 
@@ -384,12 +498,6 @@ public record CompositeKey(String tenantId, String entityId) implements Serializ
 ```
 
 That. Is. The. Whole. Class. No setters to forget. No `equals()`/`hashCode()` boilerplate that some intern will "helpfully" rewrite next sprint. No `final` keyword sprinkled around like seasoning. The language itself locks the door behind you. If your runtime supports it, this is the version you want, no questions asked.
-
-:::
-
-#### Lombok's `@Value`
-
-:::tip
 
 Allergic to records? Or stuck on a project that hasn't been blessed with a runtime new enough to use them? If Lombok is already on your classpath, you can get *most* of the same benefits with a single annotation:
 
@@ -424,7 +532,7 @@ var copy = key.withEntityId("user-43"); // returns a NEW CompositeKey, original 
 
 `@Builder` gives you a fluent constructor without writing one. `@With` gives you "copy-on-write" methods (`withTenantId(...)`, `withEntityId(...)`) that return a *new* instance with that one field changed, leaving the original untouched. Immutability stays intact. Test fixtures stay readable. Everyone wins.
 
-:::
+</details>
 
 ## Conclusion: The Happy Ending
 
@@ -436,4 +544,4 @@ Your collections will be stable. Your entities will behave predictably. And mayb
 
 You're welcome. Now go forth and implement this. Your future self is counting on you.
 
-*P.S. If you implement a `setId()` method on your entities after reading this, please reconsider. It is meaningless to do that to an entity with dynamic ID, and for concrete one, stay away from it after persisting. Maybe asking yourself if you would even need such a method in the first place.
+> *P.S. If you implement a `setId()` method on your entities after reading all of this, kindly explain yourself. For dynamic IDs, the JPA provider already does the writing for you, so your `setId()` exists purely so someone can call it at the worst possible moment. For concrete IDs, it should be set exactly once, at construction, and never again. So before you reach for that setter, ask yourself: do you actually need it, or do you just have muscle memory? Be honest.*
