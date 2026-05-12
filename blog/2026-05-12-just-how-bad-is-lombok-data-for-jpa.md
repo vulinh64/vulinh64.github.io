@@ -18,7 +18,7 @@ So I did what any reasonable developer does before writing a blog post: I blew t
 
 :::note[A note on the research process]
 
-At one point during the investigation, Anthropic's AI assistant forcefully terminated my chat session. The likely culprit was a `StackOverflowError` or `OutOfMemoryError` triggered while analysing the stack traces, as Anthropic apparently saw this as self-sabotage in progress and pulled the plug before the AI could take the blame. I like to think it was an act of corporate self-preservation. Either way, I took it as a sign that we were on to something.
+At one point during the investigation, Anthropic's AI assistant forcefully terminated my chat session. The likely culprit was a `StackOverflowError` or `OutOfMemoryError` triggered while analysing the stack traces, as Anthropic apparently saw this as self-sabotage in progress and pulled the plug before the AI could take the blame. I like to think it was an act of corporate self-preservation. Either way, I took it as a sign that we were on to something. If the stack traces can overflow an AI session, they can certainly overflow yours.
 
 :::
 
@@ -83,6 +83,28 @@ This one is more creative. A plain `for` loop adding users to a `HashSet` fires 
 3. `User.hashCode()` re-enters `user.posts`. Hibernate doesn't notice a load is already in progress and re-issues the same `SELECT`. Because why not.
 
 4. Two passes are now mutating the same backing `ArrayList` concurrently. The outermost iterator throws `ConcurrentModificationException`.
+
+Here is the call chain visualised:
+
+```
+HashSet.add(user)
+  └─ User.hashCode()
+      └─ user.posts.hashCode()                          [lazy load triggered]
+          └─ PersistentSet.injectLoadedState()          [ENTRY 1: mid-hydration]
+              └─ HashSet.add(post)
+                  └─ Post.hashCode()
+                      └─ User.hashCode()
+                          └─ user.posts.hashCode()      [Hibernate re-issues SELECT]
+                              └─ PersistentSet.injectLoadedState()    [ENTRY 2: concurrent mutation]
+                                  └─ HashSet.add(post)
+                                      └─ Post.hashCode()
+                                          └─ User.hashCode()
+                                              └─ user.posts.hashCode()
+                                                  └─ PersistentSet.injectLoadedState()    [ENTRY 3]
+                                                      └─ ConcurrentModificationException
+```
+
+Hibernate's collection hydration is not reentrant. The moment `User.hashCode()` re-enters a collection that is already mid-hydration, two passes are writing to the same backing `ArrayList`. The outermost frame throws.
 
 <details>
 
@@ -380,14 +402,32 @@ because it has been marked as rollback-only
 | 9b | `/logging-trigger-no-tx` | `LazyInitializationException` swallowed by SLF4J | **Yes (200)** |
 | 10 | `/id-mutation` | `@Id` setter → `UnexpectedRollbackException` bypasses try/catch | No (500) |
 | 10b | `/id-mutation-no-tx` | `@Id` setter → phantom merge, misleading error message | No (500) |
+| 11 | N/A | `@Version` in `equals()` → entity unreachable in `HashSet` after every update | **Yes (200)** |
 
-Six of twelve disasters return **200 OK** with no exception reaching the caller. These are the ones that survive code review, pass tests, and make it to production. The noisy ones at least tell you something is wrong.
+Seven of thirteen disasters return **200 OK** with no exception reaching the caller. These are the ones that survive code review, pass tests, and make it to production. The noisy ones at least tell you something is wrong.
 
-## One Bonus Disaster Not Covered by the PoC
+## Part IV: The @Version Disaster
+
+### Disaster 11: `equals()` Breaks After Every Update (Silent)
 
 `@Data` includes `@Version` fields in `equals()`. After every `merge()`, the version increments. The same row before and after an update is no longer `equals` to itself, silently breaking every deduplication set, cache, or collection that held the entity before the update.
 
-The version field exists to detect concurrent modification. `@Data` turns it into an equality breaker. Chef's kiss.
+```java
+User user = userRepository.findById(1L).orElseThrow(); // version = 0
+Set<User> cache = new HashSet<>();
+cache.add(user);
+
+assertTrue(cache.contains(user)); // true — version 0, bucket X
+
+user.setUsername("NewName");
+userRepository.saveAndFlush(user); // version incremented to 1
+
+assertFalse(cache.contains(user)); // false — hashCode changed, wrong bucket now
+```
+
+The entity is still physically in the set. Iterating it still yields the object. But any lookup by reference silently misses. No exception. **200 OK.**
+
+The version field exists to detect concurrent modification. `@Data` turns it into an equality breaker for every set and map that holds the entity across a save. Chef's kiss.
 
 ## In Defense of `@Data`: It Works, Just Not Here
 
