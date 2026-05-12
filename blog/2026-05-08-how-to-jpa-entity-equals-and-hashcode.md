@@ -70,47 +70,23 @@ About as useful as a screen door on a submarine.
 
 :::danger[The One Annotation You Must Never Reach For]
 
-Do not put `@Data` (or its accomplice `@EqualsAndHashCode` with default settings) on a JPA entity. Ever. The rest of this section explains why, but if you take only one sentence away from this article, take this one.
+Do not put `@Data` (or its accomplice `@EqualsAndHashCode` with default settings) on a JPA entity. Ever.
 
 :::
 
-Ah yes. The siren song of Lombok's `@Data`. One annotation, and you get `equals()`, `hashCode()`, `toString()`, getters, setters, basically everything! How could this go wrong?
+Ah yes. The siren song of Lombok's `@Data`. One annotation, getters, setters, `equals()`, `hashCode()`, `toString()`. Basically everything! How could this go wrong?
 
-Spoiler alert: **So wrong on so many levels!**
+Short version: `LazyInitializationException` when `hashCode()` touches a lazy collection outside a transaction, hydration storms that corrupt Hibernate's internal state, `StackOverflowError` from bidirectional `toString()` and `equals()` recursing into each other indefinitely, and silent `HashSet` corruption after `save()` mutates the `id` that `hashCode()` was built on. Six out of twelve reproducible disasters return **200 OK** with no exception. The app smiles (or pretends to). The data rots.
 
-Let me paint you a picture of the disaster landscape:
+:::info[With receipts]
 
-**Best case scenario:** You get some weird `LazyInitializationException` when `equals()` tries to traverse a lazily-loaded association that's no longer attached to a session. Or you get the N+1 query problem because `hashCode()` innocently triggers the loading of a lazy collection. And JPA, ever the eager helper, fires off a hundred queries you didn't ask for.
+All of this was reproduced against a real database. Stack traces, SQL logs, the full scoreboard?
 
-**Worst case scenario:** `StackOverflowError`.
+[It's all here](./2026-05-12-just-how-bad-is-lombok-data-for-jpa.md). Click it.
 
-Yes. **Stack. Overflow. Error.**
+May you never unsee the horrors that lie therein.
 
-Dare to venture into the utter darkness?
-
-<details>
-
-<summary>If it scares you? Read it so you will be less scared</summary>
-
-Here's why: JPA loves bidirectional relationships. `User` has a `List<Order>`, and each `Order` has a back-reference to `User`. Lombok's `@Data` happily generates `equals()` and `hashCode()` (and `toString()`) that **include all fields**, including those relationships.
-
-So when you call `user.equals(anotherUser)`, it tries to compare the `orders` list. To compare the `orders` list, it calls `equals()` on each `Order`. Each `Order` has a `user` field, so it calls `equals()` on `User` again. Which tries to compare the `orders` list. Which...
-
-```
-Exception in thread "main" java.lang.StackOverflowError
-    at com.example.User.equals(User.java:42)
-    at com.example.Order.equals(Order.java:31)
-    at com.example.User.equals(User.java:42)
-    at com.example.Order.equals(Order.java:31)
-    at com.example.User.equals(User.java:42)
-    ... (10,000 more lines that your scrollbar refuses to acknowledge)
-```
-
-It's almost *beautiful* in how completely it melts down. If you have godly amounts of memory, the stack trace alone will make your eyes water. After all, no amount of memory is going to handle a *theoretically infinite amount*. And if your app somehow survives long enough for you to scroll through it, you might even find it cathartic. Just like watching a sandcastle get annihilated by a wave in slow motion.
-
-The culprit? Lombok's `@Data` generates methods that include every field by default, without any awareness of JPA's circular-reference-friendly object graph. You'd need to litter your code with `@EqualsAndHashCode.Exclude` annotations on every relationship, at which point... you might as well just write the methods yourself.
-
-</details>
+:::
 
 ### And the cautious `@Id`-based approach? It explodes catastrophically
 
